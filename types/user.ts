@@ -1,4 +1,3 @@
-
 export type UserRole = "USER" | "ADMIN";
 
 export type MemberRole = "OWNER" | "MANAGER" | "MEMBER";
