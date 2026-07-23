@@ -1,19 +1,22 @@
 import { Link, useRouter } from "expo-router";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserSignupInputType, userSignupSchema} from "@/schemas/user/registerUserSchema";
+import { UserSignupInputType, userSignupSchema } from "@/schemas/user/registerUserSchema";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import userApi from "@/api/user/userApi";
 import {
     Alert,
     KeyboardAvoidingView,
     Platform,
+    Pressable,
     ScrollView,
     Text,
     View,
+    Image,
 } from "react-native";
 import { isAxiosError } from "axios";
-import { twMerge } from "tailwind-merge";
 import InputGroup from "@/components/common/input/InputGroup";
+import ErrorMessage from "@/components/common/form/ErrorMessage";
+import { twMerge } from "tailwind-merge";
 
 function AuthRegisterPage() {
     const router = useRouter();
@@ -37,9 +40,7 @@ function AuthRegisterPage() {
         control,
     });
 
-    const isFilled = Boolean(
-        email?.trim() && passwordHash?.trim() && name?.trim(),
-    );
+    const isFilled = Boolean(email?.trim() && passwordHash?.trim() && name?.trim());
 
     const onSubmit = async (data: UserSignupInputType) => {
         try {
@@ -49,10 +50,10 @@ function AuthRegisterPage() {
 
             if (Platform.OS === "web") {
                 window.alert("회원가입이 완료되었습니다. 로그인을 진행해주세요.");
-                router.push("/auth/login");
+                router.push("/");
             } else {
                 Alert.alert("가입 완료", "회원가입이 완료되었습니다. 로그인을 진행해주세요", [
-                    { text: "확인", onPress: () => router.push("/auth/login") },
+                    { text: "확인", onPress: () => router.push("/") },
                 ]);
             }
         } catch (error) {
@@ -72,8 +73,34 @@ function AuthRegisterPage() {
         <KeyboardAvoidingView>
             <ScrollView>
                 <View>
-
-                    <View className={"mx-5"}>
+                    <View className={"h-[100px] bg-primary-main items-center"}>
+                        <View className={"flex-row mt-4"}>
+                            <Image
+                                source={require("@/assets/images/register/box.png")}
+                                style={{
+                                    width: 36,
+                                    height: 36,
+                                }}
+                            />
+                            <Text
+                                className={
+                                    "text-4xl font-pretendard-bold text-background-paper ml-2"
+                                }>
+                                Invento
+                            </Text>
+                        </View>
+                        <hr
+                            className="w-[212px] bg-background-paper mt-2"
+                            style={{
+                                border: 0,
+                                height: 2,
+                            }}
+                        />
+                        <Text className={"mt-1 font-pretendard-semibold text-background-paper"}>
+                            단체 비품을 스마트하게 관리하세요!
+                        </Text>
+                    </View>
+                    <View className={"mt-10 mx-5"}>
                         <Controller
                             control={control}
                             name={"email"}
@@ -85,7 +112,7 @@ function AuthRegisterPage() {
                                         onBlur={onBlur}
                                         onChangeText={onChange}
                                         value={value}
-                                        infoMessage={"example@email.com"}
+                                        infoMessage={"example@email.com 형식으로 입력해주세요."}
                                         errorMessage={errors.email?.message}
                                     />
                                 );
@@ -126,14 +153,37 @@ function AuthRegisterPage() {
                                 );
                             }}
                         />
+
+                        {errors.root?.message && (
+                            <ErrorMessage className={"mt-4 self-center"}>
+                                {errors.root.message}
+                            </ErrorMessage>
+                        )}
+                        <Pressable
+                            disabled={!isFilled || isSubmitting}
+                            onPress={handleSubmit(onSubmit)}
+                            className={twMerge(
+                                "flex justify-center items-center mt-6",
+                                "w-full h-[60px] rounded-2xl border-2 border-text-secondary",
+                                "bg-background-deep",
+                                isFilled && "bg-primary-main",
+                            )}>
+                            <Text
+                                className={twMerge(
+                                    "text-2xl text-text-secondary font-pretendard-bold",
+                                    isFilled && "text-background-paper",
+                                )}>
+                                회원가입
+                            </Text>
+                        </Pressable>
                     </View>
 
                     <View className="mt-5 flex-row items-center justify-center gap-2">
-                        <Text className="text-brand-txt-sub font-pretendard-semibold">
+                        <Text className="text-text-secondary font-pretendard">
                             이미 등록하셨나요?
                         </Text>
-                        <Link href={"/auth/login"}>
-                            <Text className="text-brand-primary font-pretendard-semibold">
+                        <Link href={"/"}>
+                            <Text className="text-secondary-main font-pretendard underline">
                                 로그인
                             </Text>
                         </Link>

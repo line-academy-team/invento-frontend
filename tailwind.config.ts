@@ -19,12 +19,16 @@ export default {
                 "250": "1000px",
             },
             fontFamily: {
-                pretendard: ["Pretendard-Regular", "sans-serif"],
+                pretendard: ["Pretendard-Regular"],
+                "pretendard-medium": ["Pretendard-Medium"],
+                "pretendard-semibold": ["Pretendard-SemiBold"],
+                "pretendard-bold": ["Pretendard-Bold"],
             },
             colors: {
                 background: {
                     default: "var(--background)",
                     paper: "var(--surface)",
+                    deep: "var(--background-deep)",
                 },
                 text: {
                     default: "var(--text)",

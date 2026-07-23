@@ -7,9 +7,7 @@ interface InfoMessageProps {
 function InfoMessage({ children }: InfoMessageProps) {
     return (
         <View className={"mt-1.5"}>
-            <Text className={"text-brand-txt-light text-sm font-pretendard-medium"}>
-                {children}
-            </Text>
+            <Text className={"text-text-secondary text-sm font-pretendard"}>{children}</Text>
         </View>
     );
 }

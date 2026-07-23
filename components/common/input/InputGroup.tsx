@@ -24,14 +24,14 @@ function InputGroup({
     const [visibility, setVisibility] = useState(false);
 
     return (
-        <View className="mt-5">
-            <Text className={"text-brand-txt-main font-pretendard-semibold text-sm"}>{label}</Text>
+        <View className="mt-[18px]">
+            <Text className={"text-secondary-main font-pretendard-semibold text-sm"}>{label}</Text>
             <TextInput
                 className={twMerge(
-                    "mt-3 p-3 relative font-pretendard",
-                    "bg-brand-surface rounded-xl border border-brand-border",
-                    "focus:bg-brand-bg focus:outline-brand-primary focus:border-2",
-                    errorMessage && "border-brand-danger border-2",
+                    "mt-3 p-4 relative font-pretendard",
+                    "bg-brand-surface rounded-xl border-2 border-secondary-main",
+                    "focus:outline-secondary-hover",
+                    errorMessage && "border-error-main",
                 )}
                 placeholder={placeholder}
                 secureTextEntry={isPassword && !visibility}
@@ -39,7 +39,7 @@ function InputGroup({
             />
             {isPassword && (
                 <Pressable
-                    className={twMerge("h-5 w-5 absolute", "right-4 top-11")}
+                    className={twMerge("h-5 w-5 absolute", "right-7 top-11")}
                     onPress={() => {
                         setVisibility(!visibility);
                     }}>
