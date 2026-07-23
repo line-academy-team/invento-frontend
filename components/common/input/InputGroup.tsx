@@ -13,13 +13,14 @@ interface InputGroupProps extends TextInputProps {
 }
 
 function InputGroup({
-                        label,
-                        id,
-                        infoMessage,
-                        errorMessage,
-                        isPassword = false,
-                        ...props
-                    }: InputGroupProps) {
+    label,
+    id,
+    placeholder,
+    infoMessage,
+    errorMessage,
+    isPassword = false,
+    ...props
+}: InputGroupProps) {
     const [visibility, setVisibility] = useState(false);
 
     return (
@@ -32,7 +33,7 @@ function InputGroup({
                     "focus:bg-brand-bg focus:outline-brand-primary focus:border-2",
                     errorMessage && "border-brand-danger border-2",
                 )}
-                placeholder={"4자 이상 입력해주세요"}
+                placeholder={placeholder}
                 secureTextEntry={isPassword && !visibility}
                 {...props}
             />
@@ -49,7 +50,7 @@ function InputGroup({
                                 : require("@/assets/images/register/visibility.png")
                         }
                         resizeMode="contain"
-                        style={{ width: 20, height: 20 }}
+                        style={{ width: 28, height: 28 }}
                     />
                 </Pressable>
             )}
