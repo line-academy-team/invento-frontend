@@ -1,10 +1,8 @@
 import axiosInstance from "@/api/axiosInstance";
 import { User } from "@/types/user";
-import { UserSignupInputType } from "@/schemas/user/userSignupSchema";
-import { LoginInputType } from "@/schemas/user/loginSchema";
-import { UpdateUserInputType } from "@/schemas/user/updateUserSchema";
-import { UpdatePasswordInputType } from "@/schemas/user/updatePasswordSchema";
-import { WithdrawUserInputType } from "@/schemas/user/withdrawUserSchema";
+import { UserSignupInputType } from "@/schemas/user/registerUserSchema"
+import { LoginInputType } from "@/schemas/user/loginUserSchema";
+
 
 const registerUser = async (
     data: UserSignupInputType,
@@ -25,26 +23,9 @@ const getMe = async (): Promise<User> => {
     return response.data.data;
 };
 
-const updateUser = async (data: UpdateUserInputType): Promise<User> => {
-    const response = await axiosInstance.patch("/user/update", data);
-    return response.data.data;
-};
-
-const updatePassword = async (
-    data: Omit<UpdatePasswordInputType, "confirmPassword">,
-): Promise<void> => {
-    await axiosInstance.patch("/user/password", data);
-};
-
-const withdrawUser = async (data: WithdrawUserInputType): Promise<void> => {
-    await axiosInstance.patch("/user/withdraw", data);
-};
 
 export default {
     registerUser,
     login,
     getMe,
-    updateUser,
-    updatePassword,
-    withdrawUser,
 };

@@ -1,4 +1,4 @@
-import { create, InternalAxiosRequestConfig } from "axios";
+import { create } from "axios";
 import { useUserStore } from "@/stores/user/useUserStore";
 
 const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || "";
@@ -9,7 +9,7 @@ const api = create({
     withCredentials: true,
 });
 
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+api.interceptors.request.use(config => {
     const { token } = useUserStore.getState();
 
     if (token) {

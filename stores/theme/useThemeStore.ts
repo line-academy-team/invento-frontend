@@ -7,7 +7,7 @@ export type ThemeType = "light" | "dark";
 
 type ThemeState = {
     theme: ThemeType;
-    onChangeTheme: VoidFunction;
+    setTheme: (theme: ThemeType) => void;
 };
 
 const storage =
@@ -19,8 +19,7 @@ export const useThemeStore = create<ThemeState>()(
     persist(
         set => ({
             theme: "light",
-            onChangeTheme: () =>
-                set(state => ({ theme: state.theme === "light" ? "dark" : "light" })),
+            setTheme: newTheme => set({theme: newTheme}),
         }),
         {
             name: "theme-storage",

@@ -22,7 +22,7 @@ export default function RootLayout() {
         if (loaded || error) {
             SplashScreen.hideAsync();
         }
-    }, [loaded, error]);
+    }, [loaded, error])
 
     if (!loaded && !error) {
         return null;
