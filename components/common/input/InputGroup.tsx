@@ -46,8 +46,8 @@ function InputGroup({
                     <Image
                         source={
                             visibility
-                                ? require("@/assets/images/register/visibility_off.png")
-                                : require("@/assets/images/register/visibility.png")
+                                ? require("@/assets/images/auth/visibility_off.png")
+                                : require("@/assets/images/auth/visibility.png")
                         }
                         resizeMode="contain"
                         style={{ width: 28, height: 28 }}

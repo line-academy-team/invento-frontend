@@ -1,25 +1,20 @@
 import { Link, useRouter } from "expo-router";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UserSignupInputType, userSignupSchema } from "@/schemas/user/registerUserSchema";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import userApi from "@/api/user/userApi";
-import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    ScrollView,
-    Text,
-    View,
-    Image,
-} from "react-native";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginInputType, loginSchema } from "@/schemas/user/loginUserSchema";
 import { isAxiosError } from "axios";
+import userApi from "@/api/user/userApi";
+import { Image, KeyboardAvoidingView, Pressable, ScrollView, Text, View } from "react-native";
+import { twMerge } from "tailwind-merge";
 import InputGroup from "@/components/common/input/InputGroup";
 import ErrorMessage from "@/components/common/form/ErrorMessage";
-import { twMerge } from "tailwind-merge";
+import { useUserStore } from "@/stores/user/useUserStore";
+import { useState } from "react";
+import ExpoSecureStore from "expo-secure-store/src/ExpoSecureStore";
 
-function AuthRegisterPage() {
+function AuthLoginPage() {
     const router = useRouter();
+    const { login } = useUserStore();
 
     const {
         control,
@@ -27,38 +22,33 @@ function AuthRegisterPage() {
         setError,
         formState: { errors, isSubmitting },
     } = useForm({
-        resolver: zodResolver(userSignupSchema),
+        resolver: zodResolver(loginSchema),
         mode: "onTouched",
         defaultValues: {
             email: "",
             password: "",
-            name: "",
         },
     });
 
-    const { email, password, name } = useWatch({
+    const { email, password } = useWatch({
         control,
     });
 
-    const isFilled = Boolean(email?.trim() && password?.trim() && name?.trim());
+    const [checked, setChecked] = useState(false);
 
-    const onSubmit = async (data: UserSignupInputType) => {
+    const isFilled = Boolean(email?.trim() && password?.trim());
+
+    const onSubmit = async (data: LoginInputType) => {
         try {
-            const { ...submitData } = data;
-
-            await userApi.registerUser(submitData);
-
-            if (Platform.OS === "web") {
-                window.alert("회원가입이 완료되었습니다. 로그인을 진행해주세요.");
-                router.push("/");
-            } else {
-                Alert.alert("가입 완료", "회원가입이 완료되었습니다. 로그인을 진행해주세요", [
-                    { text: "확인", onPress: () => router.push("/") },
-                ]);
+            const result = await userApi.login(data);
+            if (checked) {
+                await ExpoSecureStore.setItem("accessToken", result.token);
             }
+            login({ user: result.user, memberInfo: result.memberInfo ?? null }, result.token);
+            router.replace("/");
         } catch (error) {
             console.log(error);
-            let errorMessage = "회원가입 중 오류가 발생했습니다.";
+            let errorMessage = "로그인 중 오류가 발생했습니다.";
 
             if (isAxiosError(error)) {
                 errorMessage = error.response?.data?.message || errorMessage;
@@ -69,6 +59,7 @@ function AuthRegisterPage() {
             setError("root", { message: errorMessage });
         }
     };
+
     return (
         <KeyboardAvoidingView>
             <ScrollView>
@@ -100,7 +91,8 @@ function AuthRegisterPage() {
                             단체 비품을 스마트하게 관리하세요!
                         </Text>
                     </View>
-                    <View className={"mt-10 mx-5"}>
+
+                    <View className={"mx-5 mt-[42px]"}>
                         <Controller
                             control={control}
                             name={"email"}
@@ -108,11 +100,11 @@ function AuthRegisterPage() {
                                 return (
                                     <InputGroup
                                         label={"이메일"}
-                                        placeholder={"이메일을 입력해주세요."}
+                                        placeholder={"이메일을 입력해 주세요"}
                                         onBlur={onBlur}
                                         onChangeText={onChange}
                                         value={value}
-                                        infoMessage={"example@email.com 형식으로 입력해주세요."}
+                                        infoMessage={"정확한 이메일 주소를 입력해 주세요."}
                                         errorMessage={errors.email?.message}
                                     />
                                 );
@@ -125,38 +117,41 @@ function AuthRegisterPage() {
                                 return (
                                     <InputGroup
                                         label={"비밀번호"}
-                                        placeholder={"비밀번호를 입력해주세요"}
+                                        placeholder={"비밀번호를 입력해 주세요."}
                                         onBlur={onBlur}
                                         onChangeText={onChange}
                                         value={value}
-                                        infoMessage={"6자 이상 입력해 주세요."}
+                                        infoMessage={""}
                                         errorMessage={errors.password?.message}
-                                        isPassword={true}
-                                    />
-                                );
-                            }}
-                        />
-                        <Controller
-                            control={control}
-                            name={"name"}
-                            render={({ field: { onChange, onBlur, value } }) => {
-                                return (
-                                    <InputGroup
-                                        label={"이름"}
-                                        placeholder={"이름을 입력해주세요"}
-                                        onBlur={onBlur}
-                                        onChangeText={onChange}
-                                        value={value}
-                                        infoMessage={"40자 이하로 입력해 주세요."}
-                                        errorMessage={errors.name?.message}
+                                        isPassword
                                     />
                                 );
                             }}
                         />
 
+                        <View className={"flex-row items-center mt-3 gap-1.5"}>
+                            <Pressable
+                                onPress={() => {
+                                    setChecked(!checked);
+                                }}>
+                                <Image
+                                    source={
+                                        checked
+                                            ? require("@/assets/images/auth/check.png")
+                                            : require("@/assets/images/auth/check_off.png")
+                                    }
+                                    resizeMode="contain"
+                                    style={{ width: 20, height: 20 }}
+                                />
+                            </Pressable>
+                            <Text className={"text-text-secondary font-pretendard"}>
+                                로그인 상태 유지
+                            </Text>
+                        </View>
+
                         {errors.root?.message && (
-                            <ErrorMessage className={"mt-4 self-center"}>
-                                {errors.root.message}
+                            <ErrorMessage className={"self-center"}>
+                                {errors.root?.message}
                             </ErrorMessage>
                         )}
                         <Pressable
@@ -173,18 +168,18 @@ function AuthRegisterPage() {
                                     "text-2xl text-text-secondary font-pretendard-bold",
                                     isFilled && "text-background-paper",
                                 )}>
-                                회원가입
+                                로그인
                             </Text>
                         </Pressable>
                     </View>
 
                     <View className="mt-5 flex-row items-center justify-center gap-2">
                         <Text className="text-text-secondary font-pretendard">
-                            이미 등록하셨나요?
+                            아직 계정이 없으신가요?
                         </Text>
                         <Link href={"/"}>
                             <Text className="text-secondary-main font-pretendard underline">
-                                로그인
+                                회원가입
                             </Text>
                         </Link>
                     </View>
@@ -194,4 +189,4 @@ function AuthRegisterPage() {
     );
 }
 
-export default AuthRegisterPage;
+export default AuthLoginPage;
