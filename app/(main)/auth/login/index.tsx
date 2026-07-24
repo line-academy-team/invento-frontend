@@ -10,7 +10,7 @@ import InputGroup from "@/components/common/input/InputGroup";
 import ErrorMessage from "@/components/common/form/ErrorMessage";
 import { useUserStore } from "@/stores/user/useUserStore";
 import { useState } from "react";
-import ExpoSecureStore from "expo-secure-store/src/ExpoSecureStore";
+import * as SecureStore from "expo-secure-store";
 
 function AuthLoginPage() {
     const router = useRouter();
@@ -42,7 +42,7 @@ function AuthLoginPage() {
         try {
             const result = await userApi.login(data);
             if (checked) {
-                await ExpoSecureStore.setItem("accessToken", result.token);
+                await SecureStore.setItemAsync("accessToken", result.token);
             }
             login({ user: result.user, memberInfo: result.memberInfo ?? null }, result.token);
             router.replace("/");
@@ -64,7 +64,7 @@ function AuthLoginPage() {
         <KeyboardAvoidingView>
             <ScrollView>
                 <View>
-                    <View className={"h-[100px] bg-primary-main items-center"}>
+                    <View className={"h-[88px] bg-primary-main items-center"}>
                         <View className={"flex-row mt-4"}>
                             <Image
                                 source={require("@/assets/images/common/box.png")}

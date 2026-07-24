@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 import { AuthUser, MemberInfo } from "@/types/user";
-import ExpoSecureStore from "expo-secure-store/src/ExpoSecureStore";
+import * as SecureStore from "expo-secure-store";
 import userApi from "@/api/user/userApi";
 
 type UserState = {
@@ -37,7 +37,7 @@ export const useUserStore = create<UserState>()(
                 }),
 
             logout: async () => {
-                await ExpoSecureStore.delete("accessToken");
+                await SecureStore.deleteItemAsync("accessToken");
 
                 set({
                     isLoggedIn: false,
@@ -58,7 +58,7 @@ export const useUserStore = create<UserState>()(
                         : null,
                 })),
             restoreLogin: async () => {
-                const token = await ExpoSecureStore.getItem("accessToken");
+                const token = await SecureStore.getItemAsync("accessToken");
 
                 if (!token) {
                     set({
@@ -81,7 +81,7 @@ export const useUserStore = create<UserState>()(
                         },
                     });
                 } catch {
-                    await ExpoSecureStore.delete("accessToken");
+                    await SecureStore.deleteItemAsync("accessToken");
 
                     set({
                         isLoggedIn: false,
