@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 import { AuthUser, MemberInfo } from "@/types/user";
 import ExpoSecureStore from "expo-secure-store/src/ExpoSecureStore";
+import userApi from "@/api/user/userApi";
 
 type UserState = {
     isLoggedIn: boolean;
@@ -35,7 +36,7 @@ export const useUserStore = create<UserState>()(
                     authUser,
                 }),
 
-            logout: () => {
+            logout: async () => {
                 await ExpoSecureStore.delete("accessToken");
 
                 set({
@@ -57,38 +58,35 @@ export const useUserStore = create<UserState>()(
                         : null,
                 })),
             restoreLogin: async () => {
-                const token = await SecureStore.getItemAsync("accessToken");
+                const token = await ExpoSecureStore.getItem("accessToken");
 
                 if (!token) {
                     set({
                         isLoggedIn: false,
                         token: null,
                         authUser: null,
-                        isInitializing: false,
                     });
                     return;
                 }
 
                 try {
-                    const result = await userApi.getMe(token);
+                    const result = await userApi.getMe();
 
                     set({
                         isLoggedIn: true,
                         token,
                         authUser: {
-                            user: result.user,
-                            memberInfo: result.memberInfo ?? null,
+                            user: result,
+                            memberInfo: null,
                         },
-                        isInitializing: false,
                     });
                 } catch {
-                    await SecureStore.deleteItemAsync("accessToken");
+                    await ExpoSecureStore.delete("accessToken");
 
                     set({
                         isLoggedIn: false,
                         token: null,
                         authUser: null,
-                        isInitializing: false,
                     });
                 }
             },
