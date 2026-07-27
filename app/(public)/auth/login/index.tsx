@@ -192,7 +192,7 @@ function AuthLoginPage() {
                         <Text className="text-text-secondary font-pretendard">
                             아직 계정이 없으신가요?
                         </Text>
-                        <Link href={"/"}>
+                        <Link href={"/auth/register"}>
                             <Text className="text-secondary-main font-pretendard underline">
                                 회원가입
                             </Text>
