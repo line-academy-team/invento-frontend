@@ -19,7 +19,10 @@ export default {
                 "250": "1000px",
             },
             fontFamily: {
+                sans: ["Pretendard-Regular", "sans-serif"],
                 pretendard: ["Pretendard-Regular", "sans-serif"],
+                "pretendard-semibold": ["Pretendard-SemiBold", "sans-serif"],
+                "pretendard-bold": ["Pretendard-Bold", "sans-serif"],
             },
             colors: {
                 background: {

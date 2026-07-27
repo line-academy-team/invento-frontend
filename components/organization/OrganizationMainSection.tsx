@@ -1,5 +1,6 @@
 import React from "react";
 import { ScrollView, View, Text } from "react-native";
+import { twMerge } from "tailwind-merge";
 import { useUserStore } from "@/stores/user/useUserStore";
 import OrganizationEmptyState from "./OrganizationEmptyState";
 import OrganizationPendingState from "./OrganizationPendingState";
@@ -9,37 +10,39 @@ export default function OrganizationMainSection() {
     const isPending = authUser?.memberInfo?.status === "PENDING";
 
     const handleCreate = () => {
-        // TODO: 단체 만들기
+        // TODO: 단체 만들기 이동
     };
 
     const handleJoin = () => {
-        // TODO: 단체 가입하기
+        // TODO: 단체 가입하기 이동
     };
 
     const handleCancel = () => {
-        // TODO: 가입 취소
+        // TODO: 가입 취소 요청 API
     };
 
     return (
         <ScrollView
-            contentContainerStyle={{ padding: 20, justifyContent: "space-between", flexGrow: 1 }}
+            contentContainerClassName={twMerge("p-5 justify-between flex-grow bg-white")}
             showsVerticalScrollIndicator={false}
         >
-            <View className="w-full items-center">
-                <View className="w-full bg-primary-main p-5 rounded-2xl mb-6 flex-row justify-between items-center">
+            <View className={twMerge("w-full items-center")}>
+                {/* 상단 프로필 헤더 */}
+                <View className={twMerge("w-full bg-primary-main p-5 rounded-2xl mb-6 flex-row justify-between items-center")}>
                     <View>
-                        <Text className="text-white text-sm">
+                        <Text className={twMerge("text-white text-sm font-pretendard")}>
                             안녕하세요.
                         </Text>
-                        <Text className="text-white text-2xl font-bold mt-1">
+                        <Text className={twMerge("text-white text-2xl font-pretendard font-bold mt-1")}>
                             {`${authUser?.user?.name || "사용자"}님 👋`}
                         </Text>
                     </View>
-                    <Text className="text-white text-xl font-bold">
+                    <Text className={twMerge("text-white text-xl font-pretendard font-bold")}>
                         Invento
                     </Text>
                 </View>
 
+                {/* 상태별 화면 교체 */}
                 {isPending ? (
                     <OrganizationPendingState
                         onCreatePress={handleCreate}
@@ -53,8 +56,9 @@ export default function OrganizationMainSection() {
                 )}
             </View>
 
-            <View className="items-center py-4">
-                <Text className="text-secondary-main text-xs">
+            {/* 하단 카피라이트 */}
+            <View className={twMerge("items-center py-4 mt-8")}>
+                <Text className={twMerge("text-secondary-main text-xs font-pretendard")}>
                     © 2026 Invento
                 </Text>
             </View>

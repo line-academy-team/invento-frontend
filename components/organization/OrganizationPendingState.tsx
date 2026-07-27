@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Image } from "react-native";
+import { twMerge } from "tailwind-merge";
 import { useUserStore } from "@/stores/user/useUserStore";
 
 interface Props {
@@ -11,43 +12,60 @@ export default function OrganizationPendingState({ onCreatePress, onCancelPress 
     const { authUser } = useUserStore();
 
     return (
-        <View className="w-full items-center">
-            <View className="w-full bg-background-paper p-5 rounded-2xl border border-divider items-center mb-4">
-                <Text className="text-text-default text-base font-bold text-center mb-3">
-                    {`‘${authUser?.memberInfo?.organizationName || "Work"}’ 가입 승인 대기 중이에요.`}
-                </Text>
+        <View className={twMerge("w-full items-center")}>
+            {/* 상단 승인 대기 안내 */}
+            <Text className={twMerge("text-text-default text-lg font-pretendard font-bold text-center mt-2 mb-4")}>
+                {`‘${authUser?.memberInfo?.organizationName || "Work"}’ 가입 승인 대기 중이에요.`}
+            </Text>
 
-                <Pressable
-                    onPress={onCancelPress}
-                    className="border border-error-main px-4 py-1.5 rounded-full active:opacity-70"
-                >
-                    <Text className="text-error-main text-sm font-medium">
-                        가입 신청 취소
-                    </Text>
-                </Pressable>
+            {/* 사람 아이콘 영역 */}
+            <View className={twMerge("my-4 items-center justify-center")}>
+                <Image
+                    source={require("../../assets/images/Organization_Chart_People.png")}
+                    style={{ width: 100, height: 100 }}
+                    resizeMode="contain"
+                />
             </View>
 
-            <View className="w-full bg-background-paper p-6 rounded-2xl border border-divider items-center">
-                <Text className="text-text-default text-base font-bold text-center">
-                    {"아직 가입된 단체가 없습니다.\n가입 승인을 기다리거나 단체를 만들세요."}
+            {/* 가입 신청 취소 버튼 */}
+            <Pressable
+                onPress={onCancelPress}
+                className={twMerge("border border-error-main px-5 py-2 rounded-full active:opacity-70 mb-6")}
+            >
+                <Text className={twMerge("text-error-main text-sm font-pretendard font-medium")}>
+                    가입 신청 취소
+                </Text>
+            </Pressable>
+
+            {/* 하단 안내 문구 (왼쪽 정렬) */}
+            <View className={twMerge("w-full mb-6")}>
+                <Text className={twMerge("text-text-default text-base font-pretendard font-bold text-left leading-6")}>
+                    {"아직 가입된 단체가 없습니다.\n가입 승인을 기다리거나 단체를 만드세요."}
                 </Text>
             </View>
 
-            <View className="w-full gap-3 mt-6">
+            {/* 하단 버튼 영역 */}
+            <View className={twMerge("w-full gap-3")}>
+                {/* 단체 만들기 버튼 */}
                 <Pressable
                     onPress={onCreatePress}
-                    className="bg-secondary-main hover:bg-secondary-hover py-4 rounded-xl items-center active:opacity-80"
+                    className={twMerge(
+                        "bg-secondary-main hover:bg-secondary-hover py-4 rounded-xl items-center active:opacity-80 transition-colors"
+                    )}
                 >
-                    <Text className="text-white font-bold text-base">
+                    <Text className={twMerge("text-white font-pretendard font-bold text-base")}>
                         단체 만들기
                     </Text>
                 </Pressable>
 
+                {/* 단체 가입하기 버튼 (신청 취소 안 했을 때: 회색 테두리 + 회색 글자 비활성화) */}
                 <Pressable
                     disabled={true}
-                    className="border border-secondary-main bg-gray-200 py-4 rounded-xl items-center cursor-not-allowed"
+                    className={twMerge(
+                        "border border-gray-300 bg-gray-100 py-4 rounded-xl items-center opacity-70"
+                    )}
                 >
-                    <Text className="text-secondary-main font-bold text-base">
+                    <Text className={twMerge("text-gray-400 font-pretendard font-bold text-base")}>
                         단체 가입하기
                     </Text>
                 </Pressable>

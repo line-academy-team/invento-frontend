@@ -1,7 +1,5 @@
 export type UserRole = "USER" | "ADMIN";
-
 export type MemberRole = "OWNER" | "MANAGER" | "MEMBER";
-
 export type MemberStatus = "PENDING" | "APPROVED" | "REJECTED" | "WITHDRAWN";
 
 export interface User {
@@ -9,12 +7,12 @@ export interface User {
     email: string;
     name: string;
     role: UserRole;
-    createdAt?: string; // 백엔드에서 ISO 날짜 문자열로 넘어옴
+    createdAt?: string;
     updatedAt?: string;
 }
 
 export interface MemberInfo {
-    id: number;              // 백엔드 Member 모델의 PK (또는 memberId)
+    id: number;
     organizationId: number;
     organizationName?: string;
     departmentId?: number | null;
@@ -24,16 +22,8 @@ export interface MemberInfo {
     joinedAt?: string | null;
 }
 
+// AuthUser를 아래와 같이 정리하면 로그인/내정보 조회 응답처리가 명확해집니다.
 export interface AuthUser {
     user: User;
     memberInfo?: MemberInfo | null;
-}
-
-// 백엔드 로그인 API 응답 전체 타입 (토큰 포함)
-export interface LoginResponse {
-    message: string;
-    data: {
-        user: User;
-        token: string;
-    };
 }

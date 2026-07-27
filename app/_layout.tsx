@@ -1,24 +1,31 @@
-import { StatusBar } from 'expo-status-bar';
+import { useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { Slot, SplashScreen} from "expo-router"
-import {useFonts} from "expo-font";
-import {useEffect} from "react";
+import { Slot, SplashScreen } from "expo-router";
+import { useFonts } from "expo-font";
+import { LogBox, Platform } from "react-native"; // 👈 LogBox, Platform 임포트
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import "../styles/global.css";
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+export const unstable_settings = {
+    anchor: "(main)",
+};
 
+export default function RootLayout() {
     const [loaded, error] = useFonts({
-        'Pretendard-Regular': require('pretendard/dist/web/static/woff2/Pretendard-Regular.woff2'),
-        'Pretendard-SemiBold': require('pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2'),
-        'Pretendard-Bold': require('pretendard/dist/web/static/woff2/Pretendard-Bold.woff2'),
+        "Pretendard-Regular": require("../assets/fonts/Pretendard-Regular.otf"),
+        "Pretendard-SemiBold": require("../assets/fonts/Pretendard-SemiBold.otf"),
+        "Pretendard-Bold": require("../assets/fonts/Pretendard-Bold.otf"),
     });
 
     useEffect(() => {
+        // 👈 웹 환경에서만 안전하게 실행되도록 useEffect 내부 배치
+        if (Platform.OS === "web") {
+            LogBox.ignoreAllLogs();
+        }
+
         if (loaded || error) {
             SplashScreen.hideAsync();
         }
@@ -28,12 +35,12 @@ export default function RootLayout() {
         return null;
     }
 
-  return (
-    <SafeAreaProvider>
-        <StatusBar />
-      <SafeAreaView style={{ flex: 1 }}>
-        <Slot />
-      </SafeAreaView>
-    </SafeAreaProvider>
-  );
+    return (
+        <SafeAreaProvider>
+            <StatusBar style="auto" />
+            <SafeAreaView style={{ flex: 1 }}>
+                <Slot />
+            </SafeAreaView>
+        </SafeAreaProvider>
+    );
 }
