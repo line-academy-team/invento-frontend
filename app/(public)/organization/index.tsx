@@ -1,18 +1,3 @@
-아, 디테일을 제대로 캐치하지 못했네요! 시안을 다시 꼼꼼히 보니 차이점이 명확히 보입니다.
-
-🔍 시안과 달랐던 부분
-상단 배너: 라운드가 들어간 '카드형'이 아니라 화면 좌우를 가득 채우는 상단 헤더 형태 (우측 상단 로고 포함)
-
-중앙 아이콘: 간단한 SVG 아이콘 레이아웃 적용
-
-하단 레이아웃: 안내 텍스트 아래에 보라색 하단 언더라인(Divider)
-
-전체 구조: 모바일 뷰 형태에 맞춘 여백 조절
-
-🛠️ 시안 100% 동일 수정 코드 (app/(public)/organization/index.tsx)
-Lucide 아이콘이나 SVG 등을 고려한 디테일 수정 코드입니다.
-
-    TypeScript
 import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { router } from "expo-router";
