@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 import { AuthUser, MemberInfo } from "@/types/user";
 import * as SecureStore from "expo-secure-store";
+
 import userApi from "@/api/user/userApi";
 
 type UserState = {
@@ -12,9 +13,12 @@ type UserState = {
     authUser: AuthUser | null;
 
     login: (authUser: AuthUser, token: string) => void;
-    logout: VoidFunction;
+
+    logout: () => Promise<void>;
+
     updateMemberInfo: (memberInfo: Partial<MemberInfo>) => void;
-    restoreLogin: VoidFunction;
+
+    restoreLogin: () => Promise<void>;
 };
 
 const storage =
@@ -37,7 +41,11 @@ export const useUserStore = create<UserState>()(
                 }),
 
             logout: async () => {
-                await SecureStore.deleteItemAsync("accessToken");
+                if (Platform.OS === "web") {
+                    localStorage.removeItem("accessToken");
+                } else {
+                    await SecureStore.deleteItemAsync("accessToken");
+                }
 
                 set({
                     isLoggedIn: false,
@@ -45,20 +53,32 @@ export const useUserStore = create<UserState>()(
                     authUser: null,
                 });
             },
+
             updateMemberInfo: memberInfo =>
-                set(state => ({
-                    authUser: state.authUser
-                        ? {
-                              ...state.authUser,
-                              memberInfo: {
-                                  ...state.authUser.memberInfo,
-                                  ...memberInfo,
-                              } as MemberInfo,
-                          }
-                        : null,
-                })),
+                set(state => {
+                    if (!state.authUser || !state.authUser.memberInfo) {
+                        return state;
+                    }
+
+                    return {
+                        authUser: {
+                            ...state.authUser,
+                            memberInfo: {
+                                ...state.authUser.memberInfo,
+                                ...memberInfo,
+                            },
+                        },
+                    };
+                }),
+
             restoreLogin: async () => {
-                const token = await SecureStore.getItemAsync("accessToken");
+                let token;
+
+                if (Platform.OS === "web") {
+                    token = localStorage.getItem("accessToken");
+                } else {
+                    token = await SecureStore.getItemAsync("accessToken");
+                }
 
                 if (!token) {
                     set({
@@ -66,22 +86,27 @@ export const useUserStore = create<UserState>()(
                         token: null,
                         authUser: null,
                     });
+
                     return;
                 }
 
                 try {
-                    const result = await userApi.getMe();
+                    const response = await userApi.getMe();
+                    const authUser = response.data;
 
                     set({
                         isLoggedIn: true,
                         token,
-                        authUser: {
-                            user: result,
-                            memberInfo: null,
-                        },
+                        authUser,
                     });
-                } catch {
-                    await SecureStore.deleteItemAsync("accessToken");
+                } catch (error) {
+                    console.error("로그인 복원 실패:", error);
+
+                    if (Platform.OS === "web") {
+                        localStorage.removeItem("accessToken");
+                    } else {
+                        await SecureStore.deleteItemAsync("accessToken");
+                    }
 
                     set({
                         isLoggedIn: false,
@@ -94,6 +119,10 @@ export const useUserStore = create<UserState>()(
         {
             name: "user-storage",
             storage,
+
+            partialize: state => ({
+                isLoggedIn: state.isLoggedIn,
+            }),
         },
     ),
 );
