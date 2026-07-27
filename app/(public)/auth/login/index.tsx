@@ -4,7 +4,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginInputType, loginSchema } from "@/schemas/user/loginUserSchema";
 import { isAxiosError } from "axios";
 import userApi from "@/api/user/userApi";
-import { Image, KeyboardAvoidingView, Pressable, ScrollView, Text, View } from "react-native";
+import {
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    ScrollView,
+    Text,
+    View,
+} from "react-native";
 import { twMerge } from "tailwind-merge";
 import InputGroup from "@/components/common/input/InputGroup";
 import ErrorMessage from "@/components/common/form/ErrorMessage";
@@ -40,9 +48,16 @@ function AuthLoginPage() {
 
     const onSubmit = async (data: LoginInputType) => {
         try {
-            const result = await userApi.login(data);
+            const response = await userApi.login(data);
+
+            const result = response.data;
+
             if (checked) {
-                await SecureStore.setItemAsync("accessToken", result.token);
+                if (Platform.OS === "web") {
+                    localStorage.getItem("accessToken");
+                } else {
+                    await SecureStore.setItemAsync("accessToken", result.token);
+                }
             }
             login({ user: result.user, memberInfo: result.memberInfo ?? null }, result.token);
             router.replace("/");

@@ -1,5 +1,7 @@
 export type UserRole = "USER" | "ADMIN";
+
 export type MemberRole = "OWNER" | "MANAGER" | "MEMBER";
+
 export type MemberStatus = "PENDING" | "APPROVED" | "REJECTED" | "WITHDRAWN";
 
 export interface User {
@@ -15,15 +17,28 @@ export interface MemberInfo {
     id: number;
     organizationId: number;
     organizationName?: string;
-    departmentId?: number | null;
+
+    departmentId: number | null;
     departmentName?: string;
+
     role: MemberRole;
     status: MemberStatus;
-    joinedAt?: string | null;
+    joinedAt: string | null;
 }
 
-// AuthUser를 아래와 같이 정리하면 로그인/내정보 조회 응답처리가 명확해집니다.
 export interface AuthUser {
     user: User;
-    memberInfo?: MemberInfo | null;
+    memberInfo: MemberInfo | null;
+}
+
+export interface GetMeResponse {
+    message: string;
+    data: AuthUser;
+}
+
+export interface LoginResponse {
+    message: string;
+    data: AuthUser & {
+        token: string;
+    };
 }
