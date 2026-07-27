@@ -48,18 +48,24 @@ function AuthLoginPage() {
 
     const onSubmit = async (data: LoginInputType) => {
         try {
-            const response = await userApi.login(data);
-
-            const result = response.data;
+            const result = await userApi.login(data);
 
             if (checked) {
                 if (Platform.OS === "web") {
-                    localStorage.getItem("accessToken");
+                    localStorage.setItem("accessToken", result.token);
                 } else {
                     await SecureStore.setItemAsync("accessToken", result.token);
                 }
             }
-            login({ user: result.user, memberInfo: result.memberInfo ?? null }, result.token);
+
+            login(
+                {
+                    user: result.user,
+                    memberInfo: result.memberInfo ?? null
+                },
+                result.token
+            );
+
             router.replace("/");
         } catch (error) {
             console.log(error);

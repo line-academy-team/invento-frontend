@@ -36,9 +36,6 @@ export interface GetMeResponse {
     data: AuthUser;
 }
 
-export interface LoginResponse {
-    message: string;
-    data: AuthUser & {
-        token: string;
-    };
-}
+export type LoginResponse = AuthUser & {
+    token: string;
+};
