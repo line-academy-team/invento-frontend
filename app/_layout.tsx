@@ -1,33 +1,43 @@
-import { useEffect } from "react";
-import { StatusBar } from "expo-status-bar";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { Slot, SplashScreen } from "expo-router";
-import { useFonts } from "expo-font";
-import { LogBox, Platform } from "react-native"; // 👈 LogBox, Platform 임포트
-
 import "../styles/global.css";
 
-SplashScreen.preventAutoHideAsync();
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { Slot } from "expo-router";
+import { useFonts } from "expo-font";
+import { useEffect } from "react";
+import { useThemeStore } from "@/stores/theme/useThemeStore";
+import { useUserStore } from "@/stores/user/useUserStore";
 
 export const unstable_settings = {
-    anchor: "(main)",
+    anchor: "(tabs)",
 };
 
+SplashScreen.preventAutoHideAsync().then(() => {});
+
 export default function RootLayout() {
+    const { theme } = useThemeStore();
+
     const [loaded, error] = useFonts({
-        "Pretendard-Regular": require("../assets/fonts/Pretendard-Regular.otf"),
-        "Pretendard-SemiBold": require("../assets/fonts/Pretendard-SemiBold.otf"),
-        "Pretendard-Bold": require("../assets/fonts/Pretendard-Bold.otf"),
+        "Pretendard-Thin": require("@/assets/fonts/Pretendard-Thin.otf"),
+        "Pretendard-ExtraLight": require("@/assets/fonts/Pretendard-ExtraLight.otf"),
+        "Pretendard-Light": require("@/assets/fonts/Pretendard-Light.otf"),
+        "Pretendard-Regular": require("@/assets/fonts/Pretendard-Regular.otf"),
+        "Pretendard-Medium": require("@/assets/fonts/Pretendard-Medium.otf"),
+        "Pretendard-SemiBold": require("@/assets/fonts/Pretendard-SemiBold.otf"),
+        "Pretendard-Bold": require("@/assets/fonts/Pretendard-Bold.otf"),
+        "Pretendard-ExtraBold": require("@/assets/fonts/Pretendard-ExtraBold.otf"),
+        "Pretendard-Black": require("@/assets/fonts/Pretendard-Black.otf"),
     });
+    const { restoreLogin } = useUserStore();
 
     useEffect(() => {
-        // 👈 웹 환경에서만 안전하게 실행되도록 useEffect 내부 배치
-        if (Platform.OS === "web") {
-            LogBox.ignoreAllLogs();
-        }
+        restoreLogin();
+    }, []);
 
+    useEffect(() => {
         if (loaded || error) {
-            SplashScreen.hideAsync();
+            SplashScreen.hideAsync().then(() => {});
         }
     }, [loaded, error]);
 
@@ -37,8 +47,8 @@ export default function RootLayout() {
 
     return (
         <SafeAreaProvider>
-            <StatusBar style="auto" />
-            <SafeAreaView style={{ flex: 1 }}>
+            <StatusBar style={theme === "dark" ? "light" : "dark"} />
+            <SafeAreaView className={"flex-1"}>
                 <Slot />
             </SafeAreaView>
         </SafeAreaProvider>

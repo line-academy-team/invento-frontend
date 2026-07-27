@@ -3,6 +3,8 @@ import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 import { AuthUser, MemberInfo } from "@/types/user";
+import * as SecureStore from "expo-secure-store";
+import userApi from "@/api/user/userApi";
 
 type UserState = {
     isLoggedIn: boolean;
@@ -12,6 +14,7 @@ type UserState = {
     login: (authUser: AuthUser, token: string) => void;
     logout: VoidFunction;
     updateMemberInfo: (memberInfo: Partial<MemberInfo>) => void;
+    restoreLogin: VoidFunction;
 };
 
 const customWebStorage: StateStorage = {
@@ -38,7 +41,7 @@ const storage =
 
 export const useUserStore = create<UserState>()(
     persist(
-        (set) => ({
+        set => ({
             isLoggedIn: false,
             token: null,
             authUser: null,
@@ -50,29 +53,64 @@ export const useUserStore = create<UserState>()(
                     authUser,
                 }),
 
-            logout: () =>
+            logout: async () => {
+                await SecureStore.deleteItemAsync("accessToken");
+
                 set({
                     isLoggedIn: false,
                     token: null,
                     authUser: null,
-                }),
-
-            updateMemberInfo: (memberInfo) =>
-                set((state) => ({
+                });
+            },
+            updateMemberInfo: memberInfo =>
+                set(state => ({
                     authUser: state.authUser
                         ? {
-                            ...state.authUser,
-                            memberInfo: {
-                                ...state.authUser.memberInfo,
-                                ...memberInfo,
-                            } as MemberInfo,
-                        }
+                              ...state.authUser,
+                              memberInfo: {
+                                  ...state.authUser.memberInfo,
+                                  ...memberInfo,
+                              } as MemberInfo,
+                          }
                         : null,
                 })),
+            restoreLogin: async () => {
+                const token = await SecureStore.getItemAsync("accessToken");
+
+                if (!token) {
+                    set({
+                        isLoggedIn: false,
+                        token: null,
+                        authUser: null,
+                    });
+                    return;
+                }
+
+                try {
+                    const result = await userApi.getMe();
+
+                    set({
+                        isLoggedIn: true,
+                        token,
+                        authUser: {
+                            user: result,
+                            memberInfo: null,
+                        },
+                    });
+                } catch {
+                    await SecureStore.deleteItemAsync("accessToken");
+
+                    set({
+                        isLoggedIn: false,
+                        token: null,
+                        authUser: null,
+                    });
+                }
+            },
         }),
         {
             name: "user-storage",
             storage,
-        }
-    )
+        },
+    ),
 );
