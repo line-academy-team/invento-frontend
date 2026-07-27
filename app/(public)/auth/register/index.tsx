@@ -50,7 +50,7 @@ function AuthRegisterPage() {
 
             if (Platform.OS === "web") {
                 window.alert("회원가입이 완료되었습니다. 로그인을 진행해주세요.");
-                router.push("/");
+                router.push("/auth/login");
             } else {
                 Alert.alert("가입 완료", "회원가입이 완료되었습니다. 로그인을 진행해주세요", [
                     { text: "확인", onPress: () => router.push("/") },
@@ -182,7 +182,7 @@ function AuthRegisterPage() {
                         <Text className="text-text-secondary font-pretendard">
                             이미 등록하셨나요?
                         </Text>
-                        <Link href={"/"}>
+                        <Link href={"/auth/login"}>
                             <Text className="text-secondary-main font-pretendard underline">
                                 로그인
                             </Text>
