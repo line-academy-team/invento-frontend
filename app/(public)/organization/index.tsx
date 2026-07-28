@@ -12,8 +12,7 @@ export default function OrganizationIndexPage() {
     const isPending = memberInfo?.status === "PENDING";
     const organizationName = memberInfo?.organizationName || "Work";
 
-    const handleCancelRequest = async () => {
-    };
+    const handleCancelRequest = async () => {};
 
     return (
         <View className="flex-1 bg-background-default items-center">
@@ -33,7 +32,7 @@ export default function OrganizationIndexPage() {
                                 {user?.name || "사용자"}님
                             </Text>
                             <Image
-                                source={require("@/assets/images/vector.png")}
+                                source={require("@/assets/images/organization/vector.png")}
                                 style={{ width: 27, height: 19.48 }}
                                 resizeMode="contain"
                             />
@@ -60,7 +59,7 @@ export default function OrganizationIndexPage() {
                             </Text>
 
                             <Image
-                                source={require("@/assets/images/Organization Chart People.png")}
+                                source={require("@/assets/images/organization/Organization Chart People.png")}
                                 style={{ width: 104, height: 107 }}
                                 className="mb-4"
                                 resizeMode="contain"
@@ -80,7 +79,7 @@ export default function OrganizationIndexPage() {
                                 아직 가입한 단체가 없어요.
                             </Text>
                             <Image
-                                source={require("@/assets/images/Organization Chart People.png")}
+                                source={require("@/assets/images/organization/Organization Chart People.png")}
                                 style={{ width: 104, height: 107 }}
                                 resizeMode="contain"
                             />
