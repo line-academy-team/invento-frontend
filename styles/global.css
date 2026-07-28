@@ -9,7 +9,7 @@
         --active: #5B21B6;
         --light: #EDE9FE;
 
-        --background: #FAFAFF;
+        --background: #F6F4FF;
         --background-deep: #F5F5F5;
         --surface: #FFFFFF;
         --border: #E5E7EB;
@@ -19,8 +19,13 @@
         --text-light: #FFFFFF;
 
         --success: #22C55E;
+        --success-light : #DDF9E7;
+
         --warning: #F59E0B;
+        --warning-light: #FFE5B8;
+
         --error: #EF4444;
+        --error-light: #FFE4E4;
 
         --secondary: #3B82F6;
         --secondary-hover: #2563EB;

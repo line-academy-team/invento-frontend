@@ -52,14 +52,17 @@ export default {
                 error: {
                     main: "var(--error)",
                     contrast: "var(--text-light)",
+                    light: "var(--error-light)"
                 },
                 success: {
                     main: "var(--success)",
                     contrast: "var(--text-light)",
+                    light: "var(--success-light)"
                 },
                 warning: {
                     main: "var(--warning)",
                     contrast: "var(--text-light)",
+                    light: "var(--warning-light)"
                 },
             },
         },
