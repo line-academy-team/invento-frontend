@@ -1,10 +1,5 @@
-import { Text } from "react-native";
 function UserMainPage() {
-    return (
-        <>
-            <Text>User Dashboard !!</Text>
-        </>
-    );
+    return <>UserMainPage</>;
 }
 
 export default UserMainPage;
