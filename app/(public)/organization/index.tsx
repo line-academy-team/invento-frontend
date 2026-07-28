@@ -2,7 +2,6 @@ import React from "react";
 import { View, Text, Pressable, Image } from "react-native";
 import { router } from "expo-router";
 import { useUserStore } from "@/stores/user/useUserStore";
-import { LinearGradient } from "expo-linear-gradient";
 
 export default function OrganizationIndexPage() {
     const { authUser } = useUserStore();
@@ -13,62 +12,60 @@ export default function OrganizationIndexPage() {
     const organizationName = memberInfo?.organizationName || "Work";
 
     const handleCancelRequest = async () => {
+        // TODO: 가입 신청 취소 API 연동
     };
 
     return (
         <View className="flex-1 bg-background-default items-center">
-            <View className="flex-1 w-full bg-white justify-between pb-6">
-                <LinearGradient
-                    colors={["#3B82F6", "#7C3AED"]}
-                    locations={[0, 0.54]}
-                    start={{ x: 0, y: 0.5 }}
-                    end={{ x: 1, y: 0.5 }}
-                    className="pr-3 pl-5 pt-4 pb-4 flex-row justify-between items-start w-full">
-                    <View>
-                        <Text className="text-white text-2xl font-pretendard-extrabold">
-                            안녕하세요.
-                        </Text>
-                        <View className="flex-row items-center space-x-1.5 mt-1">
-                            <Text className="text-white text-3xl font-pretendard-extrabold">
-                                {user?.name || "사용자"}님
-                            </Text>
-                            <Image
-                                source={require("@/assets/images/vector.png")}
-                                style={{ width: 27, height: 19.48 }}
-                                resizeMode="contain"
-                            />
-                        </View>
-                    </View>
+            <View className="flex-1 w-full bg-background-default justify-between pb-8">
+                {/* 1. 상단 타이틀 헤더 */}
+                <View
+                    className="bg-white h-[88px] pl-2 z-10 justify-center"
+                    style={{
+                        // iOS 그림자
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.05,
+                        shadowRadius: 6,
 
-                    <View className="flex-row items-center space-x-1">
-                        <Image
-                            source={require("@/assets/images/common/box.png")}
-                            style={{ width: 26, height: 26, tintColor: "#5B21B6" }}
-                            resizeMode="contain"
-                        />
-                        <Text className="text-primary-active font-pretendard-extrabold text-2xl opacity-90">
-                            Invento
-                        </Text>
-                    </View>
-                </LinearGradient>
+                        // Android 그림자 (투명도 5% 수준에 맞춰 입체감 조정)
+                        elevation: 2,
 
-                <View className="flex-1 items-center justify-center px-5">
+                        // Web 그림자 (피그마 Drop Shadow 속성 100% 동일)
+                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.05)",
+                    }}>
+                    <Text className="text-2xl font-pretendard-bold text-text-default">
+                        단체가입
+                    </Text>
+                </View>
+
+                {/* 2. 중앙 내용 영역 */}
+                <View className="flex-1 items-center justify-center px-6">
+                    {/* 인사말 */}
+                    <Text className="text-base font-pretendard-medium text-text-default mb-1">
+                        안녕하세요
+                    </Text>
+                    <Text className="text-2xl font-pretendard-bold text-text-default mb-8">
+                        {user?.name || "사용자"}님
+                    </Text>
+
+                    {/* 승인 대기 중 vs 가입 안 함 상태 분기 */}
                     {isPending ? (
                         <>
-                            <Text className="text-text-secondary text-lg font-pretendard-bold mb-8 text-center">
-                                '{organizationName}' 가입 승인 대기 중이에요.
+                            <Text className="text-text-secondary text-lg font-pretendard-medium mb-8 text-center">
+                                '{organizationName}' 가입 승인 대기 중이에요
                             </Text>
 
                             <Image
-                                source={require("@/assets/images/Organization Chart People.png")}
-                                style={{ width: 104, height: 107 }}
-                                className="mb-4"
+                                source={require("@/assets/images/diversity_3 (1).png")}
+                                style={{ width: 100, height: 100 }}
+                                className="mb-6"
                                 resizeMode="contain"
                             />
 
                             <Pressable
                                 onPress={handleCancelRequest}
-                                className="border border-error-main px-5 py-2 rounded-full active:opacity-80 mt-2">
+                                className="border border-error-main px-5 py-2 rounded-full active:opacity-80">
                                 <Text className="text-error-main font-pretendard-semibold text-sm">
                                     가입 신청 취소
                                 </Text>
@@ -76,65 +73,65 @@ export default function OrganizationIndexPage() {
                         </>
                     ) : (
                         <>
-                            <Text className="text-text-secondary text-xl font-pretendard-bold mb-10 text-center">
-                                아직 가입한 단체가 없어요.
+                            <Text className="text-text-secondary text-lg font-pretendard-medium mb-10 text-center">
+                                아직 가입한 단체가 없어요
                             </Text>
+
                             <Image
-                                source={require("@/assets/images/Organization Chart People.png")}
-                                style={{ width: 104, height: 107 }}
+                                source={require("@/assets/images/diversity_3 (1).png")}
+                                style={{ width: 100, height: 100 }}
+                                className="mb-10"
                                 resizeMode="contain"
                             />
+
+                            {/* 안내 문구 */}
+                            <View className="items-center mb-8">
+                                <Text className="text-primary-main font-pretendard-semibold text-base">
+                                    단체를 생성하거나
+                                </Text>
+                                <Text className="text-primary-main font-pretendard-semibold text-base mt-0.5">
+                                    초대코드로 가입하세요
+                                </Text>
+                            </View>
                         </>
                     )}
                 </View>
 
-                <View className="px-5 w-full">
-                    <View className="mb-6 border-b-2 border-primary-main pb-2">
-                        <Text className="text-text-default font-pretendard-bold text-base leading-6">
-                            {isPending ? "아직 가입된 단체가 없습니다." : "단체를 생성하거나"}
-                        </Text>
-                        <Text className="text-text-default font-pretendard-bold text-base leading-6">
-                            {isPending
-                                ? "가입 승인을 기다리거나 단체를 만들세요."
-                                : "초대코드로 가입하세요."}
-                        </Text>
-                    </View>
-
+                {/* 3. 하단 액션 버튼 영역 */}
+                <View className="px-6 w-full space-y-3">
+                    {/* 단체 생성 버튼 */}
                     <Pressable
                         disabled={isPending}
                         onPress={() => router.push("/organization/create")}
-                        className={`w-full py-4 rounded-2xl items-center mb-3 transition-colors duration-200 ${
+                        className={`w-full h-14 rounded-2xl items-center justify-center transition-colors duration-200 ${
                             isPending
-                                ? "bg-gray-200"
-                                : "bg-secondary-main hover:bg-secondary-hover active:bg-secondary-hover cursor-pointer"
+                                ? "bg-gray-200 cursor-not-allowed"
+                                : "bg-primary-main hover:bg-primary-hover active:bg-primary-hover cursor-pointer"
                         }`}>
                         <Text
-                            className={`font-pretendard-bold text-base ${
+                            className={`font-pretendard-bold text-lg ${
                                 isPending ? "text-gray-400" : "text-white"
                             }`}>
-                            단체 만들기
+                            단체 생성
                         </Text>
                     </Pressable>
 
+                    {/* 단체 가입 버튼 */}
                     <Pressable
                         disabled={isPending}
                         onPress={() => router.push("/organization/join")}
-                        className={`w-full py-4 rounded-2xl items-center border transition-colors duration-200 ${
+                        className={`w-full h-14 rounded-2xl items-center justify-center border-2 transition-colors duration-200 mt-3 ${
                             isPending
-                                ? "border-gray-300 bg-gray-100"
-                                : "border-secondary-main bg-white hover:bg-gray-100 active:bg-gray-200 cursor-pointer"
+                                ? "border-gray-300 bg-gray-100 cursor-not-allowed"
+                                : "border-primary-main bg-white hover:bg-primary-light active:bg-primary-light cursor-pointer"
                         }`}>
                         <Text
-                            className={`font-pretendard-bold text-base ${
-                                isPending ? "text-gray-400" : "text-secondary-main"
+                            className={`font-pretendard-bold text-lg ${
+                                isPending ? "text-gray-400" : "text-primary-main"
                             }`}>
-                            단체 가입하기
+                            단체 가입
                         </Text>
                     </Pressable>
-
-                    <Text className="text-secondary-main text-center text-xs mt-6">
-                        © 2026 Invento
-                    </Text>
                 </View>
             </View>
         </View>
