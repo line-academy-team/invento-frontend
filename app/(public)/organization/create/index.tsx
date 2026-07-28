@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, Pressable, Image } from "react-native";
 import { useUserStore } from "@/stores/user/useUserStore";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function OrganizationCreatePage() {
     const { authUser } = useUserStore();
@@ -8,15 +9,20 @@ export default function OrganizationCreatePage() {
     const memberInfo = authUser?.memberInfo;
     const organizationName = memberInfo?.organizationName || "Work";
 
-    const handleCancelRequest = async () => {
-    };
+    const handleCancelRequest = async () => {};
 
     return (
         <View className="flex-1 bg-background-default items-center">
             <View className="flex-1 w-full bg-white justify-between pb-6">
-                {/* 헤더 */}
-                <View className="bg-primary-main pr-3 pl-5 flex-row justify-between items-start">
-                    <View className="pt-4 pb-4">
+                {/* 📌 [수정 부분] 헤더 전체를 LinearGradient로 감쌉니다. */}
+                <LinearGradient
+                    colors={["#3B82F6", "#7C3AED"]}
+                    locations={[0, 0.54]}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 0.5 }}
+                    className="pr-3 pl-5 pt-4 pb-4 flex-row justify-between items-start w-full">
+                    {/* 좌측 인사말 */}
+                    <View>
                         <Text className="text-white text-2xl font-pretendard-extrabold">
                             안녕하세요.
                         </Text>
@@ -32,6 +38,7 @@ export default function OrganizationCreatePage() {
                         </View>
                     </View>
 
+                    {/* 우측 Invento 로고 */}
                     <View className="flex-row items-center space-x-1">
                         <Image
                             source={require("@/assets/images/common/box.png")}
@@ -42,8 +49,9 @@ export default function OrganizationCreatePage() {
                             Invento
                         </Text>
                     </View>
-                </View>
+                </LinearGradient>
 
+                {/* 중앙 콘텐츠 */}
                 <View className="flex-1 items-center justify-center px-5">
                     <Text className="text-text-secondary text-lg font-pretendard-bold mb-8 text-center">
                         '{organizationName}' 가입 승인 대기 중이에요.
@@ -65,6 +73,7 @@ export default function OrganizationCreatePage() {
                     </Pressable>
                 </View>
 
+                {/* 하단 영역 */}
                 <View className="px-5 w-full">
                     <View className="mb-6 border-b-2 border-primary-main pb-2">
                         <Text className="text-text-default font-pretendard-bold text-base leading-6">
