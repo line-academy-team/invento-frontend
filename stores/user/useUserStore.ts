@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
 import { AuthUser, MemberInfo } from "@/types/user";
@@ -21,9 +21,26 @@ type UserState = {
     restoreLogin: () => Promise<void>;
 };
 
+const customWebStorage: StateStorage = {
+    getItem: (name) => {
+        if (typeof window === "undefined") return null;
+        return localStorage.getItem(name);
+    },
+    setItem: (name, value) => {
+        if (typeof window !== "undefined") {
+            localStorage.setItem(name, value);
+        }
+    },
+    removeItem: (name) => {
+        if (typeof window !== "undefined") {
+            localStorage.removeItem(name);
+        }
+    },
+};
+
 const storage =
     Platform.OS === "web"
-        ? createJSONStorage(() => localStorage)
+        ? createJSONStorage(() => customWebStorage)
         : createJSONStorage(() => AsyncStorage);
 
 export const useUserStore = create<UserState>()(

@@ -2,7 +2,6 @@ import { Image, Pressable, Text, TextInput, TextInputProps, View } from "react-n
 import ErrorMessage from "@/components/common/form/ErrorMessage";
 import InfoMessage from "@/components/common/form/InfoMessage";
 import { twMerge } from "tailwind-merge";
-import { router } from "expo-router";
 import { useState } from "react";
 
 interface InputGroupProps extends TextInputProps {
@@ -29,7 +28,7 @@ function InputGroup({
             <TextInput
                 className={twMerge(
                     "mt-3 p-4 relative font-pretendard",
-                    "bg-brand-surface rounded-xl border-2 border-secondary-main",
+                    "bg-brand-surface rounded-xl border border-secondary-main",
                     "focus:outline-secondary-hover",
                     errorMessage && "border-error-main",
                 )}
