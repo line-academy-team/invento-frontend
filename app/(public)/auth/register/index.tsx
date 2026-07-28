@@ -1,6 +1,6 @@
 import { Link, useRouter } from "expo-router";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserSignupInputType, userSignupSchema } from "@/schemas/user/registerUserSchema";
+import { userSignupInputSchema, UserSignupInputType } from "@/schemas/user/registerUserSchema";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import userApi from "@/api/user/userApi";
 import {
@@ -17,6 +17,7 @@ import { isAxiosError } from "axios";
 import InputGroup from "@/components/common/input/InputGroup";
 import ErrorMessage from "@/components/common/form/ErrorMessage";
 import { twMerge } from "tailwind-merge";
+import { Ionicons } from "@expo/vector-icons";
 
 function AuthRegisterPage() {
     const router = useRouter();
@@ -27,24 +28,27 @@ function AuthRegisterPage() {
         setError,
         formState: { errors, isSubmitting },
     } = useForm({
-        resolver: zodResolver(userSignupSchema),
+        resolver: zodResolver(userSignupInputSchema),
         mode: "onTouched",
         defaultValues: {
             email: "",
             password: "",
+            confirmPassword: "",
             name: "",
         },
     });
 
-    const { email, password, name } = useWatch({
+    const { email, password, confirmPassword, name } = useWatch({
         control,
     });
 
-    const isFilled = Boolean(email?.trim() && password?.trim() && name?.trim());
+    const isFilled = Boolean(
+        email?.trim() && password?.trim() && confirmPassword?.trim() && name?.trim(),
+    );
 
     const onSubmit = async (data: UserSignupInputType) => {
         try {
-            const { ...submitData } = data;
+            const { confirmPassword, ...submitData } = data;
 
             await userApi.registerUser(submitData);
 
@@ -53,7 +57,7 @@ function AuthRegisterPage() {
                 router.push("/auth/login");
             } else {
                 Alert.alert("가입 완료", "회원가입이 완료되었습니다. 로그인을 진행해주세요", [
-                    { text: "확인", onPress: () => router.push("/") },
+                    { text: "확인", onPress: () => router.push("/auth/login") },
                 ]);
             }
         } catch (error) {
@@ -70,37 +74,36 @@ function AuthRegisterPage() {
         }
     };
     return (
-        <KeyboardAvoidingView>
-            <ScrollView>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            className={"flex-1 bg-background-paper"}>
+            <ScrollView keyboardShouldPersistTaps={"handled"}>
                 <View>
-                    <View className={"h-[100px] bg-primary-main items-center"}>
-                        <View className={"flex-row mt-4"}>
-                            <Image
-                                source={require("@/assets/images/common/box.png")}
-                                style={{
-                                    width: 36,
-                                    height: 36,
-                                }}
-                            />
-                            <Text
-                                className={
-                                    "text-4xl font-pretendard-bold text-background-paper ml-2"
-                                }>
-                                Invento
+                    <View className={"h-[80px] bg-text-light justify-center"}>
+                        <View className={"flex-row items-center px-5 py-3 gap-2"}>
+                            <Pressable onPress={() => router.back()}>
+                                <Ionicons name={"chevron-back-outline"} size={24} />
+                            </Pressable>
+                            <Text className={"text-text-default font-pretendard-bold text-2xl"}>
+                                회원가입
                             </Text>
                         </View>
-                        <hr
-                            className="w-[212px] bg-background-paper mt-2"
+                    </View>
+                    <View className={"justify-center items-center flex-row gap-1"}>
+                        <Image
+                            source={require("@/assets/images/common/box.png")}
                             style={{
-                                border: 0,
-                                height: 2,
+                                width: 55,
+                                height: 68,
+                                tintColor: "#7C3AED",
                             }}
+                            resizeMode={"contain"}
                         />
-                        <Text className={"mt-1 font-pretendard-semibold text-background-paper"}>
-                            단체 비품을 스마트하게 관리하세요!
+                        <Text className={"text-3xl font-pretendard-bold text-primary-main ml-2"}>
+                            Invento
                         </Text>
                     </View>
-                    <View className={"mt-10 mx-5"}>
+                    <View className={"mt-3 mx-5"}>
                         <Controller
                             control={control}
                             name={"email"}
@@ -138,6 +141,24 @@ function AuthRegisterPage() {
                         />
                         <Controller
                             control={control}
+                            name={"confirmPassword"}
+                            render={({ field: { onChange, onBlur, value } }) => {
+                                return (
+                                    <InputGroup
+                                        label={"비밀번호 확인"}
+                                        placeholder={"비밀번호를 다시 입력해주세요"}
+                                        onBlur={onBlur}
+                                        onChangeText={onChange}
+                                        value={value}
+                                        infoMessage={"6자 이상 입력해 주세요."}
+                                        errorMessage={errors.confirmPassword?.message}
+                                        isPassword={true}
+                                    />
+                                );
+                            }}
+                        />
+                        <Controller
+                            control={control}
                             name={"name"}
                             render={({ field: { onChange, onBlur, value } }) => {
                                 return (
@@ -163,7 +184,7 @@ function AuthRegisterPage() {
                             disabled={!isFilled || isSubmitting}
                             onPress={handleSubmit(onSubmit)}
                             className={twMerge(
-                                "flex justify-center items-center mt-6",
+                                "flex justify-center items-center mt-14",
                                 "w-full h-[60px] rounded-2xl border-2 border-text-secondary",
                                 "bg-background-deep",
                                 isFilled && "bg-primary-main",
