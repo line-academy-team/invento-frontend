@@ -19,6 +19,7 @@ import ErrorMessage from "@/components/common/form/ErrorMessage";
 import { useUserStore } from "@/stores/user/useUserStore";
 import { useState } from "react";
 import * as SecureStore from "expo-secure-store";
+import {Ionicons} from "@expo/vector-icons";
 
 function AuthLoginPage() {
     const router = useRouter();
@@ -82,38 +83,37 @@ function AuthLoginPage() {
     };
 
     return (
-        <KeyboardAvoidingView>
-            <ScrollView>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            className={"flex-1 bg-background-paper"}>
+            <ScrollView keyboardShouldPersistTaps={"handled"}>
                 <View>
-                    <View className={"h-[88px] bg-primary-main items-center"}>
-                        <View className={"flex-row mt-4"}>
-                            <Image
-                                source={require("@/assets/images/common/box.png")}
-                                style={{
-                                    width: 36,
-                                    height: 36,
-                                }}
-                            />
-                            <Text
-                                className={
-                                    "text-4xl font-pretendard-bold text-background-paper ml-2"
-                                }>
-                                Invento
+                    <View className={"h-[80px] bg-text-light justify-center"}>
+                        <View className={"flex-row items-center px-5 py-3 gap-2"}>
+                            <Pressable onPress={() => router.back()}>
+                                <Ionicons name={"chevron-back-outline"} size={24} />
+                            </Pressable>
+                            <Text className={"text-text-default font-pretendard-bold text-2xl"}>
+                                로그인
                             </Text>
                         </View>
-                        <hr
-                            className="w-[212px] bg-background-paper mt-2"
+                    </View>
+                    <View className={"justify-center items-center flex-row gap-1"}>
+                        <Image
+                            source={require("@/assets/images/common/box.png")}
                             style={{
-                                border: 0,
-                                height: 2,
+                                width: 55,
+                                height: 68,
+                                tintColor: "#7C3AED",
                             }}
+                            resizeMode={"contain"}
                         />
-                        <Text className={"mt-1 font-pretendard-semibold text-background-paper"}>
-                            단체 비품을 스마트하게 관리하세요!
+                        <Text className={"text-3xl font-pretendard-bold text-primary-main ml-2"}>
+                            Invento
                         </Text>
                     </View>
 
-                    <View className={"mx-5 mt-[42px]"}>
+                    <View className={"mx-5 mt-3"}>
                         <Controller
                             control={control}
                             name={"email"}
@@ -179,7 +179,7 @@ function AuthLoginPage() {
                             disabled={!isFilled || isSubmitting}
                             onPress={handleSubmit(onSubmit)}
                             className={twMerge(
-                                "flex justify-center items-center mt-6",
+                                "flex justify-center items-center mt-20",
                                 "w-full h-[60px] rounded-2xl border-2 border-text-secondary",
                                 "bg-background-deep",
                                 isFilled && "bg-primary-main",

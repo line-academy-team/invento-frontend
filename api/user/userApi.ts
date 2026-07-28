@@ -1,9 +1,9 @@
 import axiosInstance from "@/api/axiosInstance";
-import { GetMeResponse, LoginResponse, MemberInfo, User } from "@/types/user";
-import { UserSignupInputType } from "@/schemas/user/registerUserSchema";
+import { GetMeResponse, LoginResponse, User } from "@/types/user";
+import { UserSignupType } from "@/schemas/user/registerUserSchema";
 import { LoginInputType } from "@/schemas/user/loginUserSchema";
 
-const registerUser = async (data: UserSignupInputType): Promise<User> => {
+const registerUser = async (data: UserSignupType): Promise<User> => {
     const response = await axiosInstance.post("/user/signup", data);
     return response.data.data;
 };
