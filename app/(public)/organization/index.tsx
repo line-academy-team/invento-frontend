@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Image } from "react-native";
 import { router } from "expo-router";
 import { useUserStore } from "@/stores/user/useUserStore";
 
@@ -18,9 +18,7 @@ export default function OrganizationIndexPage() {
     return (
         <View className="flex-1 bg-background-default items-center">
             {/* 전체 컨테이너 (모바일 너비 고정) */}
-            <View className="flex-1 max-w-[440px] w-full bg-white justify-between pb-6">
-
-                {/* 1. 상단 풀비주얼 헤더 (그라데이션/보라색 배경) */}
+            <View className="flex-1 w-full bg-white justify-between pb-6">
                 <View className="bg-primary-main px-5 pt-10 pb-6 rounded-b-none flex-row justify-between items-start">
                     <View>
                         <Text className="text-white text-base font-pretendard">안녕하세요.</Text>
@@ -28,8 +26,15 @@ export default function OrganizationIndexPage() {
                             {user?.name || "사용자"}님 👋
                         </Text>
                     </View>
-                    {/* 우측 상단 로고 영역 */}
+
                     <Text className="text-white font-pretendard-bold text-lg opacity-90">
+                        <Image
+                            source={require("@/assets/images/common/box.png")}
+                            style={{
+                                width: 36,
+                                height: 36,
+                            }}
+                        />
                         Invento
                     </Text>
                 </View>
@@ -51,8 +56,7 @@ export default function OrganizationIndexPage() {
 
                             <Pressable
                                 onPress={handleCancelRequest}
-                                className="border border-error-main px-5 py-2 rounded-full active:opacity-80 mt-2"
-                            >
+                                className="border border-error-main px-5 py-2 rounded-full active:opacity-80 mt-2">
                                 <Text className="text-error-main font-pretendard-semibold text-sm">
                                     가입 신청 취소
                                 </Text>
@@ -63,15 +67,12 @@ export default function OrganizationIndexPage() {
                             <Text className="text-text-secondary text-xl font-pretendard-bold mb-10 text-center">
                                 아직 가입한 단체가 없어요.
                             </Text>
-
-                            {/* 사람3명 회색 그룹 아이콘 (기본 형태) */}
-                            <View className="w-24 h-24 items-center justify-center my-4">
-                                <View className="w-12 h-12 bg-gray-500 rounded-full mb-1" />
-                                <View className="flex-row space-x-2">
-                                    <View className="w-10 h-10 bg-gray-500 rounded-full" />
-                                    <View className="w-10 h-10 bg-gray-500 rounded-full" />
-                                </View>
-                            </View>
+                            <Image
+                                source={require("../../../assets/images/Organization Chart People.png")}
+                                style={{ width: 104, height: 107, marginRight: 8 }}
+                                className="rounded-sm"
+                                resizeMode="contain"
+                            />
                         </>
                     )}
                 </View>
@@ -84,7 +85,9 @@ export default function OrganizationIndexPage() {
                             {isPending ? "아직 가입된 단체가 없습니다." : "단체를 생성하거나"}
                         </Text>
                         <Text className="text-text-default font-pretendard-bold text-base leading-6">
-                            {isPending ? "가입 승인을 기다리거나 단체를 만들세요." : "초대코드로 가입하세요."}
+                            {isPending
+                                ? "가입 승인을 기다리거나 단체를 만들세요."
+                                : "초대코드로 가입하세요."}
                         </Text>
                     </View>
 
@@ -96,9 +99,9 @@ export default function OrganizationIndexPage() {
                             isPending
                                 ? "bg-gray-200"
                                 : "bg-secondary-main hover:bg-secondary-hover active:opacity-90"
-                        }`}
-                    >
-                        <Text className={`font-pretendard-bold text-base ${isPending ? "text-gray-400" : "text-white"}`}>
+                        }`}>
+                        <Text
+                            className={`font-pretendard-bold text-base ${isPending ? "text-gray-400" : "text-white"}`}>
                             단체 만들기
                         </Text>
                     </Pressable>
@@ -111,9 +114,9 @@ export default function OrganizationIndexPage() {
                             isPending
                                 ? "border-gray-300 bg-gray-100" // 승인대기 미취소 시 (회색)
                                 : "border-secondary-main bg-white hover:bg-gray-100 active:bg-gray-200" // 기본
-                        }`}
-                    >
-                        <Text className={`font-pretendard-bold text-base ${isPending ? "text-gray-400" : "text-secondary-main"}`}>
+                        }`}>
+                        <Text
+                            className={`font-pretendard-bold text-base ${isPending ? "text-gray-400" : "text-secondary-main"}`}>
                             단체 가입하기
                         </Text>
                     </Pressable>
@@ -123,7 +126,6 @@ export default function OrganizationIndexPage() {
                         © 2026 Invento
                     </Text>
                 </View>
-
             </View>
         </View>
     );
