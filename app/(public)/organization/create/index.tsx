@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-    Image,
     KeyboardAvoidingView,
     Platform,
     Pressable,
@@ -13,6 +12,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { useRouter } from "expo-router";
 import { twMerge } from "tailwind-merge";
 import ErrorMessage from "@/components/common/form/ErrorMessage";
+import { Ionicons } from "@expo/vector-icons";
 
 interface CreateOrganizationFormInput {
     name: string;
@@ -23,8 +23,7 @@ interface CreateOrganizationFormInput {
 export default function OrganizationCreatePage() {
     const router = useRouter();
 
-    // 💡 소개글 높이를 동적으로 관리하는 State (기본 최소 높이: 120)
-    const [descriptionHeight, setDescriptionHeight] = useState(120);
+    const [descriptionHeight, setDescriptionHeight] = useState(60);
 
     const {
         control,
@@ -42,6 +41,10 @@ export default function OrganizationCreatePage() {
     const nameValue = useWatch({ control, name: "name" });
     const isFilled = Boolean(nameValue?.trim());
 
+    const handleGoBack = () => {
+        router.push("/organization");
+    };
+
     const onSubmit = async (data: CreateOrganizationFormInput) => {
         try {
             console.log("단체 생성 데이터:", data);
@@ -56,32 +59,28 @@ export default function OrganizationCreatePage() {
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
-            className="flex-1 bg-background-default items-center">
+            className="flex-1 bg-background-paper items-center">
             <ScrollView
                 contentContainerStyle={{ flexGrow: 1 }}
-                className="w-full max-w-[440px] bg-white">
-                <View className="flex-1 justify-between pb-6">
-                    <View className="h-[100px] bg-secondary-main items-center justify-center pt-2">
-                        <View className="flex-row items-center">
-                            <Image
-                                source={require("@/assets/images/common/box.png")}
-                                style={{ width: 32, height: 32, tintColor: "#FFFFFF" }}
-                                resizeMode="contain"
-                            />
-                            <Text className="text-3xl font-pretendard-extrabold text-white ml-2">
-                                Invento
+                className="w-full bg-background-paper">
+                <View className="justify-between ">
+                    <View className="h-[88px] bg-text-light justify-center mb-3.5">
+                        <View className="flex-row items-center px-5 py-3 gap-2">
+                            <Pressable
+                                onPress={handleGoBack}
+                                className="p-2 -ml-2 active:opacity-70 cursor-pointer">
+                                <Ionicons name="chevron-back-outline" size={24} color="#111827" />
+                            </Pressable>
+                            <Text className="text-text-default font-pretendard-bold text-2xl">
+                                단체생성
                             </Text>
                         </View>
-                        <View className="w-[180px] h-[1.5px] bg-white opacity-80 mt-1 mb-1" />
-                        <Text className="text-xs font-pretendard-medium text-white opacity-90">
-                            단체 비품을 스마트하게 관리하세요!
-                        </Text>
                     </View>
 
-                    <View className="px-6 my-6 space-y-5">
+                    <View className="px-6 gap-y-6">
                         <View>
-                            <Text className="text-sm font-pretendard-bold text-primary-main mb-1.5">
-                                조직명 (필수)
+                            <Text className="text-base font-pretendard-semibold text-secondary-main mb-2">
+                                조직명
                             </Text>
                             <Controller
                                 control={control}
@@ -94,19 +93,20 @@ export default function OrganizationCreatePage() {
                                         onBlur={onBlur}
                                         placeholder="조직명을 입력해주세요."
                                         placeholderTextColor="#9CA3AF"
-                                        className="w-full h-12 border-2 border-primary-main rounded-2xl px-4 font-pretendard-medium text-base text-text-default bg-white"
+                                        className="w-full h-[60px] border-[1.5px] border-secondary-main rounded-2xl px-4 font-pretendard-medium text-base text-text-default bg-white"
                                     />
                                 )}
                             />
                             {errors.name?.message && (
-                                <ErrorMessage className="mt-1">{errors.name.message}</ErrorMessage>
+                                <ErrorMessage className="mt-1.5">
+                                    {errors.name.message}
+                                </ErrorMessage>
                             )}
                         </View>
 
-                        {/* 📌 동적 높이 증가 적용 부분 */}
                         <View className="mt-4">
-                            <Text className="text-sm font-pretendard-bold text-primary-main mb-1.5">
-                                소개글 (선택)
+                            <Text className="text-base font-pretendard-semibold text-secondary-main mb-2">
+                                소개글
                             </Text>
                             <Controller
                                 control={control}
@@ -126,30 +126,25 @@ export default function OrganizationCreatePage() {
                                         placeholderTextColor="#9CA3AF"
                                         multiline
                                         textAlignVertical="top"
-                                        // 💡 텍스트 줄 수 증가 시 동적으로 높이 변경 (최소 120px)
                                         onContentSizeChange={e => {
                                             const contentHeight = e.nativeEvent.contentSize.height;
-                                            setDescriptionHeight(Math.max(120, contentHeight));
+                                            setDescriptionHeight(Math.max(60, contentHeight));
                                         }}
                                         style={{ height: descriptionHeight }}
-                                        className="w-full border-2 border-primary-main rounded-2xl p-4 font-pretendard-medium text-base text-text-default bg-white transition-all duration-150"
+                                        className="w-full min-h-[60px] border-[1.5px] border-secondary-main rounded-2xl p-4 font-pretendard-medium text-base text-text-default bg-white transition-all duration-150"
                                     />
                                 )}
                             />
-                            {errors.description?.message ? (
-                                <ErrorMessage className="mt-1">
+                            {errors.description?.message && (
+                                <ErrorMessage className="mt-1.5">
                                     {errors.description.message}
                                 </ErrorMessage>
-                            ) : (
-                                <Text className="text-xs font-pretendard text-error-main mt-1">
-                                    소개글은 최대 500자 입니다.
-                                </Text>
                             )}
                         </View>
 
                         <View className="mt-4">
-                            <Text className="text-sm font-pretendard-bold text-primary-main mb-1.5">
-                                로고 URL (선택)
+                            <Text className="text-base font-pretendard-semibold text-secondary-main mb-2">
+                                로고 URL
                             </Text>
                             <Controller
                                 control={control}
@@ -165,23 +160,23 @@ export default function OrganizationCreatePage() {
                                         value={value}
                                         onChangeText={onChange}
                                         onBlur={onBlur}
-                                        placeholder="조직 로고 링크를 연결해주세요."
+                                        placeholder="조직 로고 링크를 연결해주세요"
                                         placeholderTextColor="#9CA3AF"
                                         autoCapitalize="none"
                                         keyboardType="url"
-                                        className="w-full h-12 border-2 border-primary-main rounded-2xl px-4 font-pretendard-medium text-base text-text-default bg-white"
+                                        className="w-full h-[60px] border-[1.5px] border-secondary-main rounded-2xl px-4 font-pretendard-medium text-base text-text-default bg-white"
                                     />
                                 )}
                             />
                             {errors.logoUrl?.message && (
-                                <ErrorMessage className="mt-1">
+                                <ErrorMessage className="mt-1.5">
                                     {errors.logoUrl.message}
                                 </ErrorMessage>
                             )}
                         </View>
 
                         {errors.root?.message && (
-                            <ErrorMessage className="mt-2 self-center">
+                            <ErrorMessage className="mt-3 self-center">
                                 {errors.root?.message}
                             </ErrorMessage>
                         )}
@@ -190,24 +185,20 @@ export default function OrganizationCreatePage() {
                             disabled={!isFilled || isSubmitting}
                             onPress={handleSubmit(onSubmit)}
                             className={twMerge(
-                                "w-full h-14 rounded-2xl items-center justify-center mt-6 transition-colors duration-200",
-                                "bg-background-deep cursor-not-allowed border-2 border-gray-300",
+                                "w-full h-[60px] rounded-2xl items-center justify-center mt-24 transition-colors duration-200",
+                                "bg-background-deep border-2 border-text-secondary cursor-not-allowed",
                                 isFilled &&
-                                    "bg-secondary-main hover:bg-secondary-hover active:bg-secondary-hover cursor-pointer border-0",
+                                    "bg-primary-main border-primary-main hover:bg-primary-hover active:bg-primary-hover cursor-pointer border-0",
                             )}>
                             <Text
                                 className={twMerge(
-                                    "font-pretendard-bold text-xl text-text-secondary",
-                                    isFilled && "text-text-light",
+                                    "font-pretendard-bold text-2xl text-text-secondary",
+                                    isFilled && "text-background-paper",
                                 )}>
-                                단체 만들기
+                                단체 생성
                             </Text>
                         </Pressable>
                     </View>
-
-                    <Text className="text-secondary-main text-center text-xs mt-4">
-                        © 2026 Invento
-                    </Text>
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>
