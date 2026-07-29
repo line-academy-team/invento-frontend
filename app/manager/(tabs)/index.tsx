@@ -16,9 +16,13 @@ function ManagerMainPage() {
 
     const { authUser } = useUserStore();
 
-    const ozId = Number(authUser?.memberInfo?.id);
+    const ozId = Number(authUser?.memberInfo?.organizationId);
 
     useEffect(() => {
+        console.log("현재 내 정보:", authUser?.memberInfo);
+        console.log("조직 ID:", authUser?.memberInfo?.organizationId);
+        if (!ozId || isNaN(ozId)) return;
+
         const loadDashboard = async () => {
             try {
                 setIsLoading(true);
@@ -37,7 +41,7 @@ function ManagerMainPage() {
             } finally {
                 setIsLoading(false);
             }
-        }
+        };
 
         loadDashboard().then(() => {});
     }, []);
@@ -45,10 +49,7 @@ function ManagerMainPage() {
     return (
         <ScrollView>
             <MainHeader variant={"userMain"} onMenuPress={() => {}} />
-            <View className="flex-1 w-full">
-                
-            </View>
-
+            <View className="flex-1 w-full"></View>
         </ScrollView>
     );
 }

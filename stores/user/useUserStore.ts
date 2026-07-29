@@ -22,7 +22,7 @@ type UserState = {
 };
 
 const customWebStorage: StateStorage = {
-    getItem: (name) => {
+    getItem: name => {
         if (typeof window === "undefined") return null;
         return localStorage.getItem(name);
     },
@@ -31,7 +31,7 @@ const customWebStorage: StateStorage = {
             localStorage.setItem(name, value);
         }
     },
-    removeItem: (name) => {
+    removeItem: name => {
         if (typeof window !== "undefined") {
             localStorage.removeItem(name);
         }
@@ -50,12 +50,19 @@ export const useUserStore = create<UserState>()(
             token: null,
             authUser: null,
 
-            login: (authUser, token) =>
+            login: async (authUser, token) => {
+                if (Platform.OS === "web") {
+                    localStorage.setItem("accessToken", token);
+                } else {
+                    await SecureStore.setItemAsync("accessToken", token);
+                }
+
                 set({
                     isLoggedIn: true,
                     token,
                     authUser,
-                }),
+                });
+            },
 
             logout: async () => {
                 if (Platform.OS === "web") {
@@ -139,6 +146,7 @@ export const useUserStore = create<UserState>()(
 
             partialize: state => ({
                 isLoggedIn: state.isLoggedIn,
+                authUser: state.authUser,
             }),
         },
     ),

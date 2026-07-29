@@ -3,7 +3,7 @@ import axiosInstance from "@/api/axiosInstance";
 import { EquipmentUnit } from "@/types/equipmentUnit";
 
 const getEquipmentList = async (): Promise<Equipment[]> => {
-    const response = await axiosInstance.get("/equipment/");
+    const response = await axiosInstance.get("/equipment");
     return response.data.data;
 };
 
