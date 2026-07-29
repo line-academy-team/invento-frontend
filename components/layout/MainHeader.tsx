@@ -17,7 +17,7 @@ function MainHeader({ variant = "headerSub", title, onMenuPress, isBackPress }: 
     const isAdmin = variant === "adminMain";
 
     const commonClassName =
-        "w-full h-[88px] flex-row justify-between items-center pb-3 px-[30px] overflow-hidden";
+        "w-full h-[88px] relative flex-row justify-between items-center px-[30px]";
 
     const renderContent = () => {
         if (isMain) {
@@ -113,18 +113,26 @@ function MainHeader({ variant = "headerSub", title, onMenuPress, isBackPress }: 
     }
 
     if (variant === "adminMain") {
-        return (
-            <View className={`${commonClassName} bg-primary-main`}>
-                {renderContent()}
-            </View>
-        );
+        return <View className={`${commonClassName} bg-primary-main`}>{renderContent()}</View>;
     }
 
     return (
-        <View className={`${commonClassName} bg-text-light`}>
+        <View
+            className={`${commonClassName} bg-text-light`}
+            style={
+                !isBackPress
+                    ? {
+                          shadowColor: "#000000",
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: 0.03,
+                          shadowRadius: 10,
+                          elevation: 3,
+                      }
+                    : undefined
+            }>
             {renderContent()}
         </View>
-    )
+    );
 }
 
 export default MainHeader;

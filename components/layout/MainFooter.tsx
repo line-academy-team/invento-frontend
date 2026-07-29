@@ -115,7 +115,14 @@ function MainFooter({ variant }: MainFooterProps) {
                         key={menu.href}
                         // @ts-ignore
                         onPress={() => router.push(menu.href)}
-                        className="flex-1 items-center justify-center">
+                        className="flex-1 items-center justify-center"
+                        style={{
+                            shadowColor: "#000000",
+                            shadowOffset: { width: 0, height: -4 },
+                            shadowOpacity: 0.03,
+                            shadowRadius: 10,
+                            elevation: 3,
+                        }}>
                         <Icon size={24} color={menuColor} />
 
                         <Text
