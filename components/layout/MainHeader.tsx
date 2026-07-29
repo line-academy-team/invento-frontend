@@ -23,7 +23,7 @@ function MainHeader({ variant = "headerSub", title, onMenuPress, isBackPress }: 
         if (isMain) {
             return (
                 <>
-                    <View className="flex-row gap-2.5 items-center">
+                    <View className="flex-row gap-2.5 items-center z-10">
                         <Image
                             source={require("@/assets/images/common/box.png")}
                             style={{ width: 36, height: 36 }}
@@ -39,7 +39,7 @@ function MainHeader({ variant = "headerSub", title, onMenuPress, isBackPress }: 
                             )}
                         </View>
                     </View>
-                    <Pressable onPress={onMenuPress}>
+                    <Pressable onPress={onMenuPress} className="z-10">
                         <Image
                             source={require("@/assets/images/common/menu.png")}
                             style={{ width: 28, height: 28 }}
