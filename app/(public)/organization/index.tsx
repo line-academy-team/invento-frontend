@@ -12,44 +12,34 @@ export default function OrganizationIndexPage() {
     const organizationName = memberInfo?.organizationName || "Work";
 
     const handleCancelRequest = async () => {
-        // TODO: 가입 신청 취소 API 연동
     };
 
     return (
         <View className="flex-1 bg-background-default items-center">
-            <View className="flex-1 w-full bg-background-default justify-between pb-8">
-                {/* 1. 상단 타이틀 헤더 */}
+            <View className=" w-full bg-background-default justify-between pb-8">
                 <View
                     className="bg-white h-[88px] pl-2 z-10 justify-center"
                     style={{
-                        // iOS 그림자
                         shadowColor: "#000",
                         shadowOffset: { width: 0, height: 4 },
                         shadowOpacity: 0.05,
                         shadowRadius: 6,
-
-                        // Android 그림자 (투명도 5% 수준에 맞춰 입체감 조정)
                         elevation: 2,
-
-                        // Web 그림자 (피그마 Drop Shadow 속성 100% 동일)
                         boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.05)",
                     }}>
-                    <Text className="text-2xl font-pretendard-bold text-text-default">
+                    <Text className=" pl-8 text-2xl font-pretendard-bold text-text-default">
                         단체가입
                     </Text>
                 </View>
 
-                {/* 2. 중앙 내용 영역 */}
                 <View className="flex-1 items-center justify-center px-6">
-                    {/* 인사말 */}
-                    <Text className="text-base font-pretendard-medium text-text-default mb-1">
+                    <Text className="text-base font-pretendard-medium text-text-default mt-12 mb-3.5">
                         안녕하세요
                     </Text>
-                    <Text className="text-2xl font-pretendard-bold text-text-default mb-8">
+                    <Text className="text-2xl font-pretendard-semibold text-text-default mb-14">
                         {user?.name || "사용자"}님
                     </Text>
 
-                    {/* 승인 대기 중 vs 가입 안 함 상태 분기 */}
                     {isPending ? (
                         <>
                             <Text className="text-text-secondary text-lg font-pretendard-medium mb-8 text-center">
@@ -73,19 +63,18 @@ export default function OrganizationIndexPage() {
                         </>
                     ) : (
                         <>
-                            <Text className="text-text-secondary text-lg font-pretendard-medium mb-10 text-center">
+                            <Text className="text-text-secondary text-lg font-pretendard-medium mb-14 text-center">
                                 아직 가입한 단체가 없어요
                             </Text>
 
                             <Image
                                 source={require("@/assets/images/diversity_3 (1).png")}
                                 style={{ width: 100, height: 100 }}
-                                className="mb-10"
+                                className="mb-16"
                                 resizeMode="contain"
                             />
 
-                            {/* 안내 문구 */}
-                            <View className="items-center mb-8">
+                            <View className="items-center mb-10">
                                 <Text className="text-primary-main font-pretendard-semibold text-base">
                                     단체를 생성하거나
                                 </Text>
@@ -97,9 +86,7 @@ export default function OrganizationIndexPage() {
                     )}
                 </View>
 
-                {/* 3. 하단 액션 버튼 영역 */}
-                <View className="px-6 w-full space-y-3">
-                    {/* 단체 생성 버튼 */}
+                <View className="px-6 w-full gap-y-6">
                     <Pressable
                         disabled={isPending}
                         onPress={() => router.push("/organization/create")}
@@ -116,7 +103,6 @@ export default function OrganizationIndexPage() {
                         </Text>
                     </Pressable>
 
-                    {/* 단체 가입 버튼 */}
                     <Pressable
                         disabled={isPending}
                         onPress={() => router.push("/organization/join")}

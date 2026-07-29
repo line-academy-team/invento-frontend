@@ -23,7 +23,6 @@ interface CreateOrganizationFormInput {
 export default function OrganizationCreatePage() {
     const router = useRouter();
 
-    // 소개글 높이 동적 관리 (기본 최소 높이: 60)
     const [descriptionHeight, setDescriptionHeight] = useState(60);
 
     const {
@@ -42,7 +41,6 @@ export default function OrganizationCreatePage() {
     const nameValue = useWatch({ control, name: "name" });
     const isFilled = Boolean(nameValue?.trim());
 
-    // 💡 /organization 화면으로 확실하게 이동하는 핸들러
     const handleGoBack = () => {
         router.push("/organization");
     };
@@ -51,7 +49,6 @@ export default function OrganizationCreatePage() {
         try {
             console.log("단체 생성 데이터:", data);
 
-            // TODO: 단체 생성 API 연동
             router.replace("/");
         } catch (error) {
             console.log(error);
@@ -66,11 +63,9 @@ export default function OrganizationCreatePage() {
             <ScrollView
                 contentContainerStyle={{ flexGrow: 1 }}
                 className="w-full bg-background-paper">
-                <View className="flex-1 justify-between pb-8">
-                    {/* 1. 상단 타이틀 헤더 바 */}
-                    <View className="h-[80px] bg-text-light justify-center border-b border-gray-100">
+                <View className="justify-between ">
+                    <View className="h-[88px] bg-text-light justify-center mb-3.5">
                         <View className="flex-row items-center px-5 py-3 gap-2">
-                            {/* 📌 뒤로가기 버튼 수정: 터치 영역 확보 및 /organization 이동 */}
                             <Pressable
                                 onPress={handleGoBack}
                                 className="p-2 -ml-2 active:opacity-70 cursor-pointer">
@@ -82,9 +77,7 @@ export default function OrganizationCreatePage() {
                         </View>
                     </View>
 
-                    {/* 2. 폼 입력 영역 */}
-                    <View className="px-6 my-auto space-y-5">
-                        {/* 1) 조직명 */}
+                    <View className="px-6 gap-y-6">
                         <View>
                             <Text className="text-base font-pretendard-semibold text-secondary-main mb-2">
                                 조직명
@@ -111,7 +104,6 @@ export default function OrganizationCreatePage() {
                             )}
                         </View>
 
-                        {/* 2) 소개글 (가변 높이 TextInput) */}
                         <View className="mt-4">
                             <Text className="text-base font-pretendard-semibold text-secondary-main mb-2">
                                 소개글
@@ -150,7 +142,6 @@ export default function OrganizationCreatePage() {
                             )}
                         </View>
 
-                        {/* 3) 로고 URL */}
                         <View className="mt-4">
                             <Text className="text-base font-pretendard-semibold text-secondary-main mb-2">
                                 로고 URL
@@ -184,22 +175,18 @@ export default function OrganizationCreatePage() {
                             )}
                         </View>
 
-                        {/* 서버 루트 에러 메시지 */}
                         {errors.root?.message && (
                             <ErrorMessage className="mt-3 self-center">
                                 {errors.root?.message}
                             </ErrorMessage>
                         )}
 
-                        {/* 단체 생성 버튼 */}
                         <Pressable
                             disabled={!isFilled || isSubmitting}
                             onPress={handleSubmit(onSubmit)}
                             className={twMerge(
-                                "w-full h-[60px] rounded-2xl items-center justify-center mt-8 transition-colors duration-200",
-                                // 비활성화 상태
+                                "w-full h-[60px] rounded-2xl items-center justify-center mt-24 transition-colors duration-200",
                                 "bg-background-deep border-2 border-text-secondary cursor-not-allowed",
-                                // 활성화 상태
                                 isFilled &&
                                     "bg-primary-main border-primary-main hover:bg-primary-hover active:bg-primary-hover cursor-pointer border-0",
                             )}>
@@ -212,11 +199,6 @@ export default function OrganizationCreatePage() {
                             </Text>
                         </Pressable>
                     </View>
-
-                    {/* 3. 푸터 */}
-                    <Text className="text-text-secondary text-center text-xs mt-4">
-                        © 2026 Invento
-                    </Text>
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>

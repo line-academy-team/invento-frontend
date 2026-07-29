@@ -35,7 +35,6 @@ export default function OrganizationJoinPage() {
     const inviteCode = useWatch({ control, name: "inviteCode" });
     const isFilled = Boolean(inviteCode?.trim());
 
-    // 💡 /organization 화면으로 확실하게 이동하는 핸들러
     const handleGoBack = () => {
         router.push("/organization");
     };
@@ -44,7 +43,6 @@ export default function OrganizationJoinPage() {
         try {
             console.log("초대코드 제출:", data.inviteCode);
 
-            // TODO: 초대코드 제출 API 연동
             router.replace("/");
         } catch (error) {
             console.log(error);
@@ -62,7 +60,6 @@ export default function OrganizationJoinPage() {
                 <View className="flex-1 justify-between pb-8">
                     <View className="h-[80px] bg-text-light justify-center">
                         <View className="flex-row items-center px-5 py-3 gap-2">
-                            {/* 📌 뒤로가기 버튼 수정: 터치 영역 확보 및 /organization 이동 */}
                             <Pressable
                                 onPress={handleGoBack}
                                 className="p-2 -ml-2 active:opacity-70 cursor-pointer">
@@ -74,13 +71,11 @@ export default function OrganizationJoinPage() {
                         </View>
                     </View>
 
-                    {/* 2. 중앙 초대코드 입력 영역 */}
                     <View className="px-6 items-center my-auto">
                         <Text className="text-2xl font-pretendard-bold text-text-default mb-4">
                             초대코드 입력
                         </Text>
 
-                        {/* 초대코드 TextInput */}
                         <Controller
                             control={control}
                             name="inviteCode"
