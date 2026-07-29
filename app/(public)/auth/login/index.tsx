@@ -67,7 +67,7 @@ function AuthLoginPage() {
                 result.token
             );
 
-            router.replace("/");
+            router.push("/(public)/organization");
         } catch (error) {
             console.log(error);
             let errorMessage = "로그인 중 오류가 발생했습니다.";
