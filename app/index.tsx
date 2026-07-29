@@ -46,7 +46,7 @@ export default function IndexPage() {
                 const { isLoggedIn, token, authUser, logout } = useUserStore.getState();
 
                 if (!isLoggedIn || !token || !authUser) {
-                    router.replace("/auth/login");
+                    router.replace("/welcome");
                     return;
                 }
 
