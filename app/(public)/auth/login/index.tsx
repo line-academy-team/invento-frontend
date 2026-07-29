@@ -62,9 +62,9 @@ function AuthLoginPage() {
             login(
                 {
                     user: result.user,
-                    memberInfo: result.memberInfo ?? null
+                    memberInfo: result.memberInfo ?? null,
                 },
-                result.token
+                result.token,
             );
 
             router.push("/(public)/organization");

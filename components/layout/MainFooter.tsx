@@ -3,6 +3,8 @@ import { twMerge } from "tailwind-merge";
 import { router, usePathname } from "expo-router";
 import { FiHome, FiBox, FiClipboard, FiUser, FiSettings } from "react-icons/fi";
 import { IconType } from "react-icons";
+import { MdPeople } from "react-icons/md";
+import { CgOrganisation } from "react-icons/cg";
 
 interface FooterMenu {
     label: string;
@@ -59,14 +61,38 @@ const managerMenus: FooterMenu[] = [
     },
 ];
 
+const adminMenus: FooterMenu[] = [
+    {
+        label: "홈",
+        href: "/admin",
+        icon: FiHome,
+        exact: true,
+    },
+    {
+        label: "유저 관리",
+        href: "/admin/user",
+        icon: MdPeople,
+    },
+    {
+        label: "조직 관리",
+        href: "admin/organization",
+        icon: CgOrganisation,
+    },
+    {
+        label: "마이",
+        href: "admin/my",
+        icon: FiUser,
+    },
+]
+
 interface MainFooterProps {
-    variant: "user" | "manager";
+    variant: "user" | "manager" | "admin";
 }
 
 function MainFooter({ variant }: MainFooterProps) {
     const pathname = usePathname();
 
-    const menus = variant === "user" ? userMenus : managerMenus;
+    const menus = variant === "user" ? userMenus : variant === "manager" ? managerMenus : adminMenus;
 
     const isActiveMenu = (menu: FooterMenu) => {
         if (menu.exact) {
