@@ -50,7 +50,7 @@ export default function OrganizationCreatePage() {
         try {
             console.log("단체 생성 데이터:", data);
 
-            router.replace("/");
+            router.replace("/manager");
         } catch (error) {
             console.log(error);
             setError("root", { message: "이미 존재하는 조직명입니다." });

@@ -68,7 +68,16 @@ function AuthLoginPage() {
                 result.token,
             );
 
-            router.push("/(public)/organization");
+            if (result.memberInfo === null) {
+                router.push("/organization");
+                return;
+            }
+
+            if (result.memberInfo.role in ["MANAGER", "OWNER"]) {
+                router.push("/manager");
+            } else {
+                router.push("/user");
+            }
         } catch (error) {
             console.log(error);
             let errorMessage = "로그인 중 오류가 발생했습니다.";
@@ -182,7 +191,7 @@ function AuthLoginPage() {
                             onPress={handleSubmit(onSubmit)}
                             className="h-[60px] mt-20"
                             textClassName="text-2xl">
-                            단체 생성
+                            로그인
                         </Button>
                     </View>
 

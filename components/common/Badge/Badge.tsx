@@ -43,6 +43,11 @@ const getBadgeStyles = (status: string) => {
             return { bg: "bg-warning-light", text: "text-warning-main" };
         case "관리자":
             return { bg: "bg-[#C5DAFD]", text: "text-secondary-main" };
+        case "오너":
+            return {
+                bg: "border border-secondary-main bg-secondary-main",
+                text: "text-secondary-main",
+            };
         default:
             return { bg: "bg-background-deep", text: "text-text-secondary" };
     }

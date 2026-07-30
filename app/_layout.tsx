@@ -7,7 +7,6 @@ import { Slot } from "expo-router";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { useThemeStore } from "@/stores/theme/useThemeStore";
-import { useUserStore } from "@/stores/user/useUserStore";
 
 export const unstable_settings = {
     anchor: "(tabs)",
@@ -29,11 +28,6 @@ export default function RootLayout() {
         "Pretendard-ExtraBold": require("@/assets/fonts/Pretendard-ExtraBold.otf"),
         "Pretendard-Black": require("@/assets/fonts/Pretendard-Black.otf"),
     });
-    const { restoreLogin } = useUserStore();
-
-    useEffect(() => {
-        restoreLogin();
-    }, []);
 
     useEffect(() => {
         if (loaded || error) {

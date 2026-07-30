@@ -22,7 +22,7 @@ type UserState = {
 };
 
 const customWebStorage: StateStorage = {
-    getItem: (name) => {
+    getItem: name => {
         if (typeof window === "undefined") return null;
         return localStorage.getItem(name);
     },
@@ -31,7 +31,7 @@ const customWebStorage: StateStorage = {
             localStorage.setItem(name, value);
         }
     },
-    removeItem: (name) => {
+    removeItem: name => {
         if (typeof window !== "undefined") {
             localStorage.removeItem(name);
         }
@@ -98,6 +98,10 @@ export const useUserStore = create<UserState>()(
                 }
 
                 if (!token) {
+                    token = useUserStore.getState().token;
+                }
+
+                if (!token) {
                     set({
                         isLoggedIn: false,
                         token: null,
@@ -106,10 +110,9 @@ export const useUserStore = create<UserState>()(
 
                     return;
                 }
-
+                set({ token });
                 try {
-                    const response = await userApi.getMe();
-                    const authUser = response.data;
+                    const authUser = await userApi.getMe();
 
                     set({
                         isLoggedIn: true,
@@ -136,9 +139,10 @@ export const useUserStore = create<UserState>()(
         {
             name: "user-storage",
             storage,
-
             partialize: state => ({
                 isLoggedIn: state.isLoggedIn,
+                authUser: state.authUser,
+                token: state.token,
             }),
         },
     ),

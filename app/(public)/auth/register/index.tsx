@@ -187,7 +187,7 @@ function AuthRegisterPage() {
                             onPress={handleSubmit(onSubmit)}
                             className="h-[60px] mt-14"
                             textClassName="text-2xl">
-                            단체 생성
+                            회원가입
                         </Button>
                     </View>
 

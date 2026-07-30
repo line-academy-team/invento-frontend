@@ -11,7 +11,7 @@ export default function OrganizationIndexPage() {
 
     const isPending = memberInfo?.status === "PENDING";
     const organizationName = memberInfo?.organizationName || "Work";
-
+    console.log(authUser?.user);
     const handleCancelRequest = async () => {};
 
     return (
