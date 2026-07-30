@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, Pressable, Image } from "react-native";
 import { router } from "expo-router";
 import { useUserStore } from "@/stores/user/useUserStore";
+import Button from "@/components/common/Button/Button";
 
 export default function OrganizationIndexPage() {
     const { authUser } = useUserStore();
@@ -11,8 +12,7 @@ export default function OrganizationIndexPage() {
     const isPending = memberInfo?.status === "PENDING";
     const organizationName = memberInfo?.organizationName || "Work";
 
-    const handleCancelRequest = async () => {
-    };
+    const handleCancelRequest = async () => {};
 
     return (
         <View className="flex-1 bg-background-default items-center">
@@ -47,19 +47,18 @@ export default function OrganizationIndexPage() {
                             </Text>
 
                             <Image
-                                source={require("@/assets/images/diversity_3 (1).png")}
+                                source={require("@/assets/images/organization/diversity_3 (1).png")}
                                 style={{ width: 100, height: 100 }}
                                 className="mb-6"
                                 resizeMode="contain"
                             />
-
-                            <Pressable
+                            <Button
+                                isLoading={isPending}
                                 onPress={handleCancelRequest}
-                                className="border border-error-main px-5 py-2 rounded-full active:opacity-80">
-                                <Text className="text-error-main font-pretendard-semibold text-sm">
-                                    가입 신청 취소
-                                </Text>
-                            </Pressable>
+                                className="border border-error-main px-5 py-2 rounded-full active:opacity-80"
+                                textClassName="text-sm">
+                                가입 신청 취소
+                            </Button>
                         </>
                     ) : (
                         <>
@@ -68,7 +67,7 @@ export default function OrganizationIndexPage() {
                             </Text>
 
                             <Image
-                                source={require("@/assets/images/diversity_3 (1).png")}
+                                source={require("@/assets/images/organization/diversity_3 (1).png")}
                                 style={{ width: 100, height: 100 }}
                                 className="mb-16"
                                 resizeMode="contain"
@@ -87,37 +86,21 @@ export default function OrganizationIndexPage() {
                 </View>
 
                 <View className="px-6 w-full gap-y-6">
-                    <Pressable
-                        disabled={isPending}
+                    <Button
+                        isLoading={isPending}
                         onPress={() => router.push("/organization/create")}
-                        className={`w-full h-14 rounded-2xl items-center justify-center transition-colors duration-200 ${
-                            isPending
-                                ? "bg-gray-200 cursor-not-allowed"
-                                : "bg-primary-main hover:bg-primary-hover active:bg-primary-hover cursor-pointer"
-                        }`}>
-                        <Text
-                            className={`font-pretendard-bold text-lg ${
-                                isPending ? "text-gray-400" : "text-white"
-                            }`}>
-                            단체 생성
-                        </Text>
-                    </Pressable>
+                        className="h-14"
+                        textClassName="text-lg">
+                        단체 생성
+                    </Button>
 
-                    <Pressable
-                        disabled={isPending}
+                    <Button
+                        isLoading={isPending}
                         onPress={() => router.push("/organization/join")}
-                        className={`w-full h-14 rounded-2xl items-center justify-center border-2 transition-colors duration-200 mt-3 ${
-                            isPending
-                                ? "border-gray-300 bg-gray-100 cursor-not-allowed"
-                                : "border-primary-main bg-white hover:bg-primary-light active:bg-primary-light cursor-pointer"
-                        }`}>
-                        <Text
-                            className={`font-pretendard-bold text-lg ${
-                                isPending ? "text-gray-400" : "text-primary-main"
-                            }`}>
-                            단체 가입
-                        </Text>
-                    </Pressable>
+                        className="h-14"
+                        textClassName="text-lg">
+                        단체 가입
+                    </Button>
                 </View>
             </View>
         </View>

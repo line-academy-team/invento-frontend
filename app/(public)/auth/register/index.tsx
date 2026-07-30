@@ -18,6 +18,7 @@ import InputGroup from "@/components/common/input/InputGroup";
 import ErrorMessage from "@/components/common/form/ErrorMessage";
 import { twMerge } from "tailwind-merge";
 import { Ionicons } from "@expo/vector-icons";
+import Button from "@/components/common/Button/Button";
 
 function AuthRegisterPage() {
     const router = useRouter();
@@ -180,23 +181,14 @@ function AuthRegisterPage() {
                                 {errors.root.message}
                             </ErrorMessage>
                         )}
-                        <Pressable
-                            disabled={!isFilled || isSubmitting}
+                        <Button
+                            disabled={!isFilled}
+                            isLoading={isSubmitting}
                             onPress={handleSubmit(onSubmit)}
-                            className={twMerge(
-                                "flex justify-center items-center mt-14",
-                                "w-full h-[60px] rounded-2xl border-2 border-text-secondary",
-                                "bg-background-deep",
-                                isFilled && "bg-primary-main",
-                            )}>
-                            <Text
-                                className={twMerge(
-                                    "text-2xl text-text-secondary font-pretendard-bold",
-                                    isFilled && "text-background-paper",
-                                )}>
-                                회원가입
-                            </Text>
-                        </Pressable>
+                            className="h-[60px] mt-14"
+                            textClassName="text-2xl">
+                            단체 생성
+                        </Button>
                     </View>
 
                     <View className="mt-5 flex-row items-center justify-center gap-2">
