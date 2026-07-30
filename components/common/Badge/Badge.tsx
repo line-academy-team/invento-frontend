@@ -45,7 +45,7 @@ const getBadgeStyles = (status: string) => {
             return { bg: "bg-[#C5DAFD]", text: "text-secondary-main" };
         case "오너":
             return {
-                bg: "border border-secondary-main bg-secondary-main",
+                bg: "border border-secondary-main",
                 text: "text-secondary-main",
             };
         default:

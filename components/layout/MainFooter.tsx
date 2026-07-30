@@ -5,6 +5,7 @@ import { FiHome, FiBox, FiClipboard, FiUser, FiSettings } from "react-icons/fi";
 import { IconType } from "react-icons";
 import { MdPeople } from "react-icons/md";
 import { CgOrganisation } from "react-icons/cg";
+import { VscOrganization } from "react-icons/vsc";
 
 interface FooterMenu {
     label: string;
@@ -55,6 +56,11 @@ const managerMenus: FooterMenu[] = [
         icon: FiClipboard,
     },
     {
+        label: "조직",
+        href: "/manager/organization",
+        icon: VscOrganization,
+    },
+    {
         label: "관리",
         href: "/manager/management",
         icon: FiSettings,
@@ -83,7 +89,7 @@ const adminMenus: FooterMenu[] = [
         href: "admin/my",
         icon: FiUser,
     },
-]
+];
 
 interface MainFooterProps {
     variant: "user" | "manager" | "admin";
@@ -92,7 +98,8 @@ interface MainFooterProps {
 function MainFooter({ variant }: MainFooterProps) {
     const pathname = usePathname();
 
-    const menus = variant === "user" ? userMenus : variant === "manager" ? managerMenus : adminMenus;
+    const menus =
+        variant === "user" ? userMenus : variant === "manager" ? managerMenus : adminMenus;
 
     const isActiveMenu = (menu: FooterMenu) => {
         if (menu.exact) {
