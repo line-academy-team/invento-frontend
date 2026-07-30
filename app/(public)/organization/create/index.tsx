@@ -13,6 +13,7 @@ import { useRouter } from "expo-router";
 import { twMerge } from "tailwind-merge";
 import ErrorMessage from "@/components/common/form/ErrorMessage";
 import { Ionicons } from "@expo/vector-icons";
+import Button from "@/components/common/Button/Button";
 
 interface CreateOrganizationFormInput {
     name: string;
@@ -181,23 +182,14 @@ export default function OrganizationCreatePage() {
                             </ErrorMessage>
                         )}
 
-                        <Pressable
-                            disabled={!isFilled || isSubmitting}
+                        <Button
+                            disabled={!isFilled}
+                            isLoading={isSubmitting}
                             onPress={handleSubmit(onSubmit)}
-                            className={twMerge(
-                                "w-full h-[60px] rounded-2xl items-center justify-center mt-24 transition-colors duration-200",
-                                "bg-background-deep border-2 border-text-secondary cursor-not-allowed",
-                                isFilled &&
-                                    "bg-primary-main border-primary-main hover:bg-primary-hover active:bg-primary-hover cursor-pointer border-0",
-                            )}>
-                            <Text
-                                className={twMerge(
-                                    "font-pretendard-bold text-2xl text-text-secondary",
-                                    isFilled && "text-background-paper",
-                                )}>
-                                단체 생성
-                            </Text>
-                        </Pressable>
+                            className="h-[60px] mt-24"
+                            textClassName="text-2xl">
+                            단체 생성
+                        </Button>
                     </View>
                 </View>
             </ScrollView>

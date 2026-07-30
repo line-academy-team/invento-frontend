@@ -13,6 +13,7 @@ import { useRouter } from "expo-router";
 import { twMerge } from "tailwind-merge";
 import ErrorMessage from "@/components/common/form/ErrorMessage";
 import { Ionicons } from "@expo/vector-icons";
+import Button from "@/components/common/Button/Button";
 
 interface JoinFormInput {
     inviteCode: string;
@@ -95,33 +96,20 @@ export default function OrganizationJoinPage() {
                             )}
                         />
 
-                        {/* 에러 메시지 */}
                         {errors.root?.message && (
                             <ErrorMessage className="mt-2 self-center">
                                 {errors.root?.message}
                             </ErrorMessage>
                         )}
 
-                        {/* 가입하기 버튼 */}
-                        <Pressable
-                            disabled={!isFilled || isSubmitting}
+                        <Button
+                            disabled={!isFilled}
+                            isLoading={isSubmitting}
                             onPress={handleSubmit(onSubmit)}
-                            className={twMerge(
-                                "w-full h-[60px] rounded-2xl items-center justify-center mt-6 transition-colors duration-200",
-                                // 입력 안 되었을 때 (비활성화 상태)
-                                "bg-background-deep border-2 border-text-secondary cursor-not-allowed",
-                                // 입력 완료되었을 때 (활성화 상태)
-                                isFilled &&
-                                    "bg-primary-main border-primary-main hover:bg-primary-hover active:bg-primary-hover cursor-pointer border-0",
-                            )}>
-                            <Text
-                                className={twMerge(
-                                    "font-pretendard-bold text-2xl text-text-secondary",
-                                    isFilled && "text-background-paper",
-                                )}>
-                                단체 가입
-                            </Text>
-                        </Pressable>
+                            className="h-[60px] mt-24"
+                            textClassName="text-2xl">
+                            단체 가입
+                        </Button>
                     </View>
                 </View>
             </ScrollView>
