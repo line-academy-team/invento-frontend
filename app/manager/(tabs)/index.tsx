@@ -62,19 +62,19 @@ function ManagerMainPage() {
     return (
         <ScrollView>
             <MainHeader variant={"userMain"} onMenuPress={() => {}} />
-            <View className={"px-[30px] bg-background-default"}>
-                <Text className={"mt-8 font-pretendard text-lg text-text-default"}>안녕하세요</Text>
+            <View className={"px-[30px] py-8 bg-background-default"}>
+                <Text className={"font-pretendard text-lg text-text-default"}>안녕하세요</Text>
                 <View className={"mt-4 flex-row gap-3 items-center"}>
                     <Text className={"font-pretendard-semibold text-xl text-text-default"}>
                         김철수님
                     </Text>
                     <Badge status={"오너"} />
                 </View>
-                <View className={"mt-5 flex-row gap-3 flex-wrap"}>
+                <View className={"mt-5 flex-row justify-between flex-wrap gap-2"}>
                     {mockData.map((item, i) => (
                         <View
                             className={twMerge(
-                                "w-[170px] h-[120px] rounded-[18px] p-4 justify-between",
+                                "w-[48%] h-[120px] rounded-[18px] p-4 justify-between",
                                 item.background,
                             )}
                             key={i}>
