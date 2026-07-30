@@ -42,8 +42,7 @@ export default function OrganizationJoinPage() {
     const onSubmit = async (data: JoinFormInput) => {
         try {
             console.log("초대코드 제출:", data.inviteCode);
-
-            router.replace("/");
+            router.replace("/status");
         } catch (error) {
             console.log(error);
             setError("root", { message: "올바르지 않은 초대코드입니다." });
@@ -95,22 +94,18 @@ export default function OrganizationJoinPage() {
                             )}
                         />
 
-                        {/* 에러 메시지 */}
                         {errors.root?.message && (
                             <ErrorMessage className="mt-2 self-center">
                                 {errors.root?.message}
                             </ErrorMessage>
                         )}
 
-                        {/* 가입하기 버튼 */}
                         <Pressable
                             disabled={!isFilled || isSubmitting}
                             onPress={handleSubmit(onSubmit)}
                             className={twMerge(
                                 "w-full h-[60px] rounded-2xl items-center justify-center mt-6 transition-colors duration-200",
-                                // 입력 안 되었을 때 (비활성화 상태)
                                 "bg-background-deep border-2 border-text-secondary cursor-not-allowed",
-                                // 입력 완료되었을 때 (활성화 상태)
                                 isFilled &&
                                     "bg-primary-main border-primary-main hover:bg-primary-hover active:bg-primary-hover cursor-pointer border-0",
                             )}>
