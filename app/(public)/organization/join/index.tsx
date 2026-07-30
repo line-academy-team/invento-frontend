@@ -43,8 +43,7 @@ export default function OrganizationJoinPage() {
     const onSubmit = async (data: JoinFormInput) => {
         try {
             console.log("초대코드 제출:", data.inviteCode);
-
-            router.replace("/");
+            router.replace("/status");
         } catch (error) {
             console.log(error);
             setError("root", { message: "올바르지 않은 초대코드입니다." });
