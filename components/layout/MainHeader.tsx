@@ -1,8 +1,11 @@
-import { Image, Pressable, Text, View } from "react-native";
+import React, { useState } from "react";
+import { Image, Pressable, Text, View, Modal, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Path } from "react-native-svg";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useUserStore } from "@/stores/user/useUserStore";
+
 type HeaderVariant = "userMain" | "adminMain" | "headerSub";
 
 interface MainHeaderProps {
@@ -23,8 +26,31 @@ function MainHeader({
     const isMain = variant === "userMain" || variant === "adminMain";
     const isAdmin = variant === "adminMain";
 
+    const [isModalVisible, setModalVisible] = useState(false);
+
+    const { logout } = useUserStore();
+
     const commonClassName =
         "w-full h-[88px] relative flex-row justify-between items-center px-[30px]";
+
+    const handleMenuPress = () => {
+        if (isAdmin) {
+            setModalVisible(true);
+        } else if (onMenuPress) {
+            onMenuPress();
+        }
+    };
+
+    const handleSwitchToUser = () => {
+        setModalVisible(false);
+        router.push("/user");
+    };
+
+    const handleLogout = () => {
+        setModalVisible(false);
+        logout();
+        router.replace("/");
+    };
 
     const renderContent = () => {
         if (isMain) {
@@ -46,7 +72,7 @@ function MainHeader({
                             )}
                         </View>
                     </View>
-                    <Pressable onPress={onMenuPress} className="z-10">
+                    <Pressable onPress={handleMenuPress} className="z-10">
                         <Image
                             source={require("@/assets/images/common/menu.png")}
                             style={{ width: 28, height: 28 }}
@@ -69,7 +95,7 @@ function MainHeader({
                     </Text>
                 </View>
                 {onMenuPress && (
-                    <Pressable onPress={onMenuPress} className="z-10">
+                    <Pressable onPress={handleMenuPress} className="z-10">
                         <Image
                             source={require("@/assets/images/common/menu.png")}
                             style={{ width: 28, height: 28, tintColor: "black" }}
@@ -120,7 +146,51 @@ function MainHeader({
     }
 
     if (variant === "adminMain") {
-        return <View className={`${commonClassName} bg-primary-main`}>{renderContent()}</View>;
+        return (
+            <>
+                <View className={`${commonClassName} bg-primary-main`}>{renderContent()}</View>
+                <Modal
+                    visible={isModalVisible}
+                    transparent={true}
+                    animationType="fade"
+                    onRequestClose={() => setModalVisible(false)}>
+                    <TouchableOpacity
+                        style={{
+                            flex: 1,
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                        activeOpacity={1}
+                        onPress={() => setModalVisible(false)}>
+                        <View
+                            className="bg-white rounded-2xl w-[75%] overflow-hidden"
+                            style={{
+                                shadowColor: "#000",
+                                shadowOffset: { width: 0, height: 4 },
+                                shadowOpacity: 0.1,
+                                shadowRadius: 10,
+                                elevation: 5,
+                            }}>
+                            <TouchableOpacity
+                                onPress={handleSwitchToUser}
+                                className="p-5 border-b border-gray-100 active:bg-gray-50">
+                                <Text className="text-center font-pretendard-bold text-lg text-text-default">
+                                    유저 페이지로 전환
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={handleLogout}
+                                className="p-5 active:bg-gray-50">
+                                <Text className="text-center font-pretendard-bold text-lg text-red-500">
+                                    로그아웃
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </TouchableOpacity>
+                </Modal>
+            </>
+        );
     }
 
     return (

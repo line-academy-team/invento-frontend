@@ -13,7 +13,6 @@ import {
     Text,
     View,
 } from "react-native";
-import { twMerge } from "tailwind-merge";
 import InputGroup from "@/components/common/input/InputGroup";
 import ErrorMessage from "@/components/common/form/ErrorMessage";
 import { useUserStore } from "@/stores/user/useUserStore";
@@ -69,11 +68,11 @@ function AuthLoginPage() {
             );
 
             if (result.memberInfo === null) {
-                router.push("/organization");
+                router.push("/organization/status");
                 return;
             }
-
-            if (result.memberInfo.role in ["MANAGER", "OWNER"]) {
+            console.log(result);
+            if (["MANAGER", "OWNER"].includes(result.memberInfo.role)) {
                 router.push("/manager");
             } else {
                 router.push("/user");

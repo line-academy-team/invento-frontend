@@ -93,10 +93,10 @@ export default function IndexPage() {
                 }
 
                 if (memberInfo.status !== "APPROVED") {
-                    router.replace("/status");
+                    router.replace("/organization/status");
                     return;
                 }
-
+                console.log(memberInfo);
                 switch (memberInfo.role) {
                     case "OWNER":
                     case "MANAGER":
