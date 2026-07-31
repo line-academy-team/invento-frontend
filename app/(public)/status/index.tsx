@@ -72,7 +72,7 @@ export default function OrganizationStatusPage() {
 
                             <View className="w-[120px] h-[120px] rounded-full bg-primary-main items-center justify-center mb-8">
                                 <Image
-                                    source={require("@/assets/images/diversity_3 (1).png")}
+                                    source={require("@/assets/images/organization/diversity_3 (1).png")}
                                     style={{ width: 64, height: 64, tintColor: "#FFFFFF" }}
                                     resizeMode="contain"
                                 />
