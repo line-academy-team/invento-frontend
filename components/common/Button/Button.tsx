@@ -9,6 +9,7 @@ interface ButtonProps {
     children: string;
     className?: string;
     textClassName?: string;
+    variant?: "solid" | "outline";
 }
 
 function Button({
@@ -18,8 +19,27 @@ function Button({
     children,
     className,
     textClassName,
+    variant = "solid",
 }: ButtonProps) {
     const isDisabled = disabled || isLoading;
+
+    const buttonStyle =
+        variant === "solid"
+            ? isDisabled
+                ? "bg-background-deep border-2 border-text-secondary cursor-not-allowed"
+                : "bg-primary-main border-primary-main border-0 hover:bg-primary-hover active:bg-primary-hover cursor-pointer"
+            : isDisabled
+              ? "bg-transparent border-2 border-text-secondary cursor-not-allowed"
+              : "bg-transparent border-2 border-primary-main hover:border-primary-hover active:border-primary-hover cursor-pointer";
+
+    const textStyle =
+        variant === "solid"
+            ? isDisabled
+                ? "text-text-secondary"
+                : "text-white"
+            : isDisabled
+              ? "text-text-secondary"
+              : "text-primary-main hover:text-primary-hover active:text-primary-hover";
 
     return (
         <Pressable
@@ -27,18 +47,10 @@ function Button({
             onPress={onPress}
             className={twMerge(
                 "w-full rounded-2xl items-center justify-center transition-colors duration-200",
-                "bg-background-deep border-2 border-text-secondary cursor-not-allowed",
-                !isDisabled &&
-                    "bg-primary-main border-primary-main hover:bg-primary-hover active:bg-primary-hover cursor-pointer border-0",
+                buttonStyle,
                 className,
             )}>
-            <Text
-                className={twMerge(
-                    "font-pretendard-bold",
-                    "text-text-secondary",
-                    !isDisabled && "text-white",
-                    textClassName,
-                )}>
+            <Text className={twMerge("font-pretendard-bold", textStyle, textClassName)}>
                 {children}
             </Text>
         </Pressable>
