@@ -5,8 +5,6 @@ import { Platform } from "react-native";
 import { AuthUser, MemberInfo } from "@/types/user";
 import * as SecureStore from "expo-secure-store";
 
-import userApi from "@/api/user/userApi";
-
 type UserState = {
     isLoggedIn: boolean;
     token: string | null;
@@ -112,6 +110,7 @@ export const useUserStore = create<UserState>()(
                 }
                 set({ token });
                 try {
+                    const userApi = require("@/api/user/userApi").default;
                     const authUser = await userApi.getMe();
 
                     set({

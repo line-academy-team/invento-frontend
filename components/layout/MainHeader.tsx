@@ -10,9 +10,16 @@ interface MainHeaderProps {
     title?: string;
     onMenuPress?: () => void;
     isBackPress?: boolean;
+    onBackPress?: () => void;
 }
 
-function MainHeader({ variant = "headerSub", title, onMenuPress, isBackPress }: MainHeaderProps) {
+function MainHeader({
+    variant = "headerSub",
+    title,
+    onMenuPress,
+    isBackPress,
+    onBackPress,
+}: MainHeaderProps) {
     const isMain = variant === "userMain" || variant === "adminMain";
     const isAdmin = variant === "adminMain";
 
@@ -53,7 +60,7 @@ function MainHeader({ variant = "headerSub", title, onMenuPress, isBackPress }: 
             <>
                 <View className={"flex-row gap-2.5 items-center"}>
                     {isBackPress && (
-                        <Pressable onPress={() => router.back()}>
+                        <Pressable onPress={onBackPress ? onBackPress : () => router.back()}>
                             <Ionicons name={"chevron-back-outline"} size={24} />
                         </Pressable>
                     )}
