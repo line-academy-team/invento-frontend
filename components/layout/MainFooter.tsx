@@ -61,8 +61,8 @@ const managerMenus: FooterMenu[] = [
         icon: VscOrganization,
     },
     {
-        label: "관리",
-        href: "/manager/management",
+        label: "마이",
+        href: "/manager/my",
         icon: FiSettings,
     },
 ];
