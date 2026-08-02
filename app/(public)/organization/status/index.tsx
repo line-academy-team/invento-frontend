@@ -24,10 +24,14 @@ export default function OrganizationStatusPage() {
             }
         };
         checkStatus();
-    }, []);
+    }, [restoreLogin]);
 
     const handleGoHome = () => {
-        router.replace("/user");
+        if (authUser?.memberInfo?.role === "MEMBER") {
+            router.replace("/user");
+            return;
+        }
+        router.replace("/manager");
     };
 
     if (loading) {
