@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useRouter } from "expo-router";
-import { twMerge } from "tailwind-merge";
 import ErrorMessage from "@/components/common/form/ErrorMessage";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "@/components/common/Button/Button";
@@ -19,6 +18,7 @@ import organizationApi from "@/api/organization/organizationApi";
 
 interface JoinFormInput {
     inviteCode: string;
+    department: string;
 }
 
 export default function OrganizationJoinPage() {
@@ -32,6 +32,7 @@ export default function OrganizationJoinPage() {
     } = useForm<JoinFormInput>({
         defaultValues: {
             inviteCode: "",
+            department: "",
         },
     });
 
@@ -44,7 +45,7 @@ export default function OrganizationJoinPage() {
 
     const onSubmit = async (data: JoinFormInput) => {
         try {
-            await organizationApi.joinOrganization({ inviteCode: data.inviteCode });
+            await organizationApi.joinOrganization({ inviteCode: data.inviteCode, department: data.department });
 
             Alert.alert("🎉 가입 신청 완료!", "단체 가입 신청 완료", [
                 {
@@ -98,11 +99,44 @@ export default function OrganizationJoinPage() {
                                         placeholder="초대코드를 입력하세요"
                                         placeholderTextColor="#9CA3AF"
                                         autoCapitalize="characters"
-                                        className="w-full h-[88px] border-[1.5px] mb-12 border-primary-main rounded-2xl px-4 text-center font-pretendard-bold text-xl text-text-default bg-white"
+                                        className="w-full h-[88px] border-[1.5px] mb-6 border-primary-main rounded-2xl px-4 text-center font-pretendard-bold text-xl text-text-default bg-white"
                                     />
                                 </View>
                             )}
                         />
+
+                        <View className="w-full mt-4">
+                            <Text className="text-base font-pretendard-semibold text-primary-main mb-2">
+                                부서명
+                            </Text>
+                            <Controller
+                                control={control}
+                                name="department"
+                                render={({ field: { onChange, onBlur, value } }) => (
+                                    <TextInput
+                                        value={value}
+                                        onChangeText={onChange}
+                                        onBlur={onBlur}
+                                        placeholder="부서명 입력(선택)"
+                                        placeholderTextColor="#9CA3AF"
+                                        className="w-full h-[60px] border-[1.5px] border-primary-main rounded-2xl px-4 font-pretendard-medium text-base text-text-default bg-white"
+                                    />
+                                )}
+                            />
+                            {errors.department?.message ? (
+                                <ErrorMessage className="mt-1.5">
+                                    {errors.department.message}
+                                </ErrorMessage>
+                            ) : (
+                                <View className="mt-1.5">
+                                    <Text className={
+                                            "text-text-secondary text-sm font-pretendard"
+                                        }>
+                                        * 미입력 시 관리자가 부서를 배치합니다.
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
 
                         {errors.root?.message && (
                             <ErrorMessage className="mt-2 self-center">
