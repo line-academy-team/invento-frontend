@@ -11,6 +11,7 @@ export interface User {
     role: UserRole;
     createdAt?: string;
     updatedAt?: string;
+    imageUrl?: string | null; // <--- 이 줄을 추가해 주세요!
 }
 
 export interface MemberInfo {
