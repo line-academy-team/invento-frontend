@@ -7,6 +7,7 @@ import {
     Text,
     TextInput,
     View,
+    Alert,
 } from "react-native";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useRouter } from "expo-router";
@@ -14,6 +15,7 @@ import { twMerge } from "tailwind-merge";
 import ErrorMessage from "@/components/common/form/ErrorMessage";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "@/components/common/Button/Button";
+import organizationApi from "@/api/organization/organizationApi";
 
 interface JoinFormInput {
     inviteCode: string;
@@ -37,16 +39,23 @@ export default function OrganizationJoinPage() {
     const isFilled = Boolean(inviteCode?.trim());
 
     const handleGoBack = () => {
-        router.push("/organization");
+        router.push("/organization/status");
     };
 
     const onSubmit = async (data: JoinFormInput) => {
         try {
-            console.log("초대코드 제출:", data.inviteCode);
-            router.replace("/status");
-        } catch (error) {
+            await organizationApi.joinOrganization({ inviteCode: data.inviteCode });
+
+            Alert.alert("🎉 가입 신청 완료!", "단체 가입 신청 완료", [
+                {
+                    onPress: () => router.replace("/organization/status"),
+                },
+            ]);
+        } catch (error: any) {
             console.log(error);
-            setError("root", { message: "올바르지 않은 초대코드입니다." });
+            setError("root", {
+                message: error.response?.data?.message || "올바르지 않은 초대코드입니다.",
+            });
         }
     };
 

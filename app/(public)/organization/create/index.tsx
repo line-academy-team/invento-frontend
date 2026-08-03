@@ -7,13 +7,14 @@ import {
     Text,
     TextInput,
     View,
+    Alert,
 } from "react-native";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useRouter } from "expo-router";
-import { twMerge } from "tailwind-merge";
 import ErrorMessage from "@/components/common/form/ErrorMessage";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "@/components/common/Button/Button";
+import organizationApi from "@/api/organization/organizationApi";
 
 interface CreateOrganizationFormInput {
     name: string;
@@ -23,7 +24,6 @@ interface CreateOrganizationFormInput {
 
 export default function OrganizationCreatePage() {
     const router = useRouter();
-
     const [descriptionHeight, setDescriptionHeight] = useState(60);
 
     const {
@@ -43,17 +43,31 @@ export default function OrganizationCreatePage() {
     const isFilled = Boolean(nameValue?.trim());
 
     const handleGoBack = () => {
-        router.push("/organization");
+        router.push("/organization/status");
     };
 
     const onSubmit = async (data: CreateOrganizationFormInput) => {
         try {
-            console.log("단체 생성 데이터:", data);
+            const generatedInviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-            router.replace("/manager");
-        } catch (error) {
+            const payload = {
+                ...data,
+                inviteCode: generatedInviteCode,
+            };
+
+            const newOrg = await organizationApi.createOrganization(payload);
+
+            Alert.alert("🎉 단체 생성 완료!", `초대 코드: ${newOrg.inviteCode}`, [
+                {
+                    text: "확인",
+                    onPress: () => router.replace("/manager"),
+                },
+            ]);
+        } catch (error: any) {
             console.log(error);
-            setError("root", { message: "이미 존재하는 조직명입니다." });
+            setError("root", {
+                message: error.response?.data?.message || "조직 생성에 실패했습니다.",
+            });
         }
     };
 
