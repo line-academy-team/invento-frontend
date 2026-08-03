@@ -23,7 +23,7 @@ export default function OrganizationStatusPage() {
                 setLoading(false);
             }
         };
-        checkStatus();
+        checkStatus().then(() => {});
     }, [restoreLogin]);
 
     const handleGoHome = () => {
