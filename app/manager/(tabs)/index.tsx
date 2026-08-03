@@ -46,10 +46,9 @@ function ManagerMainPage() {
         };
 
         loadDashboard().then(() => {});
-    }, []);
+    }, [ozId]);
 
     // 로그인한 사용자 정보
-    const authUser = useUserStore(state => state.authUser);
 
     const userName = authUser?.user.name ?? "회원";
 
