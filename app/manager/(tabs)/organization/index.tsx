@@ -8,7 +8,7 @@ import MainHeader from "@/components/layout/MainHeader";
 export default function ManagerOrganizationPage() {
     const { authUser } = useUserStore();
     const role = authUser?.memberInfo?.role || "MEMBER";
-    const isOwner = role === "OWNER";
+    const isOwner = true;
 
     return (
         <View className="flex-1 bg-background-default">
