@@ -1,7 +1,8 @@
 import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Path } from "react-native-svg";
-import { Button, Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import Button from "@/components/common/Button/Button";
 
 function LandingPage() {
     const router = useRouter();
@@ -38,25 +39,19 @@ function LandingPage() {
                 단체 비품을 스마트하게 관리하세요
             </Text>
             <View className={"flex-col items-center mt-[108px] gap-7"}>
-                <Pressable
-                    onPress={() => {
-                        router.push("/auth/login");
-                    }}
-                    className={
-                        "w-[128px] h-[36px] flex items-center justify-center bg-white/10 border border-white/50 rounded-2xl"
-                    }>
-                    <Text className={"font-pretendard-semibold text-lg text-white"}>로그인</Text>
-                </Pressable>
+                <Button
+                    onPress={() => router.push("/auth/login")}
+                    className="w-[128px] h-[36px]"
+                    textClassName="text-lg">
+                    로그인
+                </Button>
                 <Text className={"font-pretendard text-white text-lg"}>OR</Text>
-                <Pressable
-                    onPress={() => {
-                        router.push("/auth/register");
-                    }}
-                    className={
-                        "w-[128px] h-[36px] flex items-center justify-center bg-white/10 border border-white/50 rounded-2xl"
-                    }>
-                    <Text className={"font-pretendard-semibold text-lg text-white"}>회원가입</Text>
-                </Pressable>
+                <Button
+                    onPress={() => router.push("/auth/register")}
+                    className="w-[128px] h-[36px]"
+                    textClassName="text-lg">
+                    회원가입
+                </Button>
             </View>
             <Text className={"mt-auto text-white/50 text-[18px] font-pretendard-semibold mb-3"}>
                 © 2026 Invento

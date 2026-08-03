@@ -5,8 +5,6 @@ import { Platform } from "react-native";
 import { AuthUser, MemberInfo } from "@/types/user";
 import * as SecureStore from "expo-secure-store";
 
-import userApi from "@/api/user/userApi";
-
 type UserState = {
     isLoggedIn: boolean;
     token: string | null;
@@ -50,19 +48,12 @@ export const useUserStore = create<UserState>()(
             token: null,
             authUser: null,
 
-            login: async (authUser, token) => {
-                if (Platform.OS === "web") {
-                    localStorage.setItem("accessToken", token);
-                } else {
-                    await SecureStore.setItemAsync("accessToken", token);
-                }
-
+            login: (authUser, token) =>
                 set({
                     isLoggedIn: true,
                     token,
                     authUser,
-                });
-            },
+                }),
 
             logout: async () => {
                 if (Platform.OS === "web") {
@@ -105,6 +96,10 @@ export const useUserStore = create<UserState>()(
                 }
 
                 if (!token) {
+                    token = useUserStore.getState().token;
+                }
+
+                if (!token) {
                     set({
                         isLoggedIn: false,
                         token: null,
@@ -113,10 +108,10 @@ export const useUserStore = create<UserState>()(
 
                     return;
                 }
-
+                set({ token });
                 try {
-                    const response = await userApi.getMe();
-                    const authUser = response.data;
+                    const userApi = require("@/api/user/userApi").default;
+                    const authUser = await userApi.getMe();
 
                     set({
                         isLoggedIn: true,
@@ -143,10 +138,10 @@ export const useUserStore = create<UserState>()(
         {
             name: "user-storage",
             storage,
-
             partialize: state => ({
                 isLoggedIn: state.isLoggedIn,
                 authUser: state.authUser,
+                token: state.token,
             }),
         },
     ),
