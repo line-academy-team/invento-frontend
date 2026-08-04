@@ -117,23 +117,6 @@ function ManagerUserPage() {
 
     const memberRoleText = memberInfo.role === "OWNER" ? "오너" : "관리자";
 
-    // 여기도 더미와 같은 곳 가상으로 확인용
-    // const user = {
-    //     name: mockData.name,
-    //     email: mockData.email,
-    //     createdAt: mockData.createdAt,
-    // };
-    //
-    // const memberInfo = {
-    //     role: mockData.memberRole,
-    //     organizationName: mockData.organizationName,
-    //     departmentName: mockData.department,
-    //     joinedAt: mockData.joinedAt,
-    // };
-    // const profileImageUrl = mockData.profileImageUrl;
-    // const memberRoleText = memberInfo.role === "OWNER" ? "오너" : "관리자";
-    // 여기까지 완료후 삭제하기
-
     return (
         <View className={"flex-1"}>
             <MainHeader title={"마이"} />

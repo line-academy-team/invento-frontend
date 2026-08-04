@@ -180,7 +180,7 @@ export default function OrganizationApprovalListPage() {
                         </Text>
                     </Pressable>
 
-                    <View className="flex-1 bg-background-paper rounded-3xl border border-gray-100 overflow-hidden mb-6">
+                    <View className="flex-1 bg-background-paper rounded-3xl border border-divider overflow-hidden mb-6">
                         <FlatList
                             data={filteredMembers}
                             keyExtractor={item => item.id.toString()}

@@ -150,7 +150,13 @@ function UpdateProfilePage() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             className="flex-1 bg-background-paper">
             <View className="flex-1">
-                <MainHeader title="정보수정" isBackPress />
+                <MainHeader
+                    title="정보수정"
+                    isBackPress
+                    onBackPress={() => {
+                        router.navigate("/manager/my");
+                    }}
+                />
 
                 <ScrollView className="flex-1" contentContainerClassName="flex-grow">
                     <View className="mx-5 mt-8">
