@@ -1,4 +1,4 @@
-import { Link, useRouter } from "expo-router";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginInputType, loginSchema } from "@/schemas/user/loginUserSchema";
@@ -24,6 +24,9 @@ import Button from "@/components/common/Button/Button";
 function AuthLoginPage() {
     const router = useRouter();
     const { login } = useUserStore();
+    const { role } = useLocalSearchParams<{ role?: string }>();
+
+    const isAdmin = role === "admin";
 
     const {
         control,
@@ -66,6 +69,11 @@ function AuthLoginPage() {
                 },
                 result.token,
             );
+
+            if (isAdmin && result.user.role === "ADMIN") {
+                router.push("/admin");
+                return;
+            }
 
             if (result.memberInfo === null) {
                 router.push("/organization/status");

@@ -15,7 +15,8 @@ export type BadgeStatus =
     | "사용중"
     | "대기"
     | "신청중"
-    | "관리자";
+    | "관리자"
+    | "앱 관리자";
 
 interface BadgeProps {
     status: BadgeStatus | string;
@@ -48,6 +49,12 @@ const getBadgeStyles = (status: string) => {
                 bg: "border border-secondary-main",
                 text: "text-secondary-main",
             };
+        case "앱 관리자":
+            return {
+                bg: "bg-primary-light",
+                text: "text-primary-main",
+
+            }
         default:
             return { bg: "bg-background-deep", text: "text-text-secondary" };
     }

@@ -12,3 +12,10 @@ export interface Organization {
     updatedAt?: string;
     deletedAt?: string;
 }
+
+export type OrganizationCount = Organization & {
+    _count: {
+        members: number;
+        equipment: number;
+    };
+};
