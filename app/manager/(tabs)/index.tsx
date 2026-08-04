@@ -115,7 +115,7 @@ function ManagerMainPage() {
 
     return (
         <ScrollView>
-            <MainHeader variant={"userMain"} onMenuPress={() => {}} />
+            <MainHeader variant={"managerMain"} onMenuPress={() => {}} />
 
             <View className={"px-[30px] py-8 bg-background-default"}>
                 <Text className={"font-pretendard text-lg text-text-default"}>안녕하세요</Text>

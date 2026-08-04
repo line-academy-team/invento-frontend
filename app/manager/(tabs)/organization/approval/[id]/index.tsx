@@ -1,43 +1,82 @@
-import React, { useState } from "react";
-import { View, Text, Pressable, ScrollView, Modal, TextInput, Switch } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, Pressable, ScrollView, Modal, TextInput, Switch, Alert } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import MainHeader from "@/components/layout/MainHeader";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "@/components/common/Button/Button";
-
-interface DepartmentType {
-    id: number;
-    name: string;
-}
-
-const DEPARTMENTS: DepartmentType[] = [
-    { id: 1, name: "개발1팀" },
-    { id: 2, name: "개발2팀" },
-    { id: 3, name: "개발3팀" },
-    { id: 4, name: "회계팀" },
-    { id: 5, name: "마케팅팀" },
-];
+import managerJoinApi, {
+    JoinRequestDetail,
+    JoinRequestDepartment,
+} from "@/api/manager/managerJoinApi";
 
 export default function OrganizationApprovalDetailPage() {
-    const { id, name, joinedAt, organization } = useLocalSearchParams();
+    const { id } = useLocalSearchParams();
+    const requestId = Number(id);
+
+    const [requestDetail, setRequestDetail] = useState<JoinRequestDetail | null>(null);
+    const [departments, setDepartments] = useState<JoinRequestDepartment[]>([]);
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [selectedDept, setSelectedDept] = useState<DepartmentType | null>(null);
+    const [selectedDept, setSelectedDept] = useState<JoinRequestDepartment | null>(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     const [memo, setMemo] = useState("승인이 완료 되었습니다.");
     const [isNotificationEnabled, setIsNotificationEnabled] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleApproveComplete = () => {
-        console.log("승인 완료:", {
-            memberId: id,
-            deptId: selectedDept?.id,
-            memo,
-            isNotificationEnabled,
-        });
-        setIsModalVisible(false);
-        router.back();
+    useEffect(() => {
+        if (!isNaN(requestId)) {
+            fetchDetail();
+        }
+    }, [requestId]);
+
+    const fetchDetail = async () => {
+        try {
+            const data = await managerJoinApi.getJoinRequestById(requestId);
+            setRequestDetail(data);
+            setDepartments(data.departments || []);
+        } catch (error: any) {
+            console.error(error);
+            Alert.alert(
+                "오류",
+                error.response?.data?.message || "상세 정보를 불러오지 못했습니다.",
+            );
+            router.back();
+        }
     };
+
+    const handleApproveComplete = async () => {
+        if (!selectedDept) return;
+
+        try {
+            setIsSubmitting(true);
+            await managerJoinApi.processJoinRequest({
+                memberIds: [requestId],
+                status: "APPROVED",
+                departmentId: selectedDept.id,
+            });
+
+            setIsModalVisible(false);
+            Alert.alert("승인 완료", "가입 승인이 성공적으로 처리되었습니다.", [
+                { text: "확인", onPress: () => router.back() },
+            ]);
+        } catch (error: any) {
+            console.error(error);
+            Alert.alert("오류", error.response?.data?.message || "승인 처리에 실패했습니다.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (!requestDetail) {
+        return (
+            <View className="flex-1 bg-background-paper justify-center items-center">
+                <Text>로딩 중...</Text>
+            </View>
+        );
+    }
+
+    const joinDate = requestDetail.createdAt ? requestDetail.createdAt.split("T")[0] : "정보 없음";
 
     return (
         <View className="flex-1 bg-background-paper">
@@ -54,13 +93,13 @@ export default function OrganizationApprovalDetailPage() {
                             신청일시
                         </Text>
                         <Text className="font-pretendard-medium text-sm text-text-default">
-                            {joinedAt || "정보 없음"}
+                            {joinDate}
                         </Text>
                     </View>
                     <View className="flex-row justify-between items-center mb-3.5">
                         <Text className="font-pretendard text-sm text-text-secondary">신청자</Text>
                         <Text className="font-pretendard-medium text-sm text-text-default">
-                            {name || "알 수 없음"}
+                            {requestDetail.user.name}
                         </Text>
                     </View>
                     <View className="flex-row justify-between items-center mb-6">
@@ -68,7 +107,7 @@ export default function OrganizationApprovalDetailPage() {
                             가입 조직
                         </Text>
                         <Text className="font-pretendard-medium text-sm text-text-default">
-                            {organization || "ABC 기업"}
+                            {requestDetail.organization.name}
                         </Text>
                     </View>
 
@@ -98,7 +137,7 @@ export default function OrganizationApprovalDetailPage() {
 
                     {isDropdownOpen && (
                         <View className="absolute top-[56px] left-0 right-0 bg-surface border border-gray-200 rounded-2xl shadow-md overflow-hidden z-20">
-                            {DEPARTMENTS.map((dept, index) => {
+                            {departments.map((dept, index) => {
                                 const isSelected = selectedDept?.id === dept.id;
                                 return (
                                     <Pressable
@@ -108,7 +147,7 @@ export default function OrganizationApprovalDetailPage() {
                                             setIsDropdownOpen(false);
                                         }}
                                         className={`p-4 ${isSelected ? "bg-primary-main" : "bg-surface"} ${
-                                            index !== DEPARTMENTS.length - 1
+                                            index !== departments.length - 1
                                                 ? "border-b border-gray-100"
                                                 : ""
                                         }`}>
@@ -177,7 +216,10 @@ export default function OrganizationApprovalDetailPage() {
                             />
                         </View>
 
-                        <Button onPress={handleApproveComplete} className="h-[52px]">
+                        <Button
+                            isLoading={isSubmitting}
+                            onPress={handleApproveComplete}
+                            className="h-[52px]">
                             승인 완료
                         </Button>
                     </View>
