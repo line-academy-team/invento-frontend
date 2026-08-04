@@ -46,7 +46,18 @@ function ManagerMainPage() {
         };
 
         loadDashboard().then(() => {});
-    }, []);
+    }, [ozId]);
+
+    // 로그인한 사용자 정보
+
+    const userName = authUser?.user.name ?? "회원";
+
+    const memberRoleText =
+        authUser?.memberInfo?.role === "OWNER"
+            ? "오너"
+            : authUser?.memberInfo?.role === "MANAGER"
+              ? "관리자"
+              : "회원";
 
     const mockData = [
         {
@@ -74,6 +85,7 @@ function ManagerMainPage() {
             background: "bg-error-main",
         },
     ];
+
     const mockData2 = [
         {
             equipment: "노트북01",
@@ -100,17 +112,22 @@ function ManagerMainPage() {
             status: "대기",
         },
     ];
+
     return (
         <ScrollView>
-            <MainHeader variant={"adminMain"} onMenuPress={() => {}} />
+            <MainHeader variant={"userMain"} onMenuPress={() => {}} />
+
             <View className={"px-[30px] py-8 bg-background-default"}>
                 <Text className={"font-pretendard text-lg text-text-default"}>안녕하세요</Text>
+
                 <View className={"mt-4 flex-row gap-3 items-center"}>
                     <Text className={"font-pretendard-semibold text-xl text-text-default"}>
-                        김철수님
+                        {userName}님
                     </Text>
-                    <Badge status={"오너"} />
+
+                    <Badge status={memberRoleText} />
                 </View>
+
                 <View className={"mt-5 flex-row justify-between flex-wrap gap-2"}>
                     {mockData.map((item, i) => (
                         <View
@@ -127,24 +144,29 @@ function ManagerMainPage() {
                                         height: 36,
                                     }}
                                 />
+
                                 <Text className={"font-pretendard-semibold text-lg text-white"}>
                                     {item.title}
                                 </Text>
                             </View>
+
                             <Text className={"font-pretendard-bold text-xl text-white self-end"}>
                                 {item.number}
                             </Text>
                         </View>
                     ))}
                 </View>
+
                 <View className={"mt-8 flex-row justify-between items-center"}>
                     <Text className={"font-pretendard-medium text-xl"}>최근 대여 요청</Text>
+
                     <Pressable
                         onPress={() => {
                             router.push("/manager/rental");
                         }}>
                         <View className={"flex-row gap-2 items-center"}>
                             <Text className={"text-text-secondary"}>전체 보기</Text>
+
                             <Image
                                 source={require("@/assets/images/common/arrow_forward.png")}
                                 style={{
@@ -155,6 +177,7 @@ function ManagerMainPage() {
                         </View>
                     </Pressable>
                 </View>
+
                 <View className={"mt-3 bg-background-paper rounded-[16px]"}>
                     {mockData2.map((item, i) => (
                         <View
@@ -163,16 +186,20 @@ function ManagerMainPage() {
                             <Text className={"font-pretendard-semibold text-lg text-text-default"}>
                                 {item.equipment}
                             </Text>
+
                             <View className={"flex-row justify-between items-center mt-1"}>
                                 <View className={"flex-row gap-1"}>
                                     <Text className={"font-pretendard text-text-secondary"}>
                                         {item.name}
                                     </Text>
+
                                     <Text className={"font-pretendard text-text-secondary"}>|</Text>
+
                                     <Text className={"font-pretendard text-text-secondary"}>
                                         {item.date}
                                     </Text>
                                 </View>
+
                                 <Badge status={item.status} />
                             </View>
                         </View>
