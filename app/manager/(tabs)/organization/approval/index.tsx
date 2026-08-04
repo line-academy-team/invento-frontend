@@ -9,7 +9,6 @@ import { Member } from "@/types/member";
 // import managerOrganizationApi from "@/api/manager/managerOrganizationApi";
 import { useUserStore } from "@/stores/user/useUserStore";
 
-// 💡 시안과 동일한 5명의 가짜(Dummy) 데이터 세팅
 const DUMMY_MEMBERS: Member[] = [
     {
         id: 1,
@@ -68,7 +67,6 @@ export default function OrganizationApprovalListPage() {
     const ozId = authUser?.memberInfo?.organizationId;
 
     const [search, setSearch] = useState("");
-    // 💡 초기값으로 더미 데이터를 넣어줍니다.
     const [members, setMembers] = useState<Member[]>(DUMMY_MEMBERS);
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
@@ -108,17 +106,15 @@ export default function OrganizationApprovalListPage() {
 
     const handleGoToDetail = (item: Member) => {
         router.push({
-            // 💡 1. 템플릿 리터럴(`${ }`)을 빼고 폴더 경로의 모양 그대로 적습니다.
             pathname: "/manager/organization/approval/[id]",
             params: {
-                // 💡 2. 동적 경로인 [id]에 들어갈 값을 params 안에서 넘겨줍니다.
                 id: item.id,
                 name: item.user.name,
                 email: item.user.email,
                 joinedAt: item.joinedAt ? item.joinedAt.split("T")[0] : "날짜 없음",
                 organization: "ABC 기업",
             },
-        } as any); // Expo Router의 엄격한 타입 검사(Typed Routes)를 우회하여 빨간줄을 없앱니다.
+        } as any);
     };
 
         const executeBatchAction = async () => {
@@ -134,7 +130,6 @@ export default function OrganizationApprovalListPage() {
                     `일괄 ${batchAction === "APPROVED" ? "승인" : "반려"} 처리되었습니다. (테스트)`,
                 );
 
-                // 💡 더미 데이터 상태 업데이트 (UI 바로 반영 테스트용)
                 setMembers(prev =>
                     prev.map(m => (selectedIds.includes(m.id) ? { ...m, status: batchAction } : m)),
                 );
@@ -151,7 +146,7 @@ export default function OrganizationApprovalListPage() {
                 <MainHeader variant="headerSub" title="조직 가입 승인" isBackPress />
 
                 <View className="flex-1 px-6 pt-4">
-                    <View className="flex-row items-center bg-background-paper border border-gray-300 rounded-full px-5 h-[52px] mb-4">
+                    <View className="flex-row items-center bg-background-paper border border-divider rounded-full px-5 h-[52px] mb-4">
                         <Ionicons name="search" size={20} color="#9CA3AF" />
                         <TextInput
                             value={search}
@@ -169,7 +164,7 @@ export default function OrganizationApprovalListPage() {
                             className={`w-5 h-5 rounded border items-center justify-center mr-2 ${
                                 isAllSelected
                                     ? "bg-primary-main border-primary-main"
-                                    : "border-gray-300 bg-surface"
+                                    : "border-divider bg-surface"
                             }`}>
                             {isAllSelected && (
                                 <Ionicons name="checkmark" size={14} color="#FFFFFF" />
@@ -180,7 +175,7 @@ export default function OrganizationApprovalListPage() {
                         </Text>
                     </Pressable>
 
-                    <View className="flex-1 bg-background-paper rounded-3xl border border-gray-100 overflow-hidden mb-6">
+                    <View className="flex-1 bg-background-paper rounded-3xl border border-divider overflow-hidden mb-6">
                         <FlatList
                             data={filteredMembers}
                             keyExtractor={item => item.id.toString()}
@@ -204,11 +199,10 @@ export default function OrganizationApprovalListPage() {
 
                                 return (
                                     <Pressable
-                                        // 💡 변경된 부분: item 전체를 함수로 넘겨줍니다.
                                         onPress={() => handleGoToDetail(item)}
                                         className={`flex-row items-center p-5 active:opacity-80 ${
                                             index !== filteredMembers.length - 1
-                                                ? "border-b border-gray-100"
+                                                ? "border-b border-divider"
                                                 : ""
                                         }`}>
                                         <Pressable
@@ -221,7 +215,7 @@ export default function OrganizationApprovalListPage() {
                                                 className={`w-5 h-5 rounded border items-center justify-center ${
                                                     isChecked
                                                         ? "bg-primary-main border-primary-main"
-                                                        : "border-gray-300 bg-surface"
+                                                        : "border-divider bg-surface"
                                                 }`}>
                                                 {isChecked && (
                                                     <Ionicons
@@ -257,7 +251,7 @@ export default function OrganizationApprovalListPage() {
                     </View>
                 </View>
                 {selectedIds.length > 0 && (
-                    <View className="absolute bottom-0 w-full bg-surface rounded-t-[32px] pt-3 pb-8 px-8 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] border border-gray-100 z-50">
+                    <View className="absolute bottom-0 w-full bg-surface rounded-t-[32px] pt-3 pb-8 px-8 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] border border-divider z-50">
                         <View className="w-12 h-1.5 bg-gray-200 rounded-full self-center mb-6" />
 
                         <View className="flex-row items-center justify-between mb-2">

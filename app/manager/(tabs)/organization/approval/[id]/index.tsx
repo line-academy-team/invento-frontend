@@ -48,7 +48,7 @@ export default function OrganizationApprovalDetailPage() {
                     신청정보
                 </Text>
 
-                <View className="bg-background-paper rounded-3xl p-6 border border-gray-100 shadow-sm mb-6">
+                <View className="bg-background-paper rounded-3xl p-6 border border-divider shadow-sm mb-6">
                     <View className="flex-row justify-between items-center mb-3.5">
                         <Text className="font-pretendard text-sm text-text-secondary">
                             신청일시
@@ -83,7 +83,7 @@ export default function OrganizationApprovalDetailPage() {
                     <Pressable
                         onPress={() => setIsDropdownOpen(!isDropdownOpen)}
                         className={`flex-row items-center justify-between p-4 rounded-2xl border bg-surface shadow-sm ${
-                            isDropdownOpen ? "border-primary-main" : "border-gray-200"
+                            isDropdownOpen ? "border-primary-main" : "border-divider"
                         }`}>
                         <Text
                             className={`font-pretendard text-sm ${selectedDept ? "text-text-default font-pretendard-medium" : "text-text-secondary"}`}>
@@ -97,7 +97,7 @@ export default function OrganizationApprovalDetailPage() {
                     </Pressable>
 
                     {isDropdownOpen && (
-                        <View className="absolute top-[56px] left-0 right-0 bg-surface border border-gray-200 rounded-2xl shadow-md overflow-hidden z-20">
+                        <View className="absolute top-[56px] left-0 right-0 bg-surface border border-divider rounded-2xl shadow-md overflow-hidden z-20">
                             {DEPARTMENTS.map((dept, index) => {
                                 const isSelected = selectedDept?.id === dept.id;
                                 return (
@@ -109,7 +109,7 @@ export default function OrganizationApprovalDetailPage() {
                                         }}
                                         className={`p-4 ${isSelected ? "bg-primary-main" : "bg-surface"} ${
                                             index !== DEPARTMENTS.length - 1
-                                                ? "border-b border-gray-100"
+                                                ? "border-b border-divider"
                                                 : ""
                                         }`}>
                                         <Text
@@ -131,7 +131,7 @@ export default function OrganizationApprovalDetailPage() {
                     className={`w-full h-[56px] rounded-2xl items-center justify-center border transition-colors ${
                         selectedDept
                             ? "bg-primary-main border-primary-main"
-                            : "bg-surface border-gray-300"
+                            : "bg-surface border-divider"
                     }`}>
                     <Text
                         className={`font-pretendard-bold text-base ${
@@ -162,7 +162,7 @@ export default function OrganizationApprovalDetailPage() {
                             onChangeText={setMemo}
                             multiline
                             textAlignVertical="top"
-                            className="w-full h-24 border border-gray-200 rounded-2xl p-4 font-pretendard text-sm text-text-default mb-6"
+                            className="w-full h-24 border border-divider rounded-2xl p-4 font-pretendard text-sm text-text-default mb-6"
                         />
 
                         <View className="flex-row items-center justify-between mb-8">

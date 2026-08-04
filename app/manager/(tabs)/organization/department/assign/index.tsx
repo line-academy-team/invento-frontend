@@ -33,7 +33,7 @@ export default function DepartmentAssignIndexPage() {
                     관리자를 임명할 부서를 선택해주세요.
                 </Text>
 
-                <View className="flex-1 bg-surface rounded-3xl border border-gray-100 overflow-hidden mb-6 shadow-sm">
+                <View className="flex-1 bg-surface rounded-3xl border border-divider overflow-hidden mb-6 shadow-sm">
                     <FlatList
                         data={DEPARTMENTS}
                         keyExtractor={item => item.id.toString()}
@@ -46,7 +46,7 @@ export default function DepartmentAssignIndexPage() {
                                 <Pressable
                                     onPress={() => handleGoToDetail(item)}
                                     className={`flex-row items-center justify-between p-5 active:opacity-80 ${
-                                        !isLast ? "border-b border-gray-100" : ""
+                                        !isLast ? "border-b border-divider" : ""
                                     }`}>
                                     <View>
                                         <Text className="font-pretendard-bold text-lg text-text-default mb-1">

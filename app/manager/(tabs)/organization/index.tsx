@@ -18,7 +18,7 @@ export default function ManagerOrganizationPage() {
                 <View className="gap-y-4">
                     <Pressable
                         onPress={() => router.push("/manager/organization/approval" as Href)}
-                        className="w-full h-[64px] bg-white hover:bg-primary-main active:bg-primary-main rounded-2xl flex-row items-center justify-between px-6 shadow-sm border border-gray-100 group transition-colors">
+                        className="w-full h-[64px] bg-white hover:bg-primary-main active:bg-primary-main rounded-2xl flex-row items-center justify-between px-6 shadow-sm border border-divider group transition-colors">
                         <Text className="font-pretendard-bold text-lg text-text-default group-hover:text-white group-active:text-white transition-colors">
                             조직 가입 승인
                         </Text>
@@ -30,7 +30,7 @@ export default function ManagerOrganizationPage() {
                             onPress={() =>
                                 router.push("/manager/organization/department/create" as Href)
                             }
-                            className="w-full h-[64px] bg-white hover:bg-primary-main active:bg-primary-main rounded-2xl flex-row items-center justify-between px-6 shadow-sm border border-gray-100 group transition-colors">
+                            className="w-full h-[64px] bg-white hover:bg-primary-main active:bg-primary-main rounded-2xl flex-row items-center justify-between px-6 shadow-sm border border-divider group transition-colors">
                             <Text className="font-pretendard-bold text-lg text-text-default group-hover:text-white group-active:text-white transition-colors">
                                 부서 생성
                             </Text>
@@ -41,11 +41,9 @@ export default function ManagerOrganizationPage() {
                     {isOwner && (
                         <Pressable
                             onPress={() =>
-                                router.push(
-                                    "/manager/organization/department/assign" as Href,
-                                )
+                                router.push("/manager/organization/department/assign" as Href)
                             }
-                            className="w-full h-[64px] bg-white hover:bg-primary-main active:bg-primary-main rounded-2xl flex-row items-center justify-between px-6 shadow-sm border border-gray-100 group transition-colors">
+                            className="w-full h-[64px] bg-white hover:bg-primary-main active:bg-primary-main rounded-2xl flex-row items-center justify-between px-6 shadow-sm border border-divider group transition-colors">
                             <Text className="font-pretendard-bold text-lg text-text-default group-hover:text-white group-active:text-white transition-colors">
                                 부서 관리자 임명
                             </Text>
@@ -57,7 +55,7 @@ export default function ManagerOrganizationPage() {
                         onPress={() =>
                             router.push("/manager/organization/department/transfer" as Href)
                         }
-                        className="w-full h-[64px] bg-white hover:bg-primary-main active:bg-primary-main rounded-2xl flex-row items-center justify-between px-6 shadow-sm border border-gray-100 group transition-colors">
+                        className="w-full h-[64px] bg-white hover:bg-primary-main active:bg-primary-main rounded-2xl flex-row items-center justify-between px-6 shadow-sm border border-divider group transition-colors">
                         <Text className="font-pretendard-bold text-lg text-text-default group-hover:text-white group-active:text-white transition-colors">
                             부서 이동
                         </Text>
