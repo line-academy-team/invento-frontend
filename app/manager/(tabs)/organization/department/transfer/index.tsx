@@ -1,48 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Pressable, FlatList, Modal, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MainHeader from "@/components/layout/MainHeader";
-
-interface TransferMember {
-    id: number;
-    name: string;
-    role: string;
-    department: string;
-}
-
-interface DepartmentType {
-    id: number;
-    name: string;
-}
-
-const DUMMY_MEMBERS: TransferMember[] = [
-    { id: 1, name: "홍길동", role: "부장", department: "개발1팀" },
-    { id: 2, name: "이상해", role: "과장", department: "개발1팀" },
-    { id: 3, name: "김영희", role: "대리", department: "개발1팀" },
-    { id: 4, name: "이철수", role: "사원", department: "개발2팀" },
-    { id: 5, name: "남개발", role: "사원", department: "개발2팀" },
-    { id: 6, name: "김영주", role: "대리", department: "디자인1팀" },
-    { id: 7, name: "유감영", role: "사원", department: "비서팀" },
-];
-
-const DEPARTMENTS: DepartmentType[] = [
-    { id: 1, name: "개발1팀" },
-    { id: 2, name: "개발2팀" },
-    { id: 3, name: "개발3팀" },
-    { id: 4, name: "회계팀" },
-    { id: 5, name: "마케팅팀" },
-];
+import managerDepartmentApi, { OrgMember } from "@/api/manager/managerDepartmentApi";
+import ownerDepartmentApi, { Department } from "@/api/owner/ownerDepartmentApi";
 
 export default function DepartmentTransferPage() {
     const [search, setSearch] = useState("");
-    const [members, setMembers] = useState<TransferMember[]>(DUMMY_MEMBERS);
+    const [members, setMembers] = useState<OrgMember[]>([]);
+    const [departments, setDepartments] = useState<Department[]>([]);
 
-    const [selectedMember, setSelectedMember] = useState<TransferMember | null>(null);
+    const [selectedMember, setSelectedMember] = useState<OrgMember | null>(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [targetDept, setTargetDept] = useState<DepartmentType | null>(null);
+    const [targetDept, setTargetDept] = useState<Department | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const fetchData = async () => {
+        try {
+            const [membersData, deptsData] = await Promise.all([
+                managerDepartmentApi.getOrgMemberList(),
+                ownerDepartmentApi.getDepartmentList(),
+            ]);
+            setMembers(membersData);
+            setDepartments(deptsData);
+        } catch (error: any) {
+            console.error(error);
+            Alert.alert("오류", error.response?.data?.message || "데이터를 불러오지 못했습니다.");
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     const filteredMembers = members.filter(
-        m => m.name.includes(search) || m.department.includes(search),
+        m => m.user.name.includes(search) || (m.department?.name || "").includes(search),
     );
 
     const handleCloseModal = () => {
@@ -51,18 +43,41 @@ export default function DepartmentTransferPage() {
         setIsDropdownOpen(false);
     };
 
-    const handleTransferComplete = () => {
+    const handleTransferComplete = async () => {
         if (!selectedMember || !targetDept) return;
 
-        setMembers(prev =>
-            prev.map(m => (m.id === selectedMember.id ? { ...m, department: targetDept.name } : m)),
-        );
+        try {
+            setIsSubmitting(true);
+            await managerDepartmentApi.transferDepartment({
+                memberIds: [selectedMember.id],
+                targetDepartmentId: targetDept.id,
+            });
 
-        Alert.alert(
-            "알림",
-            `${selectedMember.name} ${selectedMember.role}님이 ${targetDept.name}(으)로 이동되었습니다.`,
-        );
-        handleCloseModal();
+            Alert.alert(
+                "부서 이동 완료",
+                `${selectedMember.user.name}님이 ${targetDept.name}(으)로 이동되었습니다.`,
+            );
+            handleCloseModal();
+            await fetchData();
+        } catch (error: any) {
+            console.error(error);
+            Alert.alert("오류", error.response?.data?.message || "부서 이동에 실패했습니다.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const getRoleName = (role: string) => {
+        switch (role) {
+            case "OWNER":
+                return "대표";
+            case "MANAGER":
+                return "관리자";
+            case "MEMBER":
+                return "일반";
+            default:
+                return "알 수 없음";
+        }
     };
 
     return (
@@ -90,6 +105,8 @@ export default function DepartmentTransferPage() {
                         renderItem={({ item, index }) => {
                             const isChecked = selectedMember?.id === item.id;
                             const isLast = index === filteredMembers.length - 1;
+                            const currentDeptName = item.department?.name || "부서 미지정";
+                            const roleName = getRoleName(item.role);
 
                             return (
                                 <Pressable
@@ -114,15 +131,15 @@ export default function DepartmentTransferPage() {
                                         </View>
 
                                         <Text className="font-pretendard-bold text-base text-text-default">
-                                            {item.name}{" "}
+                                            {item.user.name}{" "}
                                             <Text className="font-pretendard-medium text-text-secondary">
-                                                {item.role}
+                                                {roleName}
                                             </Text>
                                         </Text>
                                     </View>
 
                                     <Text className="font-pretendard text-sm text-text-secondary">
-                                        {item.department}
+                                        {currentDeptName}
                                     </Text>
                                 </Pressable>
                             );
@@ -147,11 +164,11 @@ export default function DepartmentTransferPage() {
                         {selectedMember && (
                             <>
                                 <Text className="font-pretendard-medium text-sm text-text-default text-center mb-2">
-                                    {selectedMember.name} {selectedMember.role}님의 현재 부서
+                                    {selectedMember.user.name} 님의 현재 부서
                                 </Text>
                                 <View className="bg-gray-100 rounded-2xl h-[52px] items-center justify-center mb-4">
                                     <Text className="font-pretendard-bold text-base text-text-secondary">
-                                        {selectedMember.department}
+                                        {selectedMember.department?.name || "미지정"}
                                     </Text>
                                 </View>
 
@@ -184,8 +201,7 @@ export default function DepartmentTransferPage() {
 
                                     {isDropdownOpen && (
                                         <View className="absolute top-[60px] left-0 right-0 bg-background-paper border border-gray-200 rounded-2xl shadow-md overflow-hidden z-20">
-                                            {DEPARTMENTS.map((dept, index) => {
-
+                                            {departments.map((dept, index) => {
                                                 const isSelected = targetDept?.id === dept.id;
                                                 return (
                                                     <Pressable
@@ -195,7 +211,7 @@ export default function DepartmentTransferPage() {
                                                             setIsDropdownOpen(false);
                                                         }}
                                                         className={`p-4 ${isSelected ? "bg-primary-main" : "bg-background-paper"} ${
-                                                            index !== DEPARTMENTS.length - 1
+                                                            index !== departments.length - 1
                                                                 ? "border-b border-gray-100"
                                                                 : ""
                                                         }`}>
@@ -212,6 +228,7 @@ export default function DepartmentTransferPage() {
 
                                 <View className="flex-row items-center gap-x-3">
                                     <Pressable
+                                        disabled={isSubmitting}
                                         onPress={handleCloseModal}
                                         className="flex-1 h-[52px] rounded-2xl border border-primary-main bg-background-paper items-center justify-center active:opacity-70">
                                         <Text className="font-pretendard-bold text-base text-primary-main">
@@ -220,10 +237,10 @@ export default function DepartmentTransferPage() {
                                     </Pressable>
 
                                     <Pressable
-                                        disabled={!targetDept}
+                                        disabled={!targetDept || isSubmitting}
                                         onPress={handleTransferComplete}
                                         className={`flex-1 h-[52px] rounded-2xl items-center justify-center transition-colors ${
-                                            targetDept ? "bg-primary-main" : "bg-background-paper"
+                                            targetDept ? "bg-primary-main" : "bg-gray-200"
                                         }`}>
                                         <Text
                                             className={`font-pretendard-bold text-base ${

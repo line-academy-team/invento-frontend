@@ -1,27 +1,64 @@
-import React from "react";
-import { View, Text, Pressable, FlatList } from "react-native";
-import { Href, router } from "expo-router";
+import React, { useState, useCallback } from "react";
+import { View, Text, Pressable, FlatList, Alert } from "react-native";
+import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import MainHeader from "@/components/layout/MainHeader";
+import ownerDepartmentApi from "@/api/owner/ownerDepartmentApi";
 
-const DEPARTMENTS = [
-    { id: 1, name: "개발1팀", createdAt: "2022.01.22", manager: "홍길동 부장" },
-    { id: 2, name: "개발2팀", createdAt: "2023.05.10", manager: "이철수 차장" },
-    { id: 3, name: "디자인1팀", createdAt: "2024.11.05", manager: "김영주 대리" },
-    { id: 4, name: "회계팀", createdAt: "2026.07.20", manager: "미지정" },
-];
+interface DepartmentMember {
+    id: number;
+    role: string;
+    user: {
+        id: number;
+        name: string;
+    };
+}
+
+interface DepartmentDetail {
+    id: number;
+    name: string;
+    createdAt: string;
+    members?: DepartmentMember[];
+}
 
 export default function DepartmentAssignIndexPage() {
-    const handleGoToDetail = (dept: (typeof DEPARTMENTS)[0]) => {
+    const [departments, setDepartments] = useState<DepartmentDetail[]>([]);
+
+    const fetchDepartments = async () => {
+        try {
+            const data = await ownerDepartmentApi.getDepartmentList();
+            setDepartments(data as any);
+        } catch (error: any) {
+            console.error(error);
+            Alert.alert(
+                "오류",
+                error.response?.data?.message || "부서 목록을 불러오지 못했습니다.",
+            );
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchDepartments();
+        }, []),
+    );
+
+    const handleGoToDetail = (dept: DepartmentDetail, managerName: string) => {
         router.push({
             pathname: "/manager/organization/department/assign/[id]",
             params: {
                 id: dept.id,
                 name: dept.name,
-                createdAt: dept.createdAt,
-                manager: dept.manager,
+                createdAt: dept.createdAt ? dept.createdAt.split("T")[0] : "",
+                manager: managerName,
             },
         } as any);
+    };
+
+    const getManagerName = (members?: DepartmentMember[]) => {
+        if (!members || members.length === 0) return "미지정";
+        const manager = members.find(m => m.role === "MANAGER");
+        return manager ? manager.user.name : "미지정";
     };
 
     return (
@@ -35,16 +72,17 @@ export default function DepartmentAssignIndexPage() {
 
                 <View className="flex-1 bg-surface rounded-3xl border border-gray-100 overflow-hidden mb-6 shadow-sm">
                     <FlatList
-                        data={DEPARTMENTS}
+                        data={departments}
                         keyExtractor={item => item.id.toString()}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ paddingBottom: 20 }}
                         renderItem={({ item, index }) => {
-                            const isLast = index === DEPARTMENTS.length - 1;
+                            const isLast = index === departments.length - 1;
+                            const managerName = getManagerName(item.members);
 
                             return (
                                 <Pressable
-                                    onPress={() => handleGoToDetail(item)}
+                                    onPress={() => handleGoToDetail(item, managerName)}
                                     className={`flex-row items-center justify-between p-5 active:opacity-80 ${
                                         !isLast ? "border-b border-gray-100" : ""
                                     }`}>
@@ -54,8 +92,13 @@ export default function DepartmentAssignIndexPage() {
                                         </Text>
                                         <Text className="font-pretendard text-sm text-text-secondary">
                                             현재 관리자:{" "}
-                                            <Text className="font-pretendard-medium text-primary-main">
-                                                {item.manager}
+                                            <Text
+                                                className={`font-pretendard-medium ${
+                                                    managerName !== "미지정"
+                                                        ? "text-primary-main"
+                                                        : "text-text-secondary"
+                                                }`}>
+                                                {managerName}
                                             </Text>
                                         </Text>
                                     </View>
