@@ -65,9 +65,9 @@ function ManagerEquipmentListPage() {
 
     return (
         <View className={"flex-1 bg-background-default relative"}>
-            <ScrollView className={"flex-1"}>
-                <MainHeader title={"장비 관리"} onMenuPress={onMenuPress} />
-                <View className={"px-[30px] py-8 bg-background-default min-h-[650px] relative"}>
+            <MainHeader title={"장비 관리"} onMenuPress={onMenuPress} />
+            <ScrollView className={"flex-1"} contentContainerClassName={"flex-grow"}>
+                <View className={"px-[30px] py-8 bg-background-default relative"}>
                     <View className={"relative"}>
                         <TextInput
                             className={twMerge(

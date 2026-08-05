@@ -19,7 +19,7 @@
         --text-light: #FFFFFF;
 
         --success: #22C55E;
-        --success-light : #DDF9E7;
+        --success-light: #DDF9E7;
 
         --warning: #F59E0B;
         --warning-light: #FFE5B8;
@@ -29,6 +29,7 @@
 
         --secondary: #3B82F6;
         --secondary-hover: #2563EB;
+        --secondary-light: #EFF5FF;
     }
 
     .dark {

@@ -89,7 +89,13 @@ function ManagerUpdatePasswordPage() {
             behavior={Platform.OS === "ios" ? "padding" : undefined}
             className={"flex-1 bg-background-paper"}>
             <View className={"flex-1"}>
-                <MainHeader title={"비밀번호 변경"} isBackPress />
+                <MainHeader
+                    title={"비밀번호 변경"}
+                    isBackPress
+                    onBackPress={() => {
+                        router.navigate("/manager/my");
+                    }}
+                />
 
                 <ScrollView
                     className={"flex-1"}
