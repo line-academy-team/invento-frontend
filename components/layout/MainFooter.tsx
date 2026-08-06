@@ -12,6 +12,7 @@ interface FooterMenu {
     href: string;
     icon: IconType;
     exact?: boolean;
+    activePaths?: string[];
 }
 
 const userMenus: FooterMenu[] = [
@@ -54,6 +55,7 @@ const managerMenus: FooterMenu[] = [
         label: "대여",
         href: "/manager/rental",
         icon: FiClipboard,
+        activePaths: ["/manager/report"],
     },
     {
         label: "조직",
@@ -104,6 +106,13 @@ function MainFooter({ variant }: MainFooterProps) {
     const isActiveMenu = (menu: FooterMenu) => {
         if (menu.exact) {
             return pathname === menu.href;
+        }
+
+        if (
+            menu.activePaths &&
+            menu.activePaths.some(path => pathname === path || pathname.startsWith(`${path}/`))
+        ) {
+            return true;
         }
 
         return pathname === menu.href || pathname.startsWith(`${menu.href}/`);

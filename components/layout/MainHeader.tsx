@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, ReactNode } from "react";
 import { Image, Pressable, Text, View, Modal, TouchableOpacity } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Path } from "react-native-svg";
@@ -11,6 +11,7 @@ type HeaderVariant = "userMain" | "adminMain" | "managerMain" | "headerSub";
 interface MainHeaderProps {
     variant?: HeaderVariant;
     title?: string;
+    customTitle?: ReactNode;
     onMenuPress?: () => void;
     isBackPress?: boolean;
     onBackPress?: () => void;
@@ -19,6 +20,7 @@ interface MainHeaderProps {
 function MainHeader({
     variant = "headerSub",
     title,
+    customTitle,
     onMenuPress,
     isBackPress,
     onBackPress,
@@ -132,9 +134,15 @@ function MainHeader({
                             <Ionicons name={"chevron-back-outline"} size={24} />
                         </Pressable>
                     )}
-                    <Text className="font-pretendard-bold text-2xl text-text-main z-10">
-                        {title}
-                    </Text>
+                    <View className="z-10">
+                        {customTitle ? (
+                            customTitle
+                        ) : (
+                            <Text className="font-pretendard-bold text-2xl text-text-main">
+                                {title}
+                            </Text>
+                        )}
+                    </View>
                 </View>
                 {onMenuPress && (
                     <Pressable onPress={handleMenuPress} className="z-10">

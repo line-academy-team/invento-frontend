@@ -30,6 +30,7 @@ const getBadgeStyles = (status: string) => {
         case "이용가능":
         case "반납예정":
         case "정상":
+        case "답변완료":
             return { bg: "bg-success-light", text: "text-success-main" };
         case "반려":
         case "대여중":
@@ -41,6 +42,7 @@ const getBadgeStyles = (status: string) => {
             return { bg: "bg-primary-light", text: "text-primary-main" };
         case "대기":
         case "신청중":
+        case "답변대기":
             return { bg: "bg-warning-light", text: "text-warning-main" };
         case "관리자":
             return { bg: "bg-[#C5DAFD]", text: "text-secondary-main" };
