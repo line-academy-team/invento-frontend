@@ -85,7 +85,7 @@ export default function DepartmentTransferPage() {
             <MainHeader variant="headerSub" title="부서이동" isBackPress />
 
             <View className="flex-1 px-6 pt-4">
-                <View className="flex-row items-center bg-surface border border-gray-300 rounded-full px-5 h-[52px] mb-6">
+                <View className="flex-row items-center bg-surface border border-divider rounded-full px-5 h-[52px] mb-6">
                     <Ionicons name="search" size={20} color="#9CA3AF" />
                     <TextInput
                         value={search}
@@ -96,7 +96,7 @@ export default function DepartmentTransferPage() {
                     />
                 </View>
 
-                <View className="flex-1 bg-background-paper rounded-3xl border border-gray-100 overflow-hidden mb-6 shadow-sm">
+                <View className="flex-1 bg-background-paper rounded-3xl border border-divider overflow-hidden mb-6 shadow-sm">
                     <FlatList
                         data={filteredMembers}
                         keyExtractor={item => item.id.toString()}
@@ -112,14 +112,14 @@ export default function DepartmentTransferPage() {
                                 <Pressable
                                     onPress={() => setSelectedMember(item)}
                                     className={`flex-row items-center justify-between p-5 active:opacity-80 ${
-                                        !isLast ? "border-b border-gray-100" : ""
+                                        !isLast ? "border-b border-divider" : ""
                                     }`}>
                                     <View className="flex-row items-center">
                                         <View
                                             className={`w-5 h-5 rounded border items-center justify-center mr-3 ${
                                                 isChecked
                                                     ? "bg-primary-main border-primary-main"
-                                                    : "border-gray-300 bg-surface"
+                                                    : "border-divider bg-surface"
                                             }`}>
                                             {isChecked && (
                                                 <Ionicons
@@ -166,7 +166,7 @@ export default function DepartmentTransferPage() {
                                 <Text className="font-pretendard-medium text-sm text-text-default text-center mb-2">
                                     {selectedMember.user.name} 님의 현재 부서
                                 </Text>
-                                <View className="bg-gray-100 rounded-2xl h-[52px] items-center justify-center mb-4">
+                                <View className="bg-divider rounded-2xl h-[52px] items-center justify-center mb-4">
                                     <Text className="font-pretendard-bold text-base text-text-secondary">
                                         {selectedMember.department?.name || "미지정"}
                                     </Text>
@@ -202,6 +202,9 @@ export default function DepartmentTransferPage() {
                                     {isDropdownOpen && (
                                         <View className="absolute top-[60px] left-0 right-0 bg-background-paper border border-gray-200 rounded-2xl shadow-md overflow-hidden z-20">
                                             {departments.map((dept, index) => {
+                                        <View className="absolute top-[60px] left-0 right-0 bg-background-paper border border-divider rounded-2xl shadow-md overflow-hidden z-20">
+                                            {DEPARTMENTS.map((dept, index) => {
+
                                                 const isSelected = targetDept?.id === dept.id;
                                                 return (
                                                     <Pressable
@@ -213,6 +216,8 @@ export default function DepartmentTransferPage() {
                                                         className={`p-4 ${isSelected ? "bg-primary-main" : "bg-background-paper"} ${
                                                             index !== departments.length - 1
                                                                 ? "border-b border-gray-100"
+                                                            index !== DEPARTMENTS.length - 1
+                                                                ? "border-b border-divider"
                                                                 : ""
                                                         }`}>
                                                         <Text

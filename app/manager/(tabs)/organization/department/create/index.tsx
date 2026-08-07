@@ -13,6 +13,18 @@ import {
 import MainHeader from "@/components/layout/MainHeader";
 import Button from "@/components/common/Button/Button";
 import { Ionicons, Feather } from "@expo/vector-icons";
+
+interface Department {
+    id: number;
+    name: string;
+    createdAt: string;
+}
+
+const INITIAL_DEPARTMENTS: Department[] = [
+    { id: 1, name: "관리부", createdAt: "2021-07-01 생성" },
+    { id: 2, name: "디자인1팀", createdAt: "2026-07-20 생성" },
+    { id: 3, name: "회계팀", createdAt: "2026-07-20 생성" },
+];
 import ownerDepartmentApi, { Department } from "@/api/owner/ownerDepartmentApi";
 
 export default function DepartmentCreatePage() {
@@ -25,6 +37,7 @@ export default function DepartmentCreatePage() {
         fetchDepartments();
     }, []);
 
+    const handleCreateDepartment = () => {
     const fetchDepartments = async () => {
         try {
             const data = await ownerDepartmentApi.getDepartmentList();
@@ -41,6 +54,11 @@ export default function DepartmentCreatePage() {
     const handleCreateDepartment = async () => {
         if (!newDeptName.trim()) return;
 
+        const newDept: Department = {
+            id: Date.now(),
+            name: newDeptName,
+            createdAt: new Date().toISOString().split("T")[0] + " 생성",
+        };
         try {
             setIsLoading(true);
             await ownerDepartmentApi.createDepartment(newDeptName.trim());
@@ -96,7 +114,7 @@ export default function DepartmentCreatePage() {
                 contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
                 showsVerticalScrollIndicator={false}
                 renderItem={({ item }) => (
-                    <View className="bg-background-paper rounded-[20px] p-5 mb-4 border border-gray-100 shadow-sm flex-row justify-between items-center">
+                    <View className="bg-background-paper rounded-[20px] p-5 mb-4 border border-divider shadow-sm flex-row justify-between items-center">
                         <View>
                             <Text className="font-pretendard-bold text-lg text-text-default mb-1">
                                 {item.name}
@@ -158,7 +176,7 @@ export default function DepartmentCreatePage() {
                             placeholderTextColor="#9CA3AF"
                             textAlign="center"
                             autoFocus
-                            className="w-full h-[56px] border border-gray-300 rounded-2xl px-4 font-pretendard-medium text-base text-text-default mb-8"
+                            className="w-full h-[56px] border border-divider rounded-2xl px-4 font-pretendard-medium text-base text-text-default mb-8"
                         />
 
                         <Button

@@ -85,8 +85,8 @@ export default function DepartmentAssignDetailPage() {
             <MainHeader variant="headerSub" title="부서관리자 임명" isBackPress />
 
             <View className="flex-1 px-6 pt-4">
-                <View className="bg-background-deep rounded-3xl p-6 border border-gray-100 shadow-sm mb-6">
-                    <View className="flex-row justify-between items-center mb-4 border-b border-gray-100">
+                <View className="bg-background-deep rounded-3xl p-6 border border-divider shadow-sm mb-6">
+                    <View className="flex-row justify-between items-center mb-4 border-b border-divider">
                         <Text className="font-pretendard-bold text-xl text-text-default">
                             {name || "알 수 없는 부서"}
                         </Text>
@@ -104,7 +104,7 @@ export default function DepartmentAssignDetailPage() {
                     </View>
                 </View>
 
-                <View className="flex-1 bg-background-paper rounded-3xl border border-gray-100 overflow-hidden mb-6 shadow-sm">
+                <View className="flex-1 bg-background-paper rounded-3xl border border-divider overflow-hidden mb-6 shadow-sm">
                     <FlatList
                         data={members}
                         keyExtractor={item => item.id.toString()}
@@ -119,7 +119,7 @@ export default function DepartmentAssignDetailPage() {
                                 <Pressable
                                     onPress={() => handleSelectMember(item)}
                                     className={`flex-row items-center justify-between p-5 active:opacity-80 ${
-                                        !isLast ? "border-b border-gray-100" : ""
+                                        !isLast ? "border-b border-divider" : ""
                                     }`}>
                                     <View className="flex-row items-center">
                                         <View
@@ -169,8 +169,8 @@ export default function DepartmentAssignDetailPage() {
             </View>
 
             {selectedMember && (
-                <View className="absolute bottom-0 w-full bg-surface rounded-t-[32px] pt-3 pb-8 px-8 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] border border-gray-100 z-50">
-                    <View className="w-12 h-1.5 bg-gray-200 rounded-full self-center mb-8" />
+                <View className="absolute bottom-0 w-full bg-surface rounded-t-[32px] pt-3 pb-8 px-8 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] border border-divider z-50">
+                    <View className="w-12 h-1.5 bg-divider rounded-full self-center mb-8" />
 
                     <View className="items-center mb-6">
                         <Text className="font-pretendard-bold text-xl text-text-default mb-1">

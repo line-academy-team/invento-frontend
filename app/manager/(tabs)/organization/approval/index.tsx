@@ -6,9 +6,67 @@ import MainHeader from "@/components/layout/MainHeader";
 import Badge from "@/components/common/Badge/Badge";
 import managerJoinApi, { JoinRequestMember } from "@/api/manager/managerJoinApi";
 
+import { Member } from "@/types/member";
+// import managerOrganizationApi from "@/api/manager/managerOrganizationApi";
+import { useUserStore } from "@/stores/user/useUserStore";
+
+const DUMMY_MEMBERS: Member[] = [
+    {
+        id: 1,
+        organizationId: 1,
+        userId: 101,
+        role: "MEMBER",
+        status: "PENDING",
+        joinedAt: "2026-07-20T14:30:00.000Z",
+        createdAt: "2026-07-20T14:30:00.000Z",
+        user: { id: 101, name: "홍길동", email: "hong@company.com" },
+    },
+    {
+        id: 2,
+        organizationId: 1,
+        userId: 102,
+        role: "MEMBER",
+        status: "APPROVED",
+        joinedAt: "2026-07-20T14:30:00.000Z",
+        createdAt: "2026-07-20T14:30:00.000Z",
+        user: { id: 102, name: "홍길동", email: "hong@company.com" },
+    },
+    {
+        id: 3,
+        organizationId: 1,
+        userId: 103,
+        role: "MEMBER",
+        status: "REJECTED",
+        joinedAt: "2026-07-20T14:30:00.000Z",
+        createdAt: "2026-07-20T14:30:00.000Z",
+        user: { id: 103, name: "홍길동", email: "hong@company.com" },
+    },
+    {
+        id: 4,
+        organizationId: 1,
+        userId: 104,
+        role: "MEMBER",
+        status: "PENDING",
+        joinedAt: "2026-07-20T14:30:00.000Z",
+        createdAt: "2026-07-20T14:30:00.000Z",
+        user: { id: 104, name: "홍길동", email: "hong@company.com" },
+    },
+    {
+        id: 5,
+        organizationId: 1,
+        userId: 105,
+        role: "MEMBER",
+        status: "PENDING",
+        joinedAt: "2026-07-20T14:30:00.000Z",
+        createdAt: "2026-07-20T14:30:00.000Z",
+        user: { id: 105, name: "홍길동", email: "hong@company.com" },
+    },
+];
+
 export default function OrganizationApprovalListPage() {
     const [search, setSearch] = useState("");
     const [members, setMembers] = useState<JoinRequestMember[]>([]);
+    const [members, setMembers] = useState<Member[]>(DUMMY_MEMBERS);
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [batchAction, setBatchAction] = useState<"APPROVED" | "REJECTED">("APPROVED");
 
@@ -74,6 +132,14 @@ export default function OrganizationApprovalListPage() {
                 "알림",
                 `일괄 ${batchAction === "APPROVED" ? "승인" : "반려"} 처리되었습니다.`,
             );
+                Alert.alert(
+                    "알림",
+                    `일괄 ${batchAction === "APPROVED" ? "승인" : "반려"} 처리되었습니다. (테스트)`,
+                );
+
+                setMembers(prev =>
+                    prev.map(m => (selectedIds.includes(m.id) ? { ...m, status: batchAction } : m)),
+                );
 
             setSelectedIds([]);
             await fetchMembers();
