@@ -66,7 +66,7 @@ const DUMMY_MEMBERS: Member[] = [
 export default function OrganizationApprovalListPage() {
     const [search, setSearch] = useState("");
     const [members, setMembers] = useState<JoinRequestMember[]>([]);
-    const [members, setMembers] = useState<Member[]>(DUMMY_MEMBERS);
+    //const [members, setMembers] = useState<Member[]>(DUMMY_MEMBERS);
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [batchAction, setBatchAction] = useState<"APPROVED" | "REJECTED">("APPROVED");
 
