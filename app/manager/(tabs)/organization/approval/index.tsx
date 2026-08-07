@@ -262,7 +262,7 @@ export default function OrganizationApprovalListPage() {
                             <Pressable
                                 onPress={() =>
                                     setBatchAction(prev =>
-                                        prev === "APPROVED" ? "REJECTED" : "APPROVED",
+                                        prev === "APPROVED" ? "REJECTED" : "APPROVED"
                                     )
                                 }
                                 className="flex-row items-center bg-primary-main rounded-full px-5 py-2.5 gap-x-2 active:opacity-80">
