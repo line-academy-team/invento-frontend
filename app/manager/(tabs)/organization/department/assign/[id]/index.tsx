@@ -1,36 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, FlatList, Alert } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import MainHeader from "@/components/layout/MainHeader";
+import ownerDepartmentApi from "@/api/owner/ownerDepartmentApi";
+
+interface MemberUser {
+    id: number;
+    name: string;
+}
 
 interface DepartmentMember {
     id: number;
-    name: string;
     role: string;
-    isManager: boolean;
+    user: MemberUser;
 }
 
-const INITIAL_MEMBERS: DepartmentMember[] = [
-    { id: 101, name: "홍길동", role: "부장", isManager: true },
-    { id: 102, name: "이상해", role: "과장", isManager: false },
-    { id: 103, name: "김영희", role: "대리", isManager: false },
-    { id: 104, name: "박사원", role: "사원", isManager: false },
-];
-
 export default function DepartmentAssignDetailPage() {
-    const { id, name, createdAt, manager } = useLocalSearchParams();
+    const { id, name, createdAt } = useLocalSearchParams();
+    const departmentId = Number(id);
 
-    const [members, setMembers] = useState<DepartmentMember[]>(INITIAL_MEMBERS);
+    const [members, setMembers] = useState<DepartmentMember[]>([]);
     const [selectedMember, setSelectedMember] = useState<DepartmentMember | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const currentManager = members.find(m => m.isManager);
-    const currentManagerNameText = currentManager
-        ? `${currentManager.name} ${currentManager.role}`
-        : "미지정";
+    const fetchDepartmentMembers = async () => {
+        try {
+            const data = await ownerDepartmentApi.getDepartmentList();
+            const currentDept = (data as any[]).find(d => d.id === departmentId);
+
+            if (currentDept && currentDept.members) {
+                setMembers(currentDept.members);
+            }
+        } catch (error: any) {
+            console.error(error);
+            Alert.alert(
+                "오류",
+                error.response?.data?.message || "멤버 목록을 불러오지 못했습니다.",
+            );
+        }
+    };
+
+    useEffect(() => {
+        if (!isNaN(departmentId)) {
+            fetchDepartmentMembers();
+        }
+    }, [departmentId]);
+
+    const currentManager = members.find(m => m.role === "MANAGER");
+    const currentManagerNameText = currentManager ? currentManager.user.name : "미지정";
 
     const handleSelectMember = (member: DepartmentMember) => {
-        if (member.isManager) return;
+        if (member.role === "MANAGER") return;
 
         if (selectedMember?.id === member.id) {
             setSelectedMember(null);
@@ -39,21 +60,24 @@ export default function DepartmentAssignDetailPage() {
         }
     };
 
-    const handleAssignComplete = () => {
+    const handleAssignComplete = async () => {
         if (!selectedMember) return;
 
-        setMembers(prev =>
-            prev.map(m => ({
-                ...m,
-                isManager: m.id === selectedMember.id,
-            })),
-        );
+        try {
+            setIsSubmitting(true);
+            await ownerDepartmentApi.assignDepartmentManager(departmentId, selectedMember.id);
 
-        Alert.alert(
-            "알림",
-            `${selectedMember.name} ${selectedMember.role}님이 부서 관리자로 임명되었습니다.`,
-        );
-        setSelectedMember(null);
+            Alert.alert(
+                "임명 완료",
+                `${selectedMember.user.name}님이 부서 관리자로 임명되었습니다.`,
+                [{ text: "확인", onPress: () => router.back() }],
+            );
+        } catch (error: any) {
+            console.error(error);
+            Alert.alert("오류", error.response?.data?.message || "관리자 임명에 실패했습니다.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -74,7 +98,7 @@ export default function DepartmentAssignDetailPage() {
                         <Text className="font-pretendard-bold text-base text-text-default">
                             관리자
                         </Text>
-                        <Text className="font-pretendard-medium text-base text-text-default">
+                        <Text className="font-pretendard-medium text-base text-primary-main">
                             {currentManagerNameText}
                         </Text>
                     </View>
@@ -88,6 +112,7 @@ export default function DepartmentAssignDetailPage() {
                         contentContainerStyle={{ paddingBottom: selectedMember ? 140 : 20 }}
                         renderItem={({ item, index }) => {
                             const isChecked = selectedMember?.id === item.id;
+                            const isManager = item.role === "MANAGER";
                             const isLast = index === members.length - 1;
 
                             return (
@@ -99,20 +124,20 @@ export default function DepartmentAssignDetailPage() {
                                     <View className="flex-row items-center">
                                         <View
                                             className={`w-5 h-5 rounded border items-center justify-center mr-3 ${
-                                                item.isManager
+                                                isManager
                                                     ? "bg-gray-200 border-gray-300"
                                                     : isChecked
                                                       ? "bg-primary-main border-primary-main"
                                                       : "border-gray-300 bg-surface"
                                             }`}>
-                                            {isChecked && !item.isManager && (
+                                            {isChecked && !isManager && (
                                                 <Ionicons
                                                     name="checkmark"
                                                     size={14}
                                                     color="#FFFFFF"
                                                 />
                                             )}
-                                            {item.isManager && (
+                                            {isManager && (
                                                 <Ionicons
                                                     name="checkmark"
                                                     size={14}
@@ -124,12 +149,12 @@ export default function DepartmentAssignDetailPage() {
                                         <Text className="font-pretendard-bold text-base text-text-default">
                                             {name}{" "}
                                             <Text className="text-text-default">
-                                                {item.name} {item.role}
+                                                {item.user.name}
                                             </Text>
                                         </Text>
                                     </View>
 
-                                    {item.isManager && (
+                                    {isManager && (
                                         <View className="bg-secondary-light/30 px-3 py-1 rounded-full">
                                             <Text className="font-pretendard-bold text-xs text-secondary-hover">
                                                 관리자
@@ -149,7 +174,7 @@ export default function DepartmentAssignDetailPage() {
 
                     <View className="items-center mb-6">
                         <Text className="font-pretendard-bold text-xl text-text-default mb-1">
-                            {selectedMember.name} {selectedMember.role}님
+                            {selectedMember.user.name}님
                         </Text>
                         <Text className="font-pretendard-bold text-xl text-text-default">
                             부서 관리자 임명
@@ -157,8 +182,11 @@ export default function DepartmentAssignDetailPage() {
                     </View>
 
                     <Pressable
+                        disabled={isSubmitting}
                         onPress={handleAssignComplete}
-                        className="w-full h-[56px] bg-primary-main rounded-2xl items-center justify-center active:opacity-80">
+                        className={`w-full h-[56px] rounded-2xl items-center justify-center active:opacity-80 ${
+                            isSubmitting ? "bg-gray-400" : "bg-primary-main"
+                        }`}>
                         <Text className="font-pretendard-bold text-white text-lg">완료</Text>
                     </Pressable>
                 </View>

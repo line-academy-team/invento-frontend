@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -25,13 +25,33 @@ const INITIAL_DEPARTMENTS: Department[] = [
     { id: 2, name: "디자인1팀", createdAt: "2026-07-20 생성" },
     { id: 3, name: "회계팀", createdAt: "2026-07-20 생성" },
 ];
+import ownerDepartmentApi, { Department } from "@/api/owner/ownerDepartmentApi";
 
 export default function DepartmentCreatePage() {
-    const [departments, setDepartments] = useState<Department[]>(INITIAL_DEPARTMENTS);
+    const [departments, setDepartments] = useState<Department[]>([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [newDeptName, setNewDeptName] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        fetchDepartments();
+    }, []);
 
     const handleCreateDepartment = () => {
+    const fetchDepartments = async () => {
+        try {
+            const data = await ownerDepartmentApi.getDepartmentList();
+            setDepartments(data);
+        } catch (error: any) {
+            console.log(error);
+            Alert.alert(
+                "오류",
+                error.response?.data?.message || "부서 목록을 불러오지 못했습니다.",
+            );
+        }
+    };
+
+    const handleCreateDepartment = async () => {
         if (!newDeptName.trim()) return;
 
         const newDept: Department = {
@@ -39,10 +59,23 @@ export default function DepartmentCreatePage() {
             name: newDeptName,
             createdAt: new Date().toISOString().split("T")[0] + " 생성",
         };
+        try {
+            setIsLoading(true);
+            await ownerDepartmentApi.createDepartment(newDeptName.trim());
 
-        setDepartments(prev => [...prev, newDept]);
-        setNewDeptName("");
-        setIsModalVisible(false);
+            setNewDeptName("");
+            setIsModalVisible(false);
+
+            await fetchDepartments();
+        } catch (error: any) {
+            console.log(error);
+            Alert.alert(
+                "오류",
+                error.response?.data?.message || "부서 생성 중 오류가 발생했습니다.",
+            );
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleDeleteDepartment = (id: number, name: string) => {
@@ -51,11 +84,24 @@ export default function DepartmentCreatePage() {
             {
                 text: "삭제",
                 style: "destructive",
-                onPress: () => {
-                    setDepartments(prev => prev.filter(dept => dept.id !== id));
+                onPress: async () => {
+                    try {
+                        await ownerDepartmentApi.deleteDepartment(id);
+                        await fetchDepartments();
+                    } catch (error: any) {
+                        console.log(error);
+                        Alert.alert(
+                            "오류",
+                            error.response?.data?.message || "부서 삭제 중 오류가 발생했습니다.",
+                        );
+                    }
                 },
             },
         ]);
+    };
+
+    const formatDate = (dateString: string) => {
+        return dateString.split("T")[0] + " 생성";
     };
 
     return (
@@ -74,7 +120,7 @@ export default function DepartmentCreatePage() {
                                 {item.name}
                             </Text>
                             <Text className="font-pretendard text-sm text-text-secondary">
-                                {item.createdAt}
+                                {formatDate(item.createdAt)}
                             </Text>
                         </View>
 
@@ -136,6 +182,7 @@ export default function DepartmentCreatePage() {
                         <Button
                             onPress={handleCreateDepartment}
                             disabled={!newDeptName.trim()}
+                            isLoading={isLoading}
                             className="h-[56px]">
                             완료
                         </Button>

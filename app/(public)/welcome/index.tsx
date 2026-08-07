@@ -1,14 +1,35 @@
 import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Path } from "react-native-svg";
 import { Image, Pressable, Text, View } from "react-native";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import Button from "@/components/common/Button/Button";
+import { twMerge } from "tailwind-merge";
 
 function LandingPage() {
     const router = useRouter();
+    const { role } = useLocalSearchParams<{ role?: string }>();
+
+    const isAdmin = role === "admin";
+
+    const handleLoginPress = () => {
+        if (isAdmin) {
+            router.push("/auth/login?role=admin");
+        } else {
+            router.push("/auth/login");
+        }
+    };
+
+    const handleRole = () => {
+        if (isAdmin) {
+            router.setParams({ role: undefined });
+        } else {
+            router.setParams({ role: "admin" });
+        }
+    };
+
     return (
         <LinearGradient
-            colors={["#7C3AED", "#3B82F6"]}
+            colors={isAdmin ? ["#7C3AED", "#7C3AED"] : ["#7C3AED", "#3B82F6"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{
@@ -38,24 +59,47 @@ function LandingPage() {
             <Text className={"font-pretendard-semibold text-[14px] text-white mt-2"}>
                 단체 비품을 스마트하게 관리하세요
             </Text>
-            <View className={"flex-col items-center mt-[108px] gap-7"}>
+            <View
+                className={twMerge(
+                    "flex-col items-center mt-[108px]",
+                    isAdmin ? "gap-5" : "gap-7",
+                )}>
                 <Button
-                    onPress={() => router.push("/auth/login")}
-                    className="w-[128px] h-[36px]"
+                    onPress={handleLoginPress}
+                    className={twMerge(
+                        "w-[128px] h-[36px] bg-[#FFFFFF50] border border-white",
+                        !isAdmin && "hover:bg-secondary-hover",
+                    )}
                     textClassName="text-lg">
                     로그인
                 </Button>
-                <Text className={"font-pretendard text-white text-lg"}>OR</Text>
-                <Button
-                    onPress={() => router.push("/auth/register")}
-                    className="w-[128px] h-[36px]"
-                    textClassName="text-lg">
-                    회원가입
-                </Button>
+                {isAdmin ? (
+                    <Text className="font-pretendard text-[16px] text-text-light">
+                        로그인이 필요한 서비스입니다.
+                    </Text>
+                ) : (
+                    <View className="gap-7 items-center">
+                        <Text className={"font-pretendard text-white text-lg"}>OR</Text>
+                        <Button
+                            onPress={() => router.push("/auth/register")}
+                            className={twMerge(
+                                "w-[128px] h-[36px] bg-[#FFFFFF50] border border-white",
+                                !isAdmin && "hover:bg-secondary-hover",
+                            )}
+                            textClassName="text-lg">
+                            회원가입
+                        </Button>
+                    </View>
+                )}
             </View>
-            <Text className={"mt-auto text-white/50 text-[18px] font-pretendard-semibold mb-3"}>
-                © 2026 Invento
-            </Text>
+            <Pressable
+                onPress={handleRole}
+                className="mt-auto"
+                style={{ cursor: "default" } as any}>
+                <Text className={"text-white/50 text-[18px] font-pretendard-semibold mb-3"}>
+                    © 2026 Invento
+                </Text>
+            </Pressable>
         </LinearGradient>
     );
 }

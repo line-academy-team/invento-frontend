@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist, StateStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
-import { AuthUser, MemberInfo } from "@/types/user";
+import { AuthUser, MemberInfo, User } from "@/types/user";
 import * as SecureStore from "expo-secure-store";
 
 type UserState = {
@@ -14,6 +14,10 @@ type UserState = {
 
     logout: () => Promise<void>;
 
+    // 이름, 프로필 이미지 등 사용자 정보 수정
+    updateUserInfo: (userInfo: Partial<User>) => void;
+
+    // 단체, 부서, 권한 등의 멤버 정보 수정
     updateMemberInfo: (memberInfo: Partial<MemberInfo>) => void;
 
     restoreLogin: () => Promise<void>;
@@ -21,14 +25,19 @@ type UserState = {
 
 const customWebStorage: StateStorage = {
     getItem: name => {
-        if (typeof window === "undefined") return null;
+        if (typeof window === "undefined") {
+            return null;
+        }
+
         return localStorage.getItem(name);
     },
+
     setItem: (name, value) => {
         if (typeof window !== "undefined") {
             localStorage.setItem(name, value);
         }
     },
+
     removeItem: name => {
         if (typeof window !== "undefined") {
             localStorage.removeItem(name);
@@ -69,6 +78,25 @@ export const useUserStore = create<UserState>()(
                 });
             },
 
+            // 사용자 이름과 이미지 등을 수정
+            updateUserInfo: userInfo =>
+                set(state => {
+                    if (!state.authUser) {
+                        return state;
+                    }
+
+                    return {
+                        authUser: {
+                            ...state.authUser,
+                            user: {
+                                ...state.authUser.user,
+                                ...userInfo,
+                            },
+                        },
+                    };
+                }),
+
+            // 단체, 부서, 역할 등의 멤버 정보 수정
             updateMemberInfo: memberInfo =>
                 set(state => {
                     if (!state.authUser || !state.authUser.memberInfo) {
@@ -87,7 +115,7 @@ export const useUserStore = create<UserState>()(
                 }),
 
             restoreLogin: async () => {
-                let token;
+                let token: string | null;
 
                 if (Platform.OS === "web") {
                     token = localStorage.getItem("accessToken");
@@ -108,9 +136,14 @@ export const useUserStore = create<UserState>()(
 
                     return;
                 }
-                set({ token });
+
+                set({
+                    token,
+                });
+
                 try {
                     const userApi = require("@/api/user/userApi").default;
+
                     const authUser = await userApi.getMe();
 
                     set({
@@ -138,6 +171,7 @@ export const useUserStore = create<UserState>()(
         {
             name: "user-storage",
             storage,
+
             partialize: state => ({
                 isLoggedIn: state.isLoggedIn,
                 authUser: state.authUser,
