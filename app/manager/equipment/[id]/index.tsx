@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import Badge from "@/components/common/Badge/Badge";
 import { twMerge } from "tailwind-merge";
 import Button from "@/components/common/Button/Button";
+import { Ionicons } from "@expo/vector-icons";
 
 function ManagerEquipmentDetailPage() {
     const router = useRouter();
@@ -11,7 +12,9 @@ function ManagerEquipmentDetailPage() {
     const mockData = {
         imageURL:
             "https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4",
+        category: "IT용품",
     };
+
     return (
         <View className={"flex-1"}>
             <MainHeader
@@ -23,7 +26,20 @@ function ManagerEquipmentDetailPage() {
             />
             <ScrollView className={"flex-1"} contentContainerClassName={"flex-grow"}>
                 <View className={"px-[30px] py-8 flex-1"}>
-                    <View className={"h-[200px] w-full rounded-2xl bg-background-default"}></View>
+
+                    {/* 이미지 영역 수정됨 */}
+                    <View className={"h-[200px] w-full rounded-2xl bg-background-default overflow-hidden items-center justify-center"}>
+                        {mockData.imageURL ? (
+                            <Image
+                                source={{ uri: mockData.imageURL }}
+                                className={"w-full h-full"}
+                                resizeMode={"cover"}
+                            />
+                        ) : (
+                            <Ionicons name={"image-outline"} size={48} color={"#9CA3AF"} />
+                        )}
+                    </View>
+
                     <View className={"py-[30px] flex-1"}>
                         <View
                             className={twMerge(
@@ -48,9 +64,49 @@ function ManagerEquipmentDetailPage() {
                                     카테고리
                                 </Text>
                                 <Text className={twMerge(["text-lg", "text-text-default"])}>
-                                    IT기기
+                                    {mockData.category}
                                 </Text>
                             </View>
+
+                            {mockData.category === "소모품" && (
+                                <>
+                                    <View
+                                        className={twMerge(
+                                            ["flex-row", "justify-between"],
+                                            ["border-b border-divider py-5"],
+                                        )}>
+                                        <Text
+                                            className={twMerge([
+                                                "font-semibold",
+                                                "text-lg",
+                                                "text-text-default",
+                                            ])}>
+                                            총 수량
+                                        </Text>
+                                        <Text className={twMerge(["text-lg", "text-text-default"])}>
+                                            50
+                                        </Text>
+                                    </View>
+                                    <View
+                                        className={twMerge(
+                                            ["flex-row", "justify-between"],
+                                            ["border-b border-divider py-5"],
+                                        )}>
+                                        <Text
+                                            className={twMerge([
+                                                "font-semibold",
+                                                "text-lg",
+                                                "text-text-default",
+                                            ])}>
+                                            사용가능
+                                        </Text>
+                                        <Text className={twMerge(["text-lg", "text-success-main"])}>
+                                            28
+                                        </Text>
+                                    </View>
+                                </>
+                            )}
+
                             <View
                                 className={twMerge(
                                     ["flex-row", "justify-between"],
@@ -61,41 +117,7 @@ function ManagerEquipmentDetailPage() {
                                         "font-semibold",
                                         "text-lg",
                                         "text-text-default",
-                                    ])}>
-                                    총 수량
-                                </Text>
-                                <Text className={twMerge(["text-lg", "text-text-default"])}>
-                                    50
-                                </Text>
-                            </View>
-                            <View
-                                className={twMerge(
-                                    ["flex-row", "justify-between"],
-                                    ["border-b border-divider py-5"],
-                                )}>
-                                <Text
-                                    className={twMerge([
-                                        "font-semibold",
-                                        "text-lg",
-                                        "text-text-default",
-                                    ])}>
-                                    사용가능
-                                </Text>
-                                <Text className={twMerge(["text-lg", "text-success-main"])}>
-                                    28
-                                </Text>
-                            </View>
-                            <View
-                                className={twMerge(
-                                    ["flex-row", "justify-between"],
-                                    ["border-b border-divider py-5"],
-                                )}>
-                                <Text
-                                    className={twMerge([
-                                        "font-semibold",
-                                        "text-lg",
-                                        "text-text-default",
-                                        "min-[100px]"
+                                        "min-[100px]",
                                     ])}>
                                     설명
                                 </Text>
