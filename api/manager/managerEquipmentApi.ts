@@ -10,7 +10,7 @@ import {
 import { EquipmentUnit } from "@/types/equipmentUnit";
 
 const createEquipment = async (input: CreateEquipmentInputType) => {
-    const response = await axiosInstance.post("/equipment/create", input);
+    const response = await axiosInstance.post("/equipment", input);
     return response.data.data;
 };
 
@@ -26,14 +26,17 @@ const deleteEquipment = async (equipmentId: number) => {
 const createUnit = async (input: CreateEquipmentUnitInputType): Promise<EquipmentUnit> => {
     const response = await axiosInstance.post("/equipment-unit", input);
     return response.data.data;
-}
+};
 
-const updateUnit = async (unitId: number, input: UpdateEquipmentUnitInputType): Promise<EquipmentUnit> => {
+const updateUnit = async (
+    unitId: number,
+    input: UpdateEquipmentUnitInputType,
+): Promise<EquipmentUnit> => {
     const response = await axiosInstance.patch(`/equipment-unit/${unitId}`, input);
     return response.data.data;
-}
+};
 
-const deleteUnit = async (unitId: number)=> {
+const deleteUnit = async (unitId: number) => {
     await axiosInstance.delete(`/equipment-unit/${unitId}`);
 };
 

@@ -14,7 +14,7 @@ function ManagerRentalPage() {
         <View className={"flex-1"}>
             <MainHeader title={"대여 요청 관리"} />
             <ScrollView className={"flex-1"} contentContainerClassName={"flex-grow"}>
-                <View className={"px-[30px] py-8 bg-background-default relative"}>
+                <View className={"px-[30px] py-8 bg-background-default relative flex-1"}>
                     <View>
                         <TextInput
                             className={twMerge(
