@@ -89,86 +89,88 @@ function UserMainPage() {
     ];
 
     return (
-        <ScrollView className="flex-1 bg-background-default">
+        <View className={"flex-1 bg-background-default"}>
             <MainHeader variant={"userMain"} onMenuPress={() => {}} />
+            <ScrollView className={"flex-1"} contentContainerClassName={"flex-grow"}>
+                <View className={"px-[30px] py-8 bg-background-default"}>
+                    <Text className={"font-pretendard text-lg text-text-default"}>안녕하세요</Text>
 
-            <View className={"px-[30px] py-8 bg-background-default"}>
-                <Text className={"font-pretendard text-lg text-text-default"}>안녕하세요</Text>
+                    <View className={"mt-4 flex-row gap-3 items-center"}>
+                        <Text className={"font-pretendard-semibold text-xl text-text-default"}>
+                            {userName}님
+                        </Text>
 
-                <View className={"mt-4 flex-row gap-3 items-center"}>
-                    <Text className={"font-pretendard-semibold text-xl text-text-default"}>
-                        {userName}님
-                    </Text>
+                        <Badge status={memberRoleText} />
+                    </View>
 
-                    <Badge status={memberRoleText} />
-                </View>
+                    <View className={"mt-5 flex-row justify-between flex-wrap gap-2"}>
+                        {summaryCards.map((item, i) => (
+                            <Pressable
+                                key={i}
+                                onPress={() => router.push(item.route as any)}
+                                className={twMerge(
+                                    "w-[48%] h-[120px] rounded-[18px] p-4 justify-between active:opacity-90",
+                                    item.background,
+                                )}>
+                                <View className={"flex-row justify-between items-center"}>
+                                    <Image source={item.logo} style={{ width: 36, height: 36 }} />
 
-                <View className={"mt-5 flex-row justify-between flex-wrap gap-2"}>
-                    {summaryCards.map((item, i) => (
-                        <Pressable
-                            key={i}
-                            onPress={() => router.push(item.route as any)}
-                            className={twMerge(
-                                "w-[48%] h-[120px] rounded-[18px] p-4 justify-between active:opacity-90",
-                                item.background,
-                            )}>
-                            <View className={"flex-row justify-between items-center"}>
-                                <Image source={item.logo} style={{ width: 36, height: 36 }} />
+                                    <Text className={"font-pretendard-semibold text-lg text-white"}>
+                                        {item.title}
+                                    </Text>
+                                </View>
 
-                                <Text className={"font-pretendard-semibold text-lg text-white"}>
-                                    {item.title}
-                                </Text>
-                            </View>
-
-                            <Text className={"font-pretendard-bold text-xl text-white self-end"}>
-                                {item.number}
-                            </Text>
-                        </Pressable>
-                    ))}
-                </View>
-
-                <View className={"mt-8 flex-row justify-between items-center"}>
-                    <Text className={"font-pretendard-medium text-xl"}>내 대여 현황</Text>
-
-                    <Pressable onPress={() => router.push("/user/rental" as any)}>
-                        <View className={"flex-row gap-2 items-center"}>
-                            <Text className={"text-text-secondary"}>전체 보기</Text>
-
-                            <Image
-                                source={require("@/assets/images/common/arrow_forward.png")}
-                                style={{ width: 18, height: 18 }}
-                            />
-                        </View>
-                    </Pressable>
-                </View>
-
-                <View className={"mt-3 bg-background-paper rounded-[16px] overflow-hidden"}>
-                    {mockRentalStatusList.map((item, i) => (
-                        <View
-                            key={"rental" + i}
-                            className={twMerge(
-                                "py-5 px-5 border-b border-divider flex-row justify-between items-center",
-                                i === mockRentalStatusList.length - 1 && "border-b-0",
-                            )}>
-                            <View>
                                 <Text
-                                    className={
-                                        "font-pretendard-semibold text-lg text-text-default mb-1"
-                                    }>
-                                    {item.equipment}
+                                    className={"font-pretendard-bold text-xl text-white self-end"}>
+                                    {item.number}
                                 </Text>
+                            </Pressable>
+                        ))}
+                    </View>
 
-                                <Text className={"font-pretendard text-text-secondary"}>
-                                    {item.desc}
-                                </Text>
+                    <View className={"mt-8 flex-row justify-between items-center"}>
+                        <Text className={"font-pretendard-medium text-xl"}>내 대여 현황</Text>
+
+                        <Pressable onPress={() => router.push("/user/rental" as any)}>
+                            <View className={"flex-row gap-2 items-center"}>
+                                <Text className={"text-text-secondary"}>전체 보기</Text>
+
+                                <Image
+                                    source={require("@/assets/images/common/arrow_forward.png")}
+                                    style={{ width: 18, height: 18 }}
+                                />
                             </View>
+                        </Pressable>
+                    </View>
 
-                            <Badge status={item.status} />
-                        </View>
-                    ))}
+                    <View className={"mt-3 bg-background-paper rounded-[16px] overflow-hidden"}>
+                        {mockRentalStatusList.map((item, i) => (
+                            <View
+                                key={"rental" + i}
+                                className={twMerge(
+                                    "py-5 px-5 border-b border-divider flex-row justify-between items-center",
+                                    i === mockRentalStatusList.length - 1 && "border-b-0",
+                                )}>
+                                <View>
+                                    <Text
+                                        className={
+                                            "font-pretendard-semibold text-lg text-text-default mb-1"
+                                        }>
+                                        {item.equipment}
+                                    </Text>
+
+                                    <Text className={"font-pretendard text-text-secondary"}>
+                                        {item.desc}
+                                    </Text>
+                                </View>
+
+                                <Badge status={item.status} />
+                            </View>
+                        ))}
+                    </View>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </View>
     );
 }
 

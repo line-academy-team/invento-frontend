@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { useState } from "react";
 import Badge from "@/components/common/Badge/Badge";
 import { useRouter, Href } from "expo-router";
+import MainHeader from "@/components/layout/MainHeader";
 
 export default function UserRentalListPage() {
     const router = useRouter();
@@ -53,12 +54,7 @@ export default function UserRentalListPage() {
 
     return (
         <View className={"flex-1 bg-background-default"}>
-            <View className="bg-white pt-14 pb-4 px-[30px]">
-                <Text className="font-pretendard-bold text-2xl text-text-main mt-4">
-                    내 대여 목록
-                </Text>
-            </View>
-
+            <MainHeader title={"내 대여 목록"} />
             <ScrollView className={"flex-1"} contentContainerClassName={"flex-grow pb-[120px]"}>
                 <View className={"flex-1 px-[30px] py-8"}>
                     <View className="mb-[30px] relative">
