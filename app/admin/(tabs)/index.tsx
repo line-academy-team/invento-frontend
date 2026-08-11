@@ -18,8 +18,6 @@ function AdminMainPage() {
 
     const user = authUser?.user;
 
-    const today = new Date();
-
     useEffect(() => {
         const loadAdmin = async () => {
             try {
@@ -42,6 +40,8 @@ function AdminMainPage() {
         };
         loadAdmin().then(() => {});
     }, []);
+
+    const todayDate = new Date().toISOString().split("T")[0];
 
     const dashboardData = [
         {
@@ -85,7 +85,8 @@ function AdminMainPage() {
                 </View>
             ),
             title: "오늘 가입 회원",
-            count: userList.filter(u => u.createdAt === String(today)).length,
+            count: userList.filter(u => u.createdAt && u.createdAt.split("T")[0] === todayDate)
+                .length,
             subTitle: "오늘 신규 가입 회원 수",
         },
     ];
@@ -106,7 +107,7 @@ function AdminMainPage() {
                         <View
                             key={i}
                             className={twMerge(
-                                "w-[48%] h-[120px] rounded-[18px] p-4 items-center",
+                                "w-[48%] h-[120px] rounded-[18px] p-4",
                                 "border border-border bg-background-paper",
                             )}>
                             <View className={"flex-row items-center gap-2"}>
