@@ -1,4 +1,4 @@
-import { Alert, Platform, ScrollView, Text, View } from "react-native";
+import { Alert, Image, Platform, Pressable, ScrollView, Text, View } from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
 import { useUserStore } from "@/stores/user/useUserStore";
 import { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import Badge from "@/components/common/Badge/Badge";
 import { twMerge } from "tailwind-merge";
 import { FiUsers } from "react-icons/fi";
 import { AntDesign, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 function AdminMainPage() {
     const { authUser } = useUserStore();
@@ -95,7 +96,9 @@ function AdminMainPage() {
         <ScrollView>
             <MainHeader variant={"adminMain"} onMenuPress={() => {}} />
             <View className={"flex-1 px-[30px] py-8 bg-background-default"}>
-                <Text className={"font-pretendard-medium text-lg text-text-default"}>안녕하세요</Text>
+                <Text className={"font-pretendard-medium text-lg text-text-default"}>
+                    안녕하세요
+                </Text>
                 <View className={"flex-row gap-3 items-center"}>
                     <Text className={"font-pretendard-bold text-2xl text-text-default"}>
                         {user?.name || "관리자"}님
@@ -107,22 +110,97 @@ function AdminMainPage() {
                         <View
                             key={i}
                             className={twMerge(
-                                "w-[48%] h-[120px] rounded-[18px] p-4",
-                                "border border-border bg-background-paper",
+                                "w-[48%] h-[120px] rounded-[18px] p-4 justify-between",
+                                "border border-divider bg-background-paper",
                             )}>
-                            <View className={"flex-row items-center gap-2"}>
+                            <View className="flex-row gap-2.5 items-center">
                                 {item.logo}
-                                <View>
-                                    <Text className="font-pretendard-medium text-sm">
-                                        {item.title}
-                                    </Text>
-                                    <Text className="font-pretendard-bold text-[28px]">
-                                        {item.count}
-                                    </Text>
-                                </View>
+
+                                <Text className="font-pretendard-semibold text-lg">
+                                    {item.title}
+                                </Text>
+                            </View>
+                            <View className="flex-row justify-between items-end">
+                                <Text className="font-pretendard-semibold text-text-secondary text-xs">
+                                    {item.subTitle}
+                                </Text>
+                                <Text className="font-pretendard-bold text-2xl">{item.count}</Text>
                             </View>
                         </View>
                     ))}
+                </View>
+
+                <View className="mt-8 flex-row justify-between flex-wrap gap-2">
+                    <View className="w-[48%]">
+                        <View className={"flex-row justify-between items-center"}>
+                            <Text className={"font-pretendard-medium text-xl"}>최근 가입 회원</Text>
+
+                            <Pressable onPress={() => router.push("/admin/user" as any)}>
+                                <View className={"flex-row gap-2 items-center"}>
+                                    <Text className={"text-text-secondary"}>All</Text>
+
+                                    <Image
+                                        source={require("@/assets/images/common/arrow_forward.png")}
+                                        style={{ width: 18, height: 18 }}
+                                    />
+                                </View>
+                            </Pressable>
+                        </View>
+
+                        <View className={"mt-3 bg-background-paper rounded-[16px] overflow-hidden"}>
+                            {userList.slice(0, 5).map((item, i) => (
+                                <View
+                                    key={i}
+                                    className="py-5 px-5 border-b border-divider flex-row gap-2 items-center">
+                                    <Image
+                                        source={require("@/assets/images/common/user.png")}
+                                        style={{ width: 35, height: 35 }}
+                                    />
+
+                                    <View>
+                                        <Text className="font-pretendard-semibold text-sm">
+                                            {item.name}
+                                        </Text>
+                                        <Text
+                                            className={
+                                                "font-pretendard text-xs text-text-secondary"
+                                            }>
+                                            {item.email}
+                                        </Text>
+                                        <Text
+                                            className={
+                                                "font-pretendard text-xs text-text-secondary"
+                                            }>
+                                            {item.createdAt?.slice(0, 10)}
+                                        </Text>
+                                    </View>
+                                    <Text></Text>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+
+                    <View className="w-[48%]">
+                        <View className={"flex-row justify-between items-center"}>
+                            <Text className={"font-pretendard-medium text-xl"}>최근 생성 조직</Text>
+
+                            <Pressable onPress={() => router.push("/admin/organization" as any)}>
+                                <View className={"flex-row gap-2 items-center"}>
+                                    <Text className={"text-text-secondary"}>All</Text>
+
+                                    <Image
+                                        source={require("@/assets/images/common/arrow_forward.png")}
+                                        style={{ width: 18, height: 18 }}
+                                    />
+                                </View>
+                            </Pressable>
+                        </View>
+
+                        <View
+                            className={
+                                "mt-3 bg-background-paper rounded-[16px] overflow-hidden"
+                            }></View>
+                    </View>
                 </View>
             </View>
         </ScrollView>
