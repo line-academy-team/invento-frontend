@@ -208,6 +208,4 @@ function ManagerRentalPage() {
         </View>
     );
 }
-
-
 export default ManagerRentalPage;
