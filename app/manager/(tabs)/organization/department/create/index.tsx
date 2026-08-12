@@ -13,18 +13,6 @@ import {
 import MainHeader from "@/components/layout/MainHeader";
 import Button from "@/components/common/Button/Button";
 import { Ionicons, Feather } from "@expo/vector-icons";
-
-interface Department {
-    id: number;
-    name: string;
-    createdAt: string;
-}
-
-const INITIAL_DEPARTMENTS: Department[] = [
-    { id: 1, name: "관리부", createdAt: "2021-07-01 생성" },
-    { id: 2, name: "디자인1팀", createdAt: "2026-07-20 생성" },
-    { id: 3, name: "회계팀", createdAt: "2026-07-20 생성" },
-];
 import ownerDepartmentApi, { Department } from "@/api/owner/ownerDepartmentApi";
 
 export default function DepartmentCreatePage() {
@@ -37,7 +25,6 @@ export default function DepartmentCreatePage() {
         fetchDepartments();
     }, []);
 
-    const handleCreateDepartment = () => {
     const fetchDepartments = async () => {
         try {
             const data = await ownerDepartmentApi.getDepartmentList();
@@ -54,11 +41,6 @@ export default function DepartmentCreatePage() {
     const handleCreateDepartment = async () => {
         if (!newDeptName.trim()) return;
 
-        const newDept: Department = {
-            id: Date.now(),
-            name: newDeptName,
-            createdAt: new Date().toISOString().split("T")[0] + " 생성",
-        };
         try {
             setIsLoading(true);
             await ownerDepartmentApi.createDepartment(newDeptName.trim());
@@ -101,6 +83,8 @@ export default function DepartmentCreatePage() {
     };
 
     const formatDate = (dateString: string) => {
+        // 방어 로직: dateString이 없을 경우 빈 문자열 반환
+        if (!dateString) return "";
         return dateString.split("T")[0] + " 생성";
     };
 

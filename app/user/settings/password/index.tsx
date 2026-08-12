@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import MainHeader from "@/components/layout/MainHeader";
 import PasswordForm from "@/components/setting/PasswordForm";
 
-function ManagerUpdatePasswordPage() {
+function UpdatePasswordPage() {
     const router = useRouter();
 
     return (
@@ -17,14 +17,14 @@ function ManagerUpdatePasswordPage() {
                     title={"비밀번호 변경"}
                     isBackPress
                     onBackPress={() => {
-                        router.back();
+                        router.push("/user/my");
                     }}
                 />
 
-                <PasswordForm onSuccess={() => router.back()} />
+                <PasswordForm onSuccess={() => router.push("/user/my")} />
             </View>
         </KeyboardAvoidingView>
     );
 }
 
-export default ManagerUpdatePasswordPage;
+export default UpdatePasswordPage;

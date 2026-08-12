@@ -200,11 +200,8 @@ export default function DepartmentTransferPage() {
                                     </Pressable>
 
                                     {isDropdownOpen && (
-                                        <View className="absolute top-[60px] left-0 right-0 bg-background-paper border border-gray-200 rounded-2xl shadow-md overflow-hidden z-20">
-                                            {departments.map((dept, index) => {
                                         <View className="absolute top-[60px] left-0 right-0 bg-background-paper border border-divider rounded-2xl shadow-md overflow-hidden z-20">
-                                            {DEPARTMENTS.map((dept, index) => {
-
+                                            {departments.map((dept, index) => {
                                                 const isSelected = targetDept?.id === dept.id;
                                                 return (
                                                     <Pressable
@@ -215,8 +212,6 @@ export default function DepartmentTransferPage() {
                                                         }}
                                                         className={`p-4 ${isSelected ? "bg-primary-main" : "bg-background-paper"} ${
                                                             index !== departments.length - 1
-                                                                ? "border-b border-gray-100"
-                                                            index !== DEPARTMENTS.length - 1
                                                                 ? "border-b border-divider"
                                                                 : ""
                                                         }`}>

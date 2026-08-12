@@ -83,7 +83,6 @@ function ManagerUserPage() {
     const { user, memberInfo } = authUser;
     const profileImageUrl = user.imageUrl ?? null;
 
-    // OWNER와 MANAGER 전용
     if (!memberInfo || (memberInfo.role !== "OWNER" && memberInfo.role !== "MANAGER")) {
         return (
             <View className={"flex-1"}>
