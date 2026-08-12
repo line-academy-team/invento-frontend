@@ -144,7 +144,7 @@ function UserMyInfoPage() {
                         </View>
 
                         <Button
-                            onPress={() => router.push("/user/settings/profile" as any)}
+                            onPress={() => router.push("/user/settings/profile")}
                             className="w-24 self-end p-2 mb-2">
                             정보수정
                         </Button>
@@ -170,7 +170,7 @@ function UserMyInfoPage() {
                     </View>
 
                     <Button
-                        onPress={() => router.push("/user/settings/password" as any)}
+                        onPress={() => router.push("/user/settings/password")}
                         className={twMerge(["h-[60px]", "mt-10"])}
                         textClassName={"text-xl"}
                         variant={"outline"}>

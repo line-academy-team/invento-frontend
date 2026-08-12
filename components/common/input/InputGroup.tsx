@@ -6,7 +6,7 @@ import { useState } from "react";
 
 interface InputGroupProps extends TextInputProps {
     label: string;
-    infoMessage: string;
+    infoMessage?: string;
     errorMessage?: string;
     isPassword?: boolean;
 }
@@ -55,9 +55,9 @@ function InputGroup({
             )}
             {errorMessage ? (
                 <ErrorMessage>{errorMessage}</ErrorMessage>
-            ) : (
+            ) : infoMessage ? (
                 <InfoMessage>{infoMessage}</InfoMessage>
-            )}
+            ) : null}
         </View>
     );
 }
