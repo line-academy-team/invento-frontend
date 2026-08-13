@@ -151,10 +151,10 @@ function AdminMainPage() {
                             {userList.slice(0, 5).map((item, i) => (
                                 <View
                                     key={i}
-                                    className="py-5 px-5 border-b border-divider flex-row gap-2 items-center">
+                                    className="py-5 px-5 border-b border-divider flex-row gap-4 items-center">
                                     <Image
                                         source={require("@/assets/images/common/user.png")}
-                                        style={{ width: 35, height: 35 }}
+                                        style={{ width: 45, height: 45 }}
                                     />
 
                                     <View>
@@ -174,9 +174,23 @@ function AdminMainPage() {
                                             {item.createdAt?.slice(0, 10)}
                                         </Text>
                                     </View>
-                                    <Text></Text>
                                 </View>
                             ))}
+                            <Pressable onPress={() => router.push("/admin/user" as any)}>
+                                <View
+                                    className={
+                                        "flex-row py-3 px-5 gap-2 justify-center items-center"
+                                    }>
+                                    <Text className={"font-pretendard-semibold text-primary-main"}>
+                                        더 보기
+                                    </Text>
+
+                                    <Image
+                                        source={require("@/assets/images/common/arrow_forward.png")}
+                                        style={{ width: 12, height: 12, tintColor: "#7C3AED" }}
+                                    />
+                                </View>
+                            </Pressable>
                         </View>
                     </View>
 
@@ -196,10 +210,54 @@ function AdminMainPage() {
                             </Pressable>
                         </View>
 
-                        <View
-                            className={
-                                "mt-3 bg-background-paper rounded-[16px] overflow-hidden"
-                            }></View>
+                        <View className={"mt-3 bg-background-paper rounded-[16px] overflow-hidden"}>
+                            {orgList.slice(0, 5).map((item, i) => (
+                                <View
+                                    key={i}
+                                    className="py-5 px-5 border-b border-divider flex-row gap-4 items-center">
+                                    <View className="w-[50px] h-[50px] justify-center items-center bg-text-secondary rounded-full">
+                                        <MaterialIcons
+                                            name={"domain"}
+                                            size={35}
+                                            className="text-text-light"
+                                        />
+                                    </View>
+
+                                    <View>
+                                        <Text className="font-pretendard-semibold text-sm">
+                                            {item.name}
+                                        </Text>
+                                        <Text
+                                            className={
+                                                "font-pretendard text-xs text-text-secondary"
+                                            }>
+                                            {item.creator.name}
+                                        </Text>
+                                        <Text
+                                            className={
+                                                "font-pretendard text-xs text-text-secondary"
+                                            }>
+                                            {item.createdAt?.slice(0, 10)}
+                                        </Text>
+                                    </View>
+                                </View>
+                            ))}
+                            <Pressable onPress={() => router.push("/admin/organization" as any)}>
+                                <View
+                                    className={
+                                        "flex-row py-3 px-5 gap-2 justify-center items-center"
+                                    }>
+                                    <Text className={"font-pretendard-semibold text-primary-main"}>
+                                        더 보기
+                                    </Text>
+
+                                    <Image
+                                        source={require("@/assets/images/common/arrow_forward.png")}
+                                        style={{ width: 12, height: 12, tintColor: "#7C3AED" }}
+                                    />
+                                </View>
+                            </Pressable>
+                        </View>
                     </View>
                 </View>
             </View>
