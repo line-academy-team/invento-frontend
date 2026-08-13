@@ -7,7 +7,7 @@ export type EquipmentStatusType = "AVAILABLE" | "BORROWED" | "LOST" | "BROKEN" |
 export interface Equipment {
     id: number;
     organizationId: number;
-    departmentId: number | null
+    departmentId: number | null;
     name: string;
     category: string | null;
     description: string | null;

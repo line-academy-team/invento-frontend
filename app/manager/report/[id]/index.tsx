@@ -1,16 +1,49 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ScrollView, Text, View, TextInput, Pressable, Alert, Animated } from "react-native";
+import {
+    ActivityIndicator,
+    Alert,
+    Animated,
+    Pressable,
+    ScrollView,
+    Text,
+    TextInput,
+    View,
+} from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
-import { useRouter } from "expo-router";
+import { Href, useLocalSearchParams, useRouter } from "expo-router";
 import { twMerge } from "tailwind-merge";
 import { Feather } from "@expo/vector-icons";
 import Button from "@/components/common/Button/Button";
 import Badge from "@/components/common/Badge/Badge";
+import managerReportApi from "@/api/manager/managerReportApi";
+import managerRentalApi from "@/api/manager/managerRentalApi";
+import { useUserStore } from "@/stores/user/useUserStore";
+import { Report, ReportTypes } from "@/types/report";
+import { OrgRental } from "@/types/rental";
+import { formatDate } from "@/utils/date";
+
+const reportTypeLabels: Record<ReportTypes, string> = {
+    LOST: "분실",
+    BROKEN: "고장",
+    SHORTAGE: "부족",
+    EXCESS: "초과",
+    ETC: "기타",
+};
+
+const reportTypesByLabel = Object.fromEntries(
+    Object.entries(reportTypeLabels).map(([type, label]) => [label, type]),
+) as Record<string, ReportTypes>;
 
 function ManagerDamageReportDetailPage() {
     const router = useRouter();
+    const { id } = useLocalSearchParams<{ id: string }>();
+    const organizationId = useUserStore(state => state.authUser?.memberInfo?.organizationId);
 
     const [isCompleted, setIsCompleted] = useState(false);
+    const [report, setReport] = useState<Report | null>(null);
+    const [rental, setRental] = useState<OrgRental | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [isRentalInfoOpen, setIsRentalInfoOpen] = useState(false);
     const [rentalContentHeight, setRentalContentHeight] = useState(0);
@@ -30,7 +63,7 @@ function ManagerDamageReportDetailPage() {
                 useNativeDriver: false,
             }).start();
         }
-    }, [isRentalInfoOpen, rentalContentHeight]);
+    }, [isRentalInfoOpen, rentalContentHeight, rentalInfoHeight]);
 
     const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("분실");
@@ -52,22 +85,92 @@ function ManagerDamageReportDetailPage() {
                 useNativeDriver: false,
             }).start();
         }
-    }, [isCategoryDropdownOpen, dropdownContentHeight]);
+    }, [isCategoryDropdownOpen, dropdownContentHeight, dropdownHeight]);
 
-    const [replyContent, setReplyContent] = useState(
-        "네, 확인했습니다. 새로운 기기로 교체해 드리겠습니다.",
-    );
+    const [replyContent, setReplyContent] = useState("");
 
-    const handleConfirm = () => {
-        Alert.alert("확인", "처리가 완료되었습니다.", [
-            {
-                text: "확인",
-                onPress: () => {
-                    setIsCompleted(true);
+    useEffect(() => {
+        const reportId = Number(id);
+        if (!Number.isInteger(reportId)) {
+            setIsLoading(false);
+            return;
+        }
+
+        const loadData = async () => {
+            try {
+                const [reportData, rentalData] = await Promise.all([
+                    managerReportApi.getReportById(reportId),
+                    organizationId
+                        ? managerRentalApi.getOrgRentalRequestList(organizationId)
+                        : Promise.resolve([]),
+                ]);
+                setReport(reportData);
+                setIsCompleted(reportData.status === "COMPLETED");
+                setSelectedCategory(reportTypeLabels[reportData.type]);
+                setReplyContent(reportData.result || "");
+                setRental(
+                    rentalData.find(
+                        item =>
+                            item.equipmentId === reportData.equipmentId &&
+                            item.memberId === reportData.reporterId,
+                    ) || null,
+                );
+            } catch (error) {
+                console.error(error);
+                Alert.alert("조회 실패", "파손 신고 상세를 불러오지 못했습니다.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadData();
+    }, [id, organizationId]);
+
+    const handleConfirm = async () => {
+        if (!report || !replyContent.trim()) {
+            Alert.alert("알림", "답변 내용을 입력해주세요.");
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            const updatedReport = await managerReportApi.processReport(report.id, {
+                type: reportTypesByLabel[selectedCategory],
+                result: replyContent.trim(),
+            });
+            setReport(current => (current ? { ...current, ...updatedReport } : current));
+            Alert.alert("확인", "처리가 완료되었습니다.", [
+                {
+                    text: "확인",
+                    onPress: () => router.replace("/manager/report" as Href),
                 },
-            },
-        ]);
+            ]);
+        } catch (error) {
+            console.error(error);
+            Alert.alert("처리 실패", "파손 신고 답변 처리 중 오류가 발생했습니다.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
+
+    if (isLoading || !report) {
+        return (
+            <View className="flex-1 bg-white">
+                <MainHeader
+                    title="파손신고 상세"
+                    isBackPress
+                    onBackPress={() => router.navigate("/manager/report" as Href)}
+                />
+                <View className="flex-1 items-center justify-center">
+                    {isLoading ? (
+                        <ActivityIndicator color="#7C3AED" />
+                    ) : (
+                        <Text className="text-text-secondary">신고 내역을 찾을 수 없습니다.</Text>
+                    )}
+                </View>
+            </View>
+        );
+    }
 
     return (
         <View className={"flex-1 bg-white"}>
@@ -75,18 +178,9 @@ function ManagerDamageReportDetailPage() {
                 title={"파손신고 상세"}
                 isBackPress
                 onBackPress={() => {
-                    router.navigate("/manager/report");
+                    router.navigate("/manager/report" as Href);
                 }}
             />
-
-            {/* 수정해야 하는 곳 */}
-            {/*<Pressable*/}
-            {/*    onPress={() => setIsCompleted(!isCompleted)}*/}
-            {/*    className="bg-gray-800 p-2 items-center">*/}
-            {/*    <Text className="text-white text-sm">*/}
-            {/*        🔄 화면 상태 변경 테스트 (현재: {isCompleted ? "완료" : "대기"})*/}
-            {/*    </Text>*/}
-            {/*</Pressable>*/}
 
             <ScrollView className={"flex-1"} contentContainerClassName={"flex-grow"}>
                 <View className={"px-[30px] pt-1 pb-8 flex-1"}>
@@ -99,7 +193,7 @@ function ManagerDamageReportDetailPage() {
                                 )}>
                                 <Text className={"text-lg font-bold"}>파손 정보</Text>
 
-                               <Badge status={isCompleted ? "답변완료" : "답변대기"} />
+                                <Badge status={isCompleted ? "답변완료" : "답변대기"} />
                             </View>
                             <View
                                 className={twMerge([
@@ -111,7 +205,9 @@ function ManagerDamageReportDetailPage() {
                                 <Text className={"text-gray-500 text-base font-semibold"}>
                                     신청일시
                                 </Text>
-                                <Text className={"text-gray-800 text-base"}>2026.07.25 14:30</Text>
+                                <Text className={"text-gray-800 text-base"}>
+                                    {formatDate(report.createdAt, true)}
+                                </Text>
                             </View>
                             <View
                                 className={twMerge([
@@ -124,7 +220,8 @@ function ManagerDamageReportDetailPage() {
                                     신청자
                                 </Text>
                                 <Text className={"text-gray-800 text-base"}>
-                                    김행사 대리 (010-1234-5678)
+                                    {report.reporter?.user.name || "사용자"} (
+                                    {report.reporter?.user.email || "-"})
                                 </Text>
                             </View>
                             <View
@@ -137,7 +234,10 @@ function ManagerDamageReportDetailPage() {
                                 <Text className={"text-gray-500 text-base font-semibold"}>
                                     소속
                                 </Text>
-                                <Text className={"text-gray-800 text-base"}>마케팅 / 사원</Text>
+                                <Text className={"text-gray-800 text-base"}>
+                                    {report.reporter?.department?.name || "미지정"} /{" "}
+                                    {report.reporter?.role || "MEMBER"}
+                                </Text>
                             </View>
                         </View>
 
@@ -145,7 +245,7 @@ function ManagerDamageReportDetailPage() {
                             <Text className={"pb-3 text-lg font-bold"}>파손사유</Text>
                             <View className={"bg-gray-100 rounded-2xl p-5 mb-3"}>
                                 <Text className={"text-gray-800 text-base leading-6"}>
-                                    노트북 전원은 들어오는데 화면이{"\n"}보이지 않습니다.
+                                    {report.content}
                                 </Text>
                             </View>
                         </View>
@@ -174,13 +274,13 @@ function ManagerDamageReportDetailPage() {
                                             "text-lg",
                                             "font-bold",
                                         ])}>
-                                        노트북01
+                                        {report.equipment?.name || report.title}
                                     </Text>
                                     <Text className={"py-1 text-sm text-gray-500 font-medium"}>
-                                        IT 기기 / 노트북
+                                        {report.equipment?.category || "기타"}
                                     </Text>
                                     <Text className={"text-sm text-gray-500 font-medium"}>
-                                        수량 2
+                                        수량 {rental?.quantity || 1}
                                     </Text>
                                 </View>
                             </View>
@@ -218,7 +318,7 @@ function ManagerDamageReportDetailPage() {
                                                 신청일시
                                             </Text>
                                             <Text className={"text-gray-800 text-sm"}>
-                                                2026.07.22 14:30
+                                                {formatDate(rental?.requestedAt, true)}
                                             </Text>
                                         </View>
                                         <View
@@ -229,7 +329,10 @@ function ManagerDamageReportDetailPage() {
                                                 대여기간
                                             </Text>
                                             <Text className={"text-gray-800 text-sm"}>
-                                                2026.07.20 ~ 2026.07.28
+                                                {formatDate(
+                                                    rental?.approvedAt || rental?.requestedAt,
+                                                )}{" "}
+                                                ~ {formatDate(rental?.dueAt)}
                                             </Text>
                                         </View>
                                         <View
@@ -240,7 +343,7 @@ function ManagerDamageReportDetailPage() {
                                                 사용목적
                                             </Text>
                                             <Text className={"text-gray-800 text-sm"}>
-                                                코엑스 행사 준비
+                                                {rental?.reason || "-"}
                                             </Text>
                                         </View>
                                         <View className={"flex-row justify-between py-2 mt-1"}>
@@ -254,7 +357,7 @@ function ManagerDamageReportDetailPage() {
                                                 className={
                                                     "text-gray-800 text-sm w-3/4 text-right leading-5"
                                                 }>
-                                                노트북 거치대도 함께 대여요청{"\n"}드립니다.
+                                                {rental?.reason || "-"}
                                             </Text>
                                         </View>
 
@@ -266,7 +369,7 @@ function ManagerDamageReportDetailPage() {
                                                 예상 반납일
                                             </Text>
                                             <Text className={"text-gray-800 text-base font-medium"}>
-                                                2026.07.30(목)
+                                                {formatDate(rental?.dueAt)}
                                             </Text>
                                         </View>
                                     </View>
@@ -378,6 +481,7 @@ function ManagerDamageReportDetailPage() {
                             <Button
                                 className={"h-[60px] w-full bg-purple-600 rounded-xl"}
                                 textClassName={"text-xl text-white font-bold"}
+                                isLoading={isSubmitting}
                                 onPress={handleConfirm}>
                                 확인
                             </Button>

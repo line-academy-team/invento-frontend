@@ -28,4 +28,23 @@ export interface Report {
     result?: string;
     createdAt: string;
     updatedAt?: string;
+
+    reporter?: {
+        id: number;
+        role?: string;
+        user: {
+            name: string;
+            email?: string;
+        };
+        department?: {
+            id: number;
+            name: string;
+        } | null;
+    };
+    equipment?: {
+        id: number;
+        name: string;
+        imageUrl: string | null;
+        category: string | null;
+    } | null;
 }

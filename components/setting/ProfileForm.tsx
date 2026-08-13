@@ -12,7 +12,7 @@ import ErrorMessage from "@/components/common/form/ErrorMessage";
 import Button from "@/components/common/Button/Button";
 
 interface ProfileFormProps {
-    onSuccess: () => void; // 완료 후 부모(라우트)에게 알림
+    onSuccess: () => void;
 }
 
 function ProfileForm({ onSuccess }: ProfileFormProps) {
@@ -56,7 +56,7 @@ function ProfileForm({ onSuccess }: ProfileFormProps) {
 
             if (Platform.OS === "web") {
                 Alert.alert("수정 완료", "수정이 완료되었습니다.");
-                onSuccess(); // 라우트 페이지에서 넘겨준 뒤로 가기 실행
+                onSuccess();
                 return;
             }
 
@@ -81,7 +81,6 @@ function ProfileForm({ onSuccess }: ProfileFormProps) {
         Alert.alert("안내", "이미지 업로드 서버 연결 후 사용할 수 있습니다.");
     };
 
-    // @ts-ignore
     return (
         <ScrollView className="flex-1" contentContainerClassName="flex-grow">
             <View className="mx-5 mt-8">

@@ -1,6 +1,11 @@
 import axiosInstance from "@/api/axiosInstance";
 
-export type DashboardRentalStatus = "REQUESTED" | "APPROVED" | "REJECTED" | "BORROWED" | "RETURNED";
+export type DashboardRentalStatus =
+    | "REQUESTED"
+    | "REJECTED"
+    | "BORROWED"
+    | "RETURNED"
+    | "CANCELLED";
 
 export interface ManagerDashboardSummary {
     totalEquipment: number;
@@ -22,8 +27,8 @@ export interface ManagerDashboardData {
     recentRentals: ManagerDashboardRecentRental[];
 }
 
-const getDashboard = async (organizationId: number): Promise<ManagerDashboardData> => {
-    const response = await axiosInstance.get(`/manager/dashboard/${organizationId}`);
+const getDashboard = async (): Promise<ManagerDashboardData> => {
+    const response = await axiosInstance.get("/manager/dashboard");
     return response.data.data;
 };
 

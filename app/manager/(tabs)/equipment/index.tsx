@@ -1,4 +1,12 @@
-import { Image, ScrollView, TextInput, View, Text, Pressable } from "react-native";
+import {
+    ActivityIndicator,
+    Image,
+    ScrollView,
+    TextInput,
+    View,
+    Text,
+    Pressable,
+} from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
 import { twMerge } from "tailwind-merge";
 import { useEffect, useState } from "react";
@@ -6,6 +14,7 @@ import Badge from "@/components/common/Badge/Badge";
 import { useRouter } from "expo-router";
 import memberEquipmentApi from "@/api/member/memberEquipmentApi";
 import { Equipment, EquipmentStatusType } from "@/types/equipment";
+import { useIsFocused } from "@react-navigation/native";
 
 const categories = ["전체", "IT기기", "사무용품", "소모품", "기타"];
 
@@ -26,8 +35,11 @@ function ManagerEquipmentListPage() {
     const [equipments, setEquipments] = useState<Equipment[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
+    const isFocused = useIsFocused();
 
     useEffect(() => {
+        if (!isFocused) return;
+
         let cancelled = false;
 
         const timer = setTimeout(async () => {
@@ -61,7 +73,7 @@ function ManagerEquipmentListPage() {
             cancelled = true;
             clearTimeout(timer);
         };
-    }, [selected, search]);
+    }, [isFocused, selected, search]);
 
     return (
         <View className={"flex-1 bg-background-default relative"}>
@@ -106,9 +118,7 @@ function ManagerEquipmentListPage() {
                     <View className={"mt-6 rounded-[16px] bg-background-paper overflow-hidden"}>
                         {isLoading ? (
                             <View className={"p-8 items-center"}>
-                                <Text className={"text-text-secondary"}>
-                                    장비를 불러오는 중입니다.
-                                </Text>
+                                <ActivityIndicator color="#7C3AED" />
                             </View>
                         ) : errorMessage ? (
                             <View className={"p-8 items-center"}>

@@ -47,11 +47,18 @@ function Button({
             onPress={onPress}
             className={twMerge(
                 "w-full rounded-2xl items-center justify-center transition-colors duration-200",
-                buttonStyle,
+                !isDisabled && buttonStyle,
                 className,
+                isDisabled && buttonStyle,
             )}>
-            <Text className={twMerge("font-pretendard-bold", textStyle, textClassName)}>
-                {children}
+            <Text
+                className={twMerge(
+                    "font-pretendard-bold",
+                    !isDisabled && textStyle,
+                    textClassName,
+                    isDisabled && textStyle,
+                )}>
+                {isLoading ? "처리 중..." : children}
             </Text>
         </Pressable>
     );

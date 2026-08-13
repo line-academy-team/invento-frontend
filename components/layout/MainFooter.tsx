@@ -1,6 +1,6 @@
 import { View, Text, Pressable } from "react-native";
 import { twMerge } from "tailwind-merge";
-import { router, usePathname } from "expo-router";
+import { Href, router, usePathname } from "expo-router";
 import { FiHome, FiBox, FiClipboard, FiUser, FiSettings } from "react-icons/fi";
 import { IconType } from "react-icons";
 import { MdPeople } from "react-icons/md";
@@ -31,6 +31,7 @@ const userMenus: FooterMenu[] = [
         label: "대여",
         href: "/user/rental",
         icon: FiClipboard,
+        activePaths: ["/user/report"],
     },
     {
         label: "마이",
@@ -129,8 +130,7 @@ function MainFooter({ variant }: MainFooterProps) {
                 return (
                     <Pressable
                         key={menu.href}
-                        // @ts-ignore
-                        onPress={() => router.push(menu.href)}
+                        onPress={() => router.push(menu.href as Href)}
                         className="flex-1 items-center justify-center"
                         style={{
                             shadowColor: "#000000",

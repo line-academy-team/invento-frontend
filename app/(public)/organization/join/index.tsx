@@ -45,7 +45,10 @@ export default function OrganizationJoinPage() {
 
     const onSubmit = async (data: JoinFormInput) => {
         try {
-            await organizationApi.joinOrganization({ inviteCode: data.inviteCode, department: data.department });
+            await organizationApi.joinOrganization({
+                inviteCode: data.inviteCode,
+                department: data.department,
+            });
 
             Alert.alert("🎉 가입 신청 완료!", "단체 가입 신청 완료", [
                 {
@@ -53,7 +56,6 @@ export default function OrganizationJoinPage() {
                 },
             ]);
         } catch (error: any) {
-            console.log(error);
             setError("root", {
                 message: error.response?.data?.message || "올바르지 않은 초대코드입니다.",
             });
@@ -129,9 +131,7 @@ export default function OrganizationJoinPage() {
                                 </ErrorMessage>
                             ) : (
                                 <View className="mt-1.5">
-                                    <Text className={
-                                            "text-text-secondary text-sm font-pretendard"
-                                        }>
+                                    <Text className={"text-text-secondary text-sm font-pretendard"}>
                                         * 미입력 시 관리자가 부서를 배치합니다.
                                     </Text>
                                 </View>

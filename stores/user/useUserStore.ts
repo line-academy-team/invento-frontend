@@ -14,10 +14,8 @@ type UserState = {
 
     logout: () => Promise<void>;
 
-    // 이름, 프로필 이미지 등 사용자 정보 수정
     updateUserInfo: (userInfo: Partial<User>) => void;
 
-    // 단체, 부서, 권한 등의 멤버 정보 수정
     updateMemberInfo: (memberInfo: Partial<MemberInfo>) => void;
 
     restoreLogin: () => Promise<void>;
@@ -78,7 +76,6 @@ export const useUserStore = create<UserState>()(
                 });
             },
 
-            // 사용자 이름과 이미지 등을 수정
             updateUserInfo: userInfo =>
                 set(state => {
                     if (!state.authUser) {
@@ -96,7 +93,6 @@ export const useUserStore = create<UserState>()(
                     };
                 }),
 
-            // 단체, 부서, 역할 등의 멤버 정보 수정
             updateMemberInfo: memberInfo =>
                 set(state => {
                     if (!state.authUser || !state.authUser.memberInfo) {

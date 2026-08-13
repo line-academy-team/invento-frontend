@@ -12,7 +12,7 @@ import { UpdatePasswordInputType, updatePasswordSchema } from "@/schemas/user/up
 import userApi from "@/api/user/userApi";
 
 interface PasswordFormProps {
-    onSuccess: () => void; // 부모(라우트)에게 완료 상태를 알리는 함수
+    onSuccess: () => void;
 }
 
 export default function PasswordForm({ onSuccess }: PasswordFormProps) {
@@ -45,19 +45,17 @@ export default function PasswordForm({ onSuccess }: PasswordFormProps) {
 
             if (Platform.OS === "web") {
                 window.alert("비밀번호가 성공적으로 변경되었습니다.");
-                onSuccess(); // 페이지에서 넘겨준 뒤로 가기 실행
+                onSuccess();
                 return;
             }
 
             Alert.alert("성공", "비밀번호가 성공적으로 변경되었습니다.", [
                 {
                     text: "확인",
-                    onPress: onSuccess, // 페이지에서 넘겨준 뒤로 가기 실행
+                    onPress: onSuccess,
                 },
             ]);
         } catch (error) {
-            console.log(error);
-
             let errorMessage = "비밀번호 변경 중 오류가 발생했습니다.";
 
             if (isAxiosError(error)) {

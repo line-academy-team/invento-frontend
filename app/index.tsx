@@ -24,7 +24,6 @@ export default function IndexPage() {
 
         const initializeAuth = async () => {
             try {
-                // persist 복원이 끝나지 않은 경우
                 if (!useUserStore.persist.hasHydrated()) {
                     await new Promise<void>(resolve => {
                         const unsubscribe = useUserStore.persist.onFinishHydration(() => {
@@ -65,9 +64,6 @@ export default function IndexPage() {
                     return;
                 }
 
-                /*
-                 * 조직에 아직 가입하지 않은 사용자
-                 */
                 if (!memberInfo) {
                     router.replace("/organization/join");
                     return;
@@ -96,7 +92,6 @@ export default function IndexPage() {
                     router.replace("/organization/status");
                     return;
                 }
-                console.log(memberInfo);
                 switch (memberInfo.role) {
                     case "OWNER":
                     case "MANAGER":

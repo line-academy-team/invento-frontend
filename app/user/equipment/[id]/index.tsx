@@ -1,27 +1,58 @@
-import React from "react";
-import { Image, ScrollView, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import Badge from "@/components/common/Badge/Badge";
 import Button from "@/components/common/Button/Button";
 import { Ionicons } from "@expo/vector-icons";
 import { twMerge } from "tailwind-merge";
+import memberEquipmentApi from "@/api/member/memberEquipmentApi";
+import { Equipment } from "@/types/equipment";
 
 export default function UserEquipmentDetailPage() {
     const router = useRouter();
-    const { id } = useLocalSearchParams();
+    const { id } = useLocalSearchParams<{ id: string }>();
+    const [equipment, setEquipment] = useState<Equipment | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const mockData = {
-        imageURL:
-            "https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4",
-        name: "노트북01",
-        category: "IT기기",
-        totalQuantity: 50,
-        availableQuantity: 28,
-        description: "업무용 노트북입니다.",
-        department: "개발팀",
-        status: "이용가능",
-    };
+    useEffect(() => {
+        const equipmentId = Number(id);
+        if (!Number.isInteger(equipmentId)) {
+            setIsLoading(false);
+            return;
+        }
+
+        memberEquipmentApi
+            .getEquipmentById(equipmentId)
+            .then(setEquipment)
+            .catch(error => {
+                console.error(error);
+                Alert.alert("조회 실패", "장비 정보를 불러오지 못했습니다.");
+            })
+            .finally(() => setIsLoading(false));
+    }, [id]);
+
+    const status =
+        equipment?.status === "BROKEN"
+            ? "파손신고"
+            : equipment?.status === "BORROWED" || equipment?.availableQuantity === 0
+              ? "대여중"
+              : "이용가능";
+
+    if (isLoading || !equipment) {
+        return (
+            <View className="flex-1 bg-white">
+                <MainHeader title="장비 상세" isBackPress onBackPress={() => router.back()} />
+                <View className="flex-1 items-center justify-center">
+                    {isLoading ? (
+                        <ActivityIndicator color="#7C3AED" />
+                    ) : (
+                        <Text className="text-text-secondary">장비 정보를 찾을 수 없습니다.</Text>
+                    )}
+                </View>
+            </View>
+        );
+    }
 
     return (
         <View className={"flex-1 bg-white"}>
@@ -33,9 +64,9 @@ export default function UserEquipmentDetailPage() {
                         className={
                             "h-[200px] w-full rounded-2xl bg-background-default overflow-hidden items-center justify-center"
                         }>
-                        {mockData.imageURL ? (
+                        {equipment.imageUrl ? (
                             <Image
-                                source={{ uri: mockData.imageURL }}
+                                source={{ uri: equipment.imageUrl }}
                                 className={"w-full h-full"}
                                 resizeMode={"cover"}
                             />
@@ -50,8 +81,8 @@ export default function UserEquipmentDetailPage() {
                                 ["flex-row", "justify-between", "items-center"],
                                 ["py-5", "border-b", "border-text-secondary"],
                             )}>
-                            <Text className={"font-semibold text-2xl"}>{mockData.name}</Text>
-                            <Badge status={mockData.status} />
+                            <Text className={"font-semibold text-2xl"}>{equipment.name}</Text>
+                            <Badge status={status} />
                         </View>
 
                         <View>
@@ -71,7 +102,7 @@ export default function UserEquipmentDetailPage() {
                                     카테고리
                                 </Text>
                                 <Text className={twMerge(["text-lg", "text-text-default"])}>
-                                    {mockData.category}
+                                    {equipment.category || "기타"}
                                 </Text>
                             </View>
 
@@ -91,7 +122,7 @@ export default function UserEquipmentDetailPage() {
                                     총 수량
                                 </Text>
                                 <Text className={twMerge(["text-lg", "text-text-default"])}>
-                                    {mockData.totalQuantity}
+                                    {equipment.totalQuantity}
                                 </Text>
                             </View>
 
@@ -111,7 +142,7 @@ export default function UserEquipmentDetailPage() {
                                     사용가능
                                 </Text>
                                 <Text className={twMerge(["text-lg", "text-success-main"])}>
-                                    {mockData.availableQuantity}
+                                    {equipment.availableQuantity}
                                 </Text>
                             </View>
 
@@ -132,7 +163,7 @@ export default function UserEquipmentDetailPage() {
                                     설명
                                 </Text>
                                 <Text className={twMerge(["text-lg", "text-text-default"])}>
-                                    {mockData.description}
+                                    {equipment.description || "-"}
                                 </Text>
                             </View>
 
@@ -153,7 +184,7 @@ export default function UserEquipmentDetailPage() {
                                     보관 부서
                                 </Text>
                                 <Text className={twMerge(["text-lg", "text-text-default"])}>
-                                    {mockData.department}
+                                    {equipment.department?.name || "공용"}
                                 </Text>
                             </View>
                         </View>
@@ -165,6 +196,7 @@ export default function UserEquipmentDetailPage() {
                 <Button
                     className={"h-[60px] w-full"}
                     textClassName={"text-xl"}
+                    disabled={equipment.availableQuantity === 0 || equipment.status !== "AVAILABLE"}
                     onPress={() => router.push(`/user/equipment/${id}/rental`)}>
                     대여요청
                 </Button>

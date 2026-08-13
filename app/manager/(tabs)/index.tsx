@@ -1,21 +1,31 @@
-import { Alert, Image, Platform, Pressable, ScrollView, Text, View } from "react-native";
+import {
+    ActivityIndicator,
+    Alert,
+    Image,
+    Platform,
+    Pressable,
+    ScrollView,
+    Text,
+    View,
+} from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
 import Badge from "@/components/common/Badge/Badge";
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useUserStore } from "@/stores/user/useUserStore";
 import managerDashboardApi, {
     DashboardRentalStatus,
     ManagerDashboardData,
 } from "@/api/manager/managerDashboardApi";
+import { useFocusEffect } from "@react-navigation/native";
 
 const rentalStatusText: Record<DashboardRentalStatus, string> = {
     REQUESTED: "요청",
-    APPROVED: "승인",
     REJECTED: "반려",
     BORROWED: "대여중",
     RETURNED: "반납",
+    CANCELLED: "취소",
 };
 
 function ManagerMainPage() {
@@ -25,36 +35,34 @@ function ManagerMainPage() {
     const [dashboard, setDashboard] = useState<ManagerDashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const organizationId = Number(authUser?.memberInfo?.organizationId);
+    useFocusEffect(
+        useCallback(() => {
+            let isActive = true;
+            const loadDashboard = async () => {
+                try {
+                    setIsLoading(true);
+                    const data = await managerDashboardApi.getDashboard();
+                    if (isActive) setDashboard(data);
+                } catch {
+                    const message = "대시보드 정보를 불러오는데 실패했습니다.";
 
-    useEffect(() => {
-        if (!organizationId || isNaN(organizationId)) {
-            setIsLoading(false);
-            return;
-        }
-
-        const loadDashboard = async () => {
-            try {
-                setIsLoading(true);
-                const data = await managerDashboardApi.getDashboard(organizationId);
-                setDashboard(data);
-            } catch (error) {
-                console.log(error);
-
-                const message = "대시보드 정보를 불러오는데 실패했습니다.";
-
-                if (Platform.OS === "web") {
-                    alert(message);
-                } else {
-                    Alert.alert("오류", message);
+                    if (Platform.OS === "web") {
+                        alert(message);
+                    } else {
+                        Alert.alert("오류", message);
+                    }
+                } finally {
+                    if (isActive) setIsLoading(false);
                 }
-            } finally {
-                setIsLoading(false);
-            }
-        };
+            };
 
-        loadDashboard().then(() => {});
-    }, [organizationId]);
+            loadDashboard();
+
+            return () => {
+                isActive = false;
+            };
+        }, []),
+    );
 
     const userName = authUser?.user.name ?? "회원";
 
@@ -135,7 +143,11 @@ function ManagerMainPage() {
 
                                 <Text
                                     className={"font-pretendard-bold text-xl text-white self-end"}>
-                                    {isLoading ? "-" : item.number}
+                                    {isLoading ? (
+                                        <ActivityIndicator color="#FFFFFF" />
+                                    ) : (
+                                        item.number
+                                    )}
                                 </Text>
                             </View>
                         ))}
@@ -165,9 +177,7 @@ function ManagerMainPage() {
                     <View className={"mt-3 bg-background-paper rounded-[16px]"}>
                         {isLoading ? (
                             <View className={"py-8 items-center"}>
-                                <Text className={"font-pretendard text-text-secondary"}>
-                                    불러오는 중...
-                                </Text>
+                                <ActivityIndicator color="#7C3AED" />
                             </View>
                         ) : dashboard && dashboard.recentRentals.length > 0 ? (
                             dashboard.recentRentals.map(item => (

@@ -19,7 +19,7 @@ export const useThemeStore = create<ThemeState>()(
     persist(
         set => ({
             theme: "light",
-            setTheme: newTheme => set({theme: newTheme}),
+            setTheme: newTheme => set({ theme: newTheme }),
         }),
         {
             name: "theme-storage",

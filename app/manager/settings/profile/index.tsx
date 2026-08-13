@@ -13,8 +13,11 @@ function ManagerUpdateProfilePage() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             className="flex-1 bg-background-paper">
             <View className="flex-1">
-
-                <MainHeader title="정보수정" isBackPress onBackPress={() => router.push("/manager/my")} />
+                <MainHeader
+                    title="정보수정"
+                    isBackPress
+                    onBackPress={() => router.push("/manager/my")}
+                />
 
                 <ProfileForm onSuccess={() => router.push("/manager/my")} />
             </View>

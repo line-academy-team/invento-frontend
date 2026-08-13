@@ -111,7 +111,7 @@ function EditEquipmentPage() {
         try {
             setIsSubmitting(true);
             await managerEquipmentApi.updateEquipment(equipment.id, input);
-            router.replace(`/manager/equipment/${equipment.id}`);
+            router.replace("/manager/equipment");
         } catch (error) {
             console.error("장비 수정 실패", error);
             Alert.alert("수정 실패", "장비 정보 수정 중 오류가 발생했습니다.");

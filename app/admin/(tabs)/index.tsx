@@ -1,4 +1,4 @@
-import { Alert, Platform, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Platform, ScrollView, Text, View } from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
 import { useUserStore } from "@/stores/user/useUserStore";
 import { useEffect, useState } from "react";
@@ -28,8 +28,7 @@ function AdminMainPage() {
                 setUserList(users);
                 const organizations = await adminApi.getOrganizations();
                 setOrgList(organizations);
-            } catch (error) {
-                console.log(error);
+            } catch {
                 const msg = "사용자, 조직 현황을 불러오는데 실패했습니다.";
                 if (Platform.OS === "web") {
                     alert(msg);
@@ -94,35 +93,41 @@ function AdminMainPage() {
         <ScrollView>
             <MainHeader variant={"adminMain"} onMenuPress={() => {}} />
             <View className={"flex-1 px-[30px] py-8 bg-background-default"}>
-                <Text className={"font-pretendard-medium text-lg text-text-default"}>안녕하세요</Text>
+                <Text className={"font-pretendard-medium text-lg text-text-default"}>
+                    안녕하세요
+                </Text>
                 <View className={"flex-row gap-3 items-center"}>
                     <Text className={"font-pretendard-bold text-2xl text-text-default"}>
                         {user?.name || "관리자"}님
                     </Text>
                     <Badge status={"앱 관리자"} />
                 </View>
-                <View className={"mt-5 flex-row justify-between flex-wrap gap-2"}>
-                    {dashboardData.map((item, i) => (
-                        <View
-                            key={i}
-                            className={twMerge(
-                                "w-[48%] h-[120px] rounded-[18px] p-4 items-center",
-                                "border border-border bg-background-paper",
-                            )}>
-                            <View className={"flex-row items-center gap-2"}>
-                                {item.logo}
-                                <View>
-                                    <Text className="font-pretendard-medium text-sm">
-                                        {item.title}
-                                    </Text>
-                                    <Text className="font-pretendard-bold text-[28px]">
-                                        {item.count}
-                                    </Text>
+                {isLoading ? (
+                    <ActivityIndicator className="mt-12" color="#7C3AED" />
+                ) : (
+                    <View className={"mt-5 flex-row justify-between flex-wrap gap-2"}>
+                        {dashboardData.map((item, i) => (
+                            <View
+                                key={i}
+                                className={twMerge(
+                                    "w-[48%] h-[120px] rounded-[18px] p-4 items-center",
+                                    "border border-border bg-background-paper",
+                                )}>
+                                <View className={"flex-row items-center gap-2"}>
+                                    {item.logo}
+                                    <View>
+                                        <Text className="font-pretendard-medium text-sm">
+                                            {item.title}
+                                        </Text>
+                                        <Text className="font-pretendard-bold text-[28px]">
+                                            {item.count}
+                                        </Text>
+                                    </View>
                                 </View>
                             </View>
-                        </View>
-                    ))}
-                </View>
+                        ))}
+                    </View>
+                )}
             </View>
         </ScrollView>
     );
