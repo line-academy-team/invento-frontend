@@ -1,6 +1,7 @@
 import {
     ActivityIndicator,
     Alert,
+    Image,
     Platform,
     Pressable,
     ScrollView,
@@ -14,7 +15,6 @@ import { User } from "@/types/user";
 import { Organization } from "@/types/organization";
 import adminApi from "@/api/admin/adminApi";
 import Badge from "@/components/common/Badge/Badge";
-import { twMerge } from "tailwind-merge";
 import { FiUsers } from "react-icons/fi";
 import { AntDesign, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -119,7 +119,9 @@ function AdminMainPage() {
                     <View className="mt-8 flex-row justify-between flex-wrap gap-2">
                         <View className="w-[48%]">
                             <View className={"flex-row justify-between items-center"}>
-                                <Text className={"font-pretendard-medium text-xl"}>최근 가입 회원</Text>
+                                <Text className={"font-pretendard-medium text-xl"}>
+                                    최근 가입 회원
+                                </Text>
 
                                 <Pressable onPress={() => router.push("/admin/user" as any)}>
                                     <View className={"flex-row gap-2 items-center"}>
@@ -133,7 +135,10 @@ function AdminMainPage() {
                                 </Pressable>
                             </View>
 
-                            <View className={"mt-3 bg-background-paper rounded-[16px] overflow-hidden"}>
+                            <View
+                                className={
+                                    "mt-3 bg-background-paper rounded-[16px] overflow-hidden"
+                                }>
                                 {userList.slice(0, 5).map((item, i) => (
                                     <View
                                         key={i}
@@ -167,7 +172,10 @@ function AdminMainPage() {
                                         className={
                                             "flex-row py-3 px-5 gap-2 justify-center items-center"
                                         }>
-                                        <Text className={"font-pretendard-semibold text-primary-main"}>
+                                        <Text
+                                            className={
+                                                "font-pretendard-semibold text-primary-main"
+                                            }>
                                             더 보기
                                         </Text>
 
@@ -182,9 +190,12 @@ function AdminMainPage() {
 
                         <View className="w-[48%]">
                             <View className={"flex-row justify-between items-center"}>
-                                <Text className={"font-pretendard-medium text-xl"}>최근 생성 조직</Text>
+                                <Text className={"font-pretendard-medium text-xl"}>
+                                    최근 생성 조직
+                                </Text>
 
-                                <Pressable onPress={() => router.push("/admin/organization" as any)}>
+                                <Pressable
+                                    onPress={() => router.push("/admin/organization" as any)}>
                                     <View className={"flex-row gap-2 items-center"}>
                                         <Text className={"text-text-secondary"}>All</Text>
 
@@ -196,7 +207,10 @@ function AdminMainPage() {
                                 </Pressable>
                             </View>
 
-                            <View className={"mt-3 bg-background-paper rounded-[16px] overflow-hidden"}>
+                            <View
+                                className={
+                                    "mt-3 bg-background-paper rounded-[16px] overflow-hidden"
+                                }>
                                 {orgList.slice(0, 5).map((item, i) => (
                                     <View
                                         key={i}
@@ -228,12 +242,16 @@ function AdminMainPage() {
                                         </View>
                                     </View>
                                 ))}
-                                <Pressable onPress={() => router.push("/admin/organization" as any)}>
+                                <Pressable
+                                    onPress={() => router.push("/admin/organization" as any)}>
                                     <View
                                         className={
                                             "flex-row py-3 px-5 gap-2 justify-center items-center"
                                         }>
-                                        <Text className={"font-pretendard-semibold text-primary-main"}>
+                                        <Text
+                                            className={
+                                                "font-pretendard-semibold text-primary-main"
+                                            }>
                                             더 보기
                                         </Text>
 
