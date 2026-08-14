@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, Pressable, FlatList, Alert } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -24,7 +24,7 @@ export default function DepartmentAssignDetailPage() {
     const [selectedMember, setSelectedMember] = useState<DepartmentMember | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const fetchDepartmentMembers = async () => {
+    const fetchDepartmentMembers = useCallback(async () => {
         try {
             const data = await ownerDepartmentApi.getDepartmentList();
             const currentDept = (data as any[]).find(d => d.id === departmentId);
@@ -39,13 +39,13 @@ export default function DepartmentAssignDetailPage() {
                 error.response?.data?.message || "멤버 목록을 불러오지 못했습니다.",
             );
         }
-    };
+    }, [departmentId]);
 
     useEffect(() => {
         if (!isNaN(departmentId)) {
             fetchDepartmentMembers();
         }
-    }, [departmentId]);
+    }, [departmentId, fetchDepartmentMembers]);
 
     const currentManager = members.find(m => m.role === "MANAGER");
     const currentManagerNameText = currentManager ? currentManager.user.name : "미지정";

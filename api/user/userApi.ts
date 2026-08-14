@@ -27,18 +27,16 @@ const updatePassword = async (data: UpdatePasswordInputType): Promise<void> => {
     });
 };
 
-
 const updateUser = async (data: UpdateProfileInputType): Promise<User> => {
     const response = await axiosInstance.patch("/user/update", data);
 
     return response.data.data;
 };
 
-
 export default {
     registerUser,
     login,
     getMe,
     updatePassword,
-    updateUser
+    updateUser,
 };

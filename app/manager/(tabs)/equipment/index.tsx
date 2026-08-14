@@ -1,67 +1,79 @@
-import { Image, ScrollView, TextInput, View, Text, Pressable } from "react-native";
+import {
+    ActivityIndicator,
+    Image,
+    ScrollView,
+    TextInput,
+    View,
+    Text,
+    Pressable,
+} from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
 import { twMerge } from "tailwind-merge";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Badge from "@/components/common/Badge/Badge";
 import { useRouter } from "expo-router";
+import memberEquipmentApi from "@/api/member/memberEquipmentApi";
+import { Equipment, EquipmentStatusType } from "@/types/equipment";
+import { useIsFocused } from "@react-navigation/native";
+
+const categories = ["전체", "IT기기", "사무용품", "소모품", "기타"];
+
+const statusTextMap: Record<EquipmentStatusType, string> = {
+    AVAILABLE: "이용가능",
+    BORROWED: "대여중",
+    LOST: "분실",
+    BROKEN: "고장",
+    DISPOSED: "폐기",
+};
 
 function ManagerEquipmentListPage() {
     const router = useRouter();
     const onMenuPress = () => {};
+
     const [selected, setSelected] = useState("전체");
+    const [search, setSearch] = useState("");
+    const [equipments, setEquipments] = useState<Equipment[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [errorMessage, setErrorMessage] = useState("");
+    const isFocused = useIsFocused();
 
-    const categories = ["전체", "IT기기", "사무용품", "소모품", "기타"];
+    useEffect(() => {
+        if (!isFocused) return;
 
-    const mockData = [
-        {
-            imageLink:
-                "https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4",
-            name: "노트북 1",
-            category: "IT기기",
-            status: "이용가능",
-            id: 1,
-        },
-        {
-            imageLink:
-                "https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4",
-            name: "샤프",
-            category: "사무용품",
-            status: "대여중",
-            id: 2,
-        },
-        {
-            imageLink:
-                "https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4",
-            name: "줄자",
-            category: "사무용품",
-            status: "이용가능",
-            id: 3,
-        },
-        {
-            imageLink:
-                "https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4",
-            name: "노트북 1",
-            category: "IT기기",
-            status: "이용가능",
-            id: 4,
-        },
-        {
-            imageLink:
-                "https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4",
-            name: "서류철",
-            category: "소모품",
-            status: "이용가능",
-            id: 5,
-        },
-        {
-            imageLink:
-                "https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4",
-            name: "기타엔 뭐가 들어가지",
-            category: "기타",
-            status: "이용가능",
-            id: 6,
-        },
-    ];
+        let cancelled = false;
+
+        const timer = setTimeout(async () => {
+            try {
+                setIsLoading(true);
+                setErrorMessage("");
+
+                const data = await memberEquipmentApi.getEquipmentList({
+                    category: selected === "전체" ? undefined : selected,
+                    search: search.trim() || undefined,
+                });
+
+                if (!cancelled) {
+                    setEquipments(data);
+                }
+            } catch (error) {
+                console.error("장비 목록 조회 실패", error);
+
+                if (!cancelled) {
+                    setEquipments([]);
+                    setErrorMessage("장비 목록을 불러오지 못했습니다.");
+                }
+            } finally {
+                if (!cancelled) {
+                    setIsLoading(false);
+                }
+            }
+        }, 300);
+
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
+    }, [isFocused, selected, search]);
 
     return (
         <View className={"flex-1 bg-background-default relative"}>
@@ -75,6 +87,8 @@ function ManagerEquipmentListPage() {
                                 "rounded-[16px] pl-[50px] text-text-main",
                             )}
                             placeholder={"장비명 검색"}
+                            value={search}
+                            onChangeText={setSearch}
                         />
                         <Image
                             source={require("@/assets/images/common/search.png")}
@@ -82,6 +96,7 @@ function ManagerEquipmentListPage() {
                             className={"absolute top-[16px] left-[16px]"}
                         />
                     </View>
+
                     <View className={"mt-[30px] flex-row justify-between"}>
                         {categories.map((category, i) => (
                             <Pressable
@@ -99,31 +114,55 @@ function ManagerEquipmentListPage() {
                             </Pressable>
                         ))}
                     </View>
-                    <View className={"mt-6 rounded-[16px] bg-background-paper"}>
-                        {mockData
-                            .filter(data =>
-                                selected === "전체" ? true : data.category === selected,
-                            )
-                            .map((data, i) => (
+
+                    <View className={"mt-6 rounded-[16px] bg-background-paper overflow-hidden"}>
+                        {isLoading ? (
+                            <View className={"p-8 items-center"}>
+                                <ActivityIndicator color="#7C3AED" />
+                            </View>
+                        ) : errorMessage ? (
+                            <View className={"p-8 items-center"}>
+                                <Text className={"text-text-secondary"}>{errorMessage}</Text>
+                            </View>
+                        ) : equipments.length === 0 ? (
+                            <View className={"p-8 items-center"}>
+                                <Text className={"text-text-secondary"}>
+                                    조건에 맞는 장비가 없습니다.
+                                </Text>
+                            </View>
+                        ) : (
+                            equipments.map(data => (
                                 <Pressable
-                                    key={data.id + i}
+                                    key={data.id}
                                     onPress={() => {
                                         router.push(`/manager/equipment/${data.id}`);
                                     }}>
                                     <View
                                         className={
                                             "flex-row p-6 justify-between border-b border-divider last:border-b-0"
-                                        }
-                                        key={"equipment" + data.id}>
-                                        <View className={"flex-row"}>
-                                            <Image
-                                                source={{ uri: data.imageLink }}
-                                                style={{ width: 64, height: 64 }}
-                                                resizeMode={"cover"}
-                                                className={"rounded-[16px]"}
-                                            />
-                                            <View className={"ml-5 justify-between"}>
+                                        }>
+                                        <View className={"flex-row flex-1 mr-4"}>
+                                            {data.imageUrl ? (
+                                                <Image
+                                                    source={{ uri: data.imageUrl }}
+                                                    style={{ width: 64, height: 64 }}
+                                                    resizeMode={"cover"}
+                                                    className={"rounded-[16px]"}
+                                                />
+                                            ) : (
+                                                <View
+                                                    className={
+                                                        "w-16 h-16 rounded-[16px] bg-background-default items-center justify-center"
+                                                    }>
+                                                    <Text className={"text-xs text-text-secondary"}>
+                                                        이미지 없음
+                                                    </Text>
+                                                </View>
+                                            )}
+
+                                            <View className={"ml-5 justify-between flex-1"}>
                                                 <Text
+                                                    numberOfLines={1}
                                                     className={
                                                         "font-pretendard-semibold text-xl text-text-main"
                                                     }>
@@ -133,14 +172,19 @@ function ManagerEquipmentListPage() {
                                                     className={
                                                         "font-pretendard text-text-secondary mb-1"
                                                     }>
-                                                    {data.category}
+                                                    {data.category ?? "카테고리 없음"}
                                                 </Text>
                                             </View>
                                         </View>
-                                        <Badge status={data.status} className={"self-end"} />
+
+                                        <Badge
+                                            status={statusTextMap[data.status]}
+                                            className={"self-end"}
+                                        />
                                     </View>
                                 </Pressable>
-                            ))}
+                            ))
+                        )}
                     </View>
                 </View>
             </ScrollView>

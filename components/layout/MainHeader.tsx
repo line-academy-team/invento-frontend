@@ -111,7 +111,7 @@ function MainHeader({
                             </Text>
                             {isAdmin && (
                                 <Text className="font-pretendard-bold text-sm text-text-light">
-                                    "시스템 관리 센터"
+                                    {'"시스템 관리 센터"'}
                                 </Text>
                             )}
                         </View>

@@ -5,7 +5,7 @@ import Badge from "@/components/common/Badge/Badge";
 import { Feather } from "@expo/vector-icons";
 import Button from "@/components/common/Button/Button";
 import { useUserStore } from "@/stores/user/useUserStore";
-import { useRouter } from "expo-router";
+import { Href, useRouter } from "expo-router";
 
 interface ProfileRowProps {
     label: string;
@@ -82,10 +82,8 @@ function UserMyInfoPage() {
     const { user, memberInfo } = authUser;
     const profileImageUrl = user.imageUrl ?? null;
 
-    // 관리자 여부 확인 (오너 또는 매니저)
     const isManager = memberInfo?.role === "OWNER" || memberInfo?.role === "MANAGER";
 
-    // 뱃지에 표시할 텍스트 (관리자가 유저 페이지로 들어와도 본인 직급 표시)
     const memberRoleText = isManager
         ? memberInfo?.role === "OWNER"
             ? "오너"
@@ -144,7 +142,7 @@ function UserMyInfoPage() {
                         </View>
 
                         <Button
-                            onPress={() => router.push("/user/settings/profile")}
+                            onPress={() => router.push("/user/settings/profile" as Href)}
                             className="w-24 self-end p-2 mb-2">
                             정보수정
                         </Button>
@@ -170,7 +168,7 @@ function UserMyInfoPage() {
                     </View>
 
                     <Button
-                        onPress={() => router.push("/user/settings/password")}
+                        onPress={() => router.push("/user/settings/password" as Href)}
                         className={twMerge(["h-[60px]", "mt-10"])}
                         textClassName={"text-xl"}
                         variant={"outline"}>

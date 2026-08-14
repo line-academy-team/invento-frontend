@@ -27,12 +27,12 @@ const getOrganizations = async (): Promise<OrganizationCount[]> => {
 const getOrganizationById = async (orgId: number): Promise<OrganizationCount | null> => {
     const response = await axiosInstance.get(`/admin/organization/${orgId}`);
     return response.data.data;
-}
+};
 
 const updateOrganization = async (orgId: number, input: AdminUpdateOrganizationInputType) => {
     const response = await axiosInstance.patch(`/admin/organization/${orgId}`, input);
     return response.data.data;
-}
+};
 
 export default {
     getUsers,

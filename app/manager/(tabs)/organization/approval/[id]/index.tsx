@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Pressable, ScrollView, Modal, TextInput, Switch, Alert } from "react-native";
+import {
+    ActivityIndicator,
+    View,
+    Text,
+    Pressable,
+    ScrollView,
+    Modal,
+    TextInput,
+    Switch,
+    Alert,
+} from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import MainHeader from "@/components/layout/MainHeader";
 import { Ionicons } from "@expo/vector-icons";
@@ -25,25 +35,25 @@ export default function OrganizationApprovalDetailPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        if (!isNaN(requestId)) {
-            fetchDetail();
-        }
-    }, [requestId]);
+        if (isNaN(requestId)) return;
 
-    const fetchDetail = async () => {
-        try {
-            const data = await managerJoinApi.getJoinRequestById(requestId);
-            setRequestDetail(data);
-            setDepartments(data.departments || []);
-        } catch (error: any) {
-            console.error(error);
-            Alert.alert(
-                "오류",
-                error.response?.data?.message || "상세 정보를 불러오지 못했습니다.",
-            );
-            router.back();
-        }
-    };
+        const fetchDetail = async () => {
+            try {
+                const data = await managerJoinApi.getJoinRequestById(requestId);
+                setRequestDetail(data);
+                setDepartments(data.departments || []);
+            } catch (error: any) {
+                console.error(error);
+                Alert.alert(
+                    "오류",
+                    error.response?.data?.message || "상세 정보를 불러오지 못했습니다.",
+                );
+                router.back();
+            }
+        };
+
+        fetchDetail();
+    }, [requestId]);
 
     const handleApproveComplete = async () => {
         if (!selectedDept) return;
@@ -58,7 +68,10 @@ export default function OrganizationApprovalDetailPage() {
 
             setIsModalVisible(false);
             Alert.alert("승인 완료", "가입 승인이 성공적으로 처리되었습니다.", [
-                { text: "확인", onPress: () => router.back() },
+                {
+                    text: "확인",
+                    onPress: () => router.replace("/manager/organization/approval"),
+                },
             ]);
         } catch (error: any) {
             console.error(error);
@@ -71,7 +84,7 @@ export default function OrganizationApprovalDetailPage() {
     if (!requestDetail) {
         return (
             <View className="flex-1 bg-background-paper justify-center items-center">
-                <Text>로딩 중...</Text>
+                <ActivityIndicator color="#7C3AED" />
             </View>
         );
     }

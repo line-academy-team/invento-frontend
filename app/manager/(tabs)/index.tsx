@@ -1,54 +1,68 @@
-import { Alert, Platform, ScrollView, View, Text, Image, Pressable } from "react-native";
+import {
+    ActivityIndicator,
+    Alert,
+    Image,
+    Platform,
+    Pressable,
+    ScrollView,
+    Text,
+    View,
+} from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
 import Badge from "@/components/common/Badge/Badge";
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Equipment } from "@/types/equipment";
-import { OrgRental } from "@/types/rental";
-import managerRentalApi from "@/api/manager/managerRentalApi";
+import { useCallback, useMemo, useState } from "react";
 import { useUserStore } from "@/stores/user/useUserStore";
-import memberEquipmentApi from "@/api/member/memberEquipmentApi";
+import managerDashboardApi, {
+    DashboardRentalStatus,
+    ManagerDashboardData,
+} from "@/api/manager/managerDashboardApi";
+import { useFocusEffect } from "@react-navigation/native";
+
+const rentalStatusText: Record<DashboardRentalStatus, string> = {
+    REQUESTED: "요청",
+    REJECTED: "반려",
+    BORROWED: "대여중",
+    RETURNED: "반납",
+    CANCELLED: "취소",
+};
 
 function ManagerMainPage() {
     const router = useRouter();
-    const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
-    const [rentalList, setRentalList] = useState<OrgRental[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-
     const { authUser } = useUserStore();
 
-    const ozId = Number(authUser?.memberInfo?.organizationId);
+    const [dashboard, setDashboard] = useState<ManagerDashboardData | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        console.log("현재 내 정보:", authUser?.memberInfo);
-        console.log("조직 ID:", authUser?.memberInfo?.organizationId);
-        if (!ozId || isNaN(ozId)) return;
+    useFocusEffect(
+        useCallback(() => {
+            let isActive = true;
+            const loadDashboard = async () => {
+                try {
+                    setIsLoading(true);
+                    const data = await managerDashboardApi.getDashboard();
+                    if (isActive) setDashboard(data);
+                } catch {
+                    const message = "대시보드 정보를 불러오는데 실패했습니다.";
 
-        const loadDashboard = async () => {
-            try {
-                setIsLoading(true);
-                const orgRentalList = await managerRentalApi.getOrgRentalRequestList(ozId);
-                setRentalList(orgRentalList);
-                const orgEquipmentList = await memberEquipmentApi.getEquipmentList();
-                setEquipmentList(orgEquipmentList);
-            } catch (error) {
-                console.log(error);
-                const msg = "조직 내 대여, 장비 목록을 불러오는데 실패했습니다.";
-                if (Platform.OS === "web") {
-                    alert(msg);
-                } else {
-                    Alert.alert("오류", msg);
+                    if (Platform.OS === "web") {
+                        alert(message);
+                    } else {
+                        Alert.alert("오류", message);
+                    }
+                } finally {
+                    if (isActive) setIsLoading(false);
                 }
-            } finally {
-                setIsLoading(false);
-            }
-        };
+            };
 
-        loadDashboard().then(() => {});
-    }, [ozId]);
+            loadDashboard();
 
-    // 로그인한 사용자 정보
+            return () => {
+                isActive = false;
+            };
+        }, []),
+    );
 
     const userName = authUser?.user.name ?? "회원";
 
@@ -59,64 +73,41 @@ function ManagerMainPage() {
               ? "관리자"
               : "회원";
 
-    const mockData = [
-        {
-            logo: require("@/assets/images/common/build_circle.png"),
-            title: "전체 장비 수",
-            number: "128",
-            background: "bg-secondary-main",
-        },
-        {
-            logo: require("@/assets/images/common/short_stay.png"),
-            title: "대여중",
-            number: "128",
-            background: "bg-success-main",
-        },
-        {
-            logo: require("@/assets/images/common/box_add.png"),
-            title: "대여 요청",
-            number: "128",
-            background: "bg-warning-main",
-        },
-        {
-            logo: require("@/assets/images/common/devices_off.png"),
-            title: "고장 신고",
-            number: "128",
-            background: "bg-error-main",
-        },
-    ];
-
-    const mockData2 = [
-        {
-            equipment: "노트북01",
-            name: "김영희 대리",
-            date: "07.24",
-            status: "요청",
-        },
-        {
-            equipment: "프로젝터",
-            name: "이철수 과장",
-            date: "07.24",
-            status: "승인",
-        },
-        {
-            equipment: "마이크",
-            name: "유영수 연구원",
-            date: "07.24",
-            status: "반려",
-        },
-        {
-            equipment: "마이크 4",
-            name: "유영수 연구원",
-            date: "07.24",
-            status: "대기",
-        },
-    ];
+    const summaryCards = useMemo(
+        () => [
+            {
+                logo: require("@/assets/images/common/build_circle.png"),
+                title: "전체 장비 수",
+                number: dashboard?.summary.totalEquipment ?? 0,
+                background: "bg-secondary-main",
+            },
+            {
+                logo: require("@/assets/images/common/short_stay.png"),
+                title: "대여중",
+                number: dashboard?.summary.borrowed ?? 0,
+                background: "bg-success-main",
+            },
+            {
+                logo: require("@/assets/images/common/box_add.png"),
+                title: "대여 요청",
+                number: dashboard?.summary.requested ?? 0,
+                background: "bg-warning-main",
+            },
+            {
+                logo: require("@/assets/images/common/devices_off.png"),
+                title: "고장 신고",
+                number: dashboard?.summary.brokenReports ?? 0,
+                background: "bg-error-main",
+            },
+        ],
+        [dashboard],
+    );
 
     return (
-        <View className={"flex-1 bg-background-default"}>
+        <ScrollView>
             <MainHeader variant={"managerMain"} onMenuPress={() => {}} />
-            <ScrollView className={"flex-1"} contentContainerClassName={"flex-grow"}>
+
+            <View className={"flex-1 bg-background-default"}>
                 <View className={"px-[30px] py-8 bg-background-default"}>
                     <Text className={"font-pretendard text-lg text-text-default"}>안녕하세요</Text>
 
@@ -129,13 +120,13 @@ function ManagerMainPage() {
                     </View>
 
                     <View className={"mt-5 flex-row justify-between flex-wrap gap-2"}>
-                        {mockData.map((item, i) => (
+                        {summaryCards.map(item => (
                             <View
                                 className={twMerge(
                                     "w-[48%] h-[120px] rounded-[18px] p-4 justify-between",
                                     item.background,
                                 )}
-                                key={i}>
+                                key={item.title}>
                                 <View className={"flex-row justify-between items-center"}>
                                     <Image
                                         source={item.logo}
@@ -152,7 +143,11 @@ function ManagerMainPage() {
 
                                 <Text
                                     className={"font-pretendard-bold text-xl text-white self-end"}>
-                                    {item.number}
+                                    {isLoading ? (
+                                        <ActivityIndicator color="#FFFFFF" />
+                                    ) : (
+                                        item.number
+                                    )}
                                 </Text>
                             </View>
                         ))}
@@ -180,40 +175,54 @@ function ManagerMainPage() {
                     </View>
 
                     <View className={"mt-3 bg-background-paper rounded-[16px]"}>
-                        {mockData2.map((item, i) => (
-                            <View
-                                className={"py-5 px-5 border-b border-divider last:border-b-0"}
-                                key={"비품" + i}>
-                                <Text
-                                    className={
-                                        "font-pretendard-semibold text-lg text-text-default"
-                                    }>
-                                    {item.equipment}
-                                </Text>
-
-                                <View className={"flex-row justify-between items-center mt-1"}>
-                                    <View className={"flex-row gap-1"}>
-                                        <Text className={"font-pretendard text-text-secondary"}>
-                                            {item.name}
-                                        </Text>
-
-                                        <Text className={"font-pretendard text-text-secondary"}>
-                                            |
-                                        </Text>
-
-                                        <Text className={"font-pretendard text-text-secondary"}>
-                                            {item.date}
-                                        </Text>
-                                    </View>
-
-                                    <Badge status={item.status} />
-                                </View>
+                        {isLoading ? (
+                            <View className={"py-8 items-center"}>
+                                <ActivityIndicator color="#7C3AED" />
                             </View>
-                        ))}
+                        ) : dashboard && dashboard.recentRentals.length > 0 ? (
+                            dashboard.recentRentals.map(item => (
+                                <View
+                                    className={"py-5 px-5 border-b border-divider last:border-b-0"}
+                                    key={item.id}>
+                                    <Text
+                                        className={
+                                            "font-pretendard-semibold text-lg text-text-default"
+                                        }>
+                                        {item.equipment}
+                                    </Text>
+
+                                    <View className={"flex-row justify-between items-center mt-1"}>
+                                        <View className={"flex-row gap-1"}>
+                                            <Text className={"font-pretendard text-text-secondary"}>
+                                                {item.name}
+                                            </Text>
+
+                                            <Text className={"font-pretendard text-text-secondary"}>
+                                                |
+                                            </Text>
+
+                                            <Text className={"font-pretendard text-text-secondary"}>
+                                                {item.date}
+                                            </Text>
+                                        </View>
+
+                                        <Badge
+                                            status={rentalStatusText[item.status] ?? item.status}
+                                        />
+                                    </View>
+                                </View>
+                            ))
+                        ) : (
+                            <View className={"py-8 items-center"}>
+                                <Text className={"font-pretendard text-text-secondary"}>
+                                    최근 대여 내역이 없습니다.
+                                </Text>
+                            </View>
+                        )}
                     </View>
                 </View>
-            </ScrollView>
-        </View>
+            </View>
+        </ScrollView>
     );
 }
 

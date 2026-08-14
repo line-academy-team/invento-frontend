@@ -1,4 +1,4 @@
-import { ScrollView, Text, View, Image as RNImage,} from "react-native";
+import { ScrollView, Text, View, Image as RNImage } from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
 import { twMerge } from "tailwind-merge";
 import Badge from "@/components/common/Badge/Badge";
@@ -12,7 +12,6 @@ interface ProfileRowProps {
     value: string;
     isLast?: boolean;
 }
-
 
 function ProfileRow({ label, value, isLast = false }: ProfileRowProps) {
     return (
@@ -80,7 +79,6 @@ function ManagerUserPage() {
             </View>
         );
     }
-
 
     const { user, memberInfo } = authUser;
     const profileImageUrl = user.imageUrl ?? null;

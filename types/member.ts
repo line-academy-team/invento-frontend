@@ -13,7 +13,7 @@ export const MemberStatus = {
     APPROVED: "APPROVED",
     REJECTED: "REJECTED",
     WITHDRAWN: "WITHDRAWN",
-}
+};
 
 export type MemberStatusType = (typeof MemberStatus)[keyof typeof MemberStatus];
 
@@ -30,5 +30,5 @@ export interface Member {
     joinedAt?: string;
     createdAt: string;
     updatedAt?: string;
-    user: Pick<User, "id" | "name" | "email">
+    user: Pick<User, "id" | "name" | "email">;
 }

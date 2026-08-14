@@ -1,52 +1,59 @@
-import { Image, ScrollView, TextInput, View, Text, Pressable } from "react-native";
+import {
+    ActivityIndicator,
+    Alert,
+    Image,
+    ScrollView,
+    TextInput,
+    View,
+    Text,
+    Pressable,
+} from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
 import { twMerge } from "tailwind-merge";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Badge from "@/components/common/Badge/Badge";
 import { useRouter } from "expo-router";
+import memberEquipmentApi from "@/api/member/memberEquipmentApi";
+import { Equipment } from "@/types/equipment";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function UserEquipmentListPage() {
     const router = useRouter();
     const [selected, setSelected] = useState("전체");
+    const [search, setSearch] = useState("");
+    const [equipmentList, setEquipmentList] = useState<Equipment[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const isFocused = useIsFocused();
 
     const categories = ["전체", "IT기기", "사무용품", "소모품", "기타"];
 
-    // 💡 API 연동 전 UI 확인용 더미 데이터
-    const mockData = [
-        {
-            id: 1,
-            imageLink:
-                "https://fastly.picsum.photos/id/1/5000/3333.jpg?hmac=Asv2DU3rA_5D1xSe22xZK47WEAN0wjWeFOhzd13ujW4",
-            name: "노트북 01",
-            category: "IT기기",
-            status: "이용가능",
-        },
-        {
-            id: 2,
-            imageLink: "https://fastly.picsum.photos/id/2/5000/3333.jpg?hmac=...",
-            name: "샤프",
-            category: "사무용품",
-            status: "대여중",
-        },
-        {
-            id: 3,
-            imageLink: "https://fastly.picsum.photos/id/3/5000/3333.jpg?hmac=...",
-            name: "줄자",
-            category: "사무용품",
-            status: "이용가능",
-        },
-        {
-            id: 4,
-            imageLink: "https://fastly.picsum.photos/id/4/5000/3333.jpg?hmac=...",
-            name: "서류철",
-            category: "소모품",
-            status: "이용가능",
-        },
-    ];
+    useEffect(() => {
+        if (!isFocused) return;
 
-    const filteredData = mockData.filter(data =>
-        selected === "전체" ? true : data.category === selected,
-    );
+        const timer = setTimeout(async () => {
+            try {
+                setIsLoading(true);
+                const data = await memberEquipmentApi.getEquipmentList({
+                    category: selected === "전체" ? undefined : selected,
+                    search: search.trim() || undefined,
+                });
+                setEquipmentList(data);
+            } catch (error) {
+                console.error(error);
+                Alert.alert("조회 실패", "장비 목록을 불러오지 못했습니다.");
+            } finally {
+                setIsLoading(false);
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [isFocused, search, selected]);
+
+    const getStatus = (equipment: Equipment) => {
+        if (equipment.status === "BROKEN") return "파손신고";
+        if (equipment.status === "BORROWED" || equipment.availableQuantity === 0) return "대여중";
+        return "이용가능";
+    };
 
     return (
         <View className={"flex-1 bg-background-default relative"}>
@@ -54,7 +61,6 @@ export default function UserEquipmentListPage() {
 
             <ScrollView className={"flex-1"} contentContainerClassName={"flex-grow"}>
                 <View className={"px-[30px] py-8 bg-background-default relative"}>
-                    {/* 검색 바 */}
                     <View className={"relative"}>
                         <TextInput
                             className={twMerge(
@@ -63,6 +69,8 @@ export default function UserEquipmentListPage() {
                             )}
                             placeholder={"장비명 검색"}
                             placeholderTextColor={"#9CA3AF"}
+                            value={search}
+                            onChangeText={setSearch}
                         />
                         <Image
                             source={require("@/assets/images/common/search.png")}
@@ -94,46 +102,57 @@ export default function UserEquipmentListPage() {
                         </View>
                     </ScrollView>
 
-                    {/* 장비 리스트 */}
                     <View
                         className={
                             "mt-4 rounded-[16px] bg-background-paper border border-divider overflow-hidden"
                         }>
-                        {filteredData.map((data, i) => (
-                            <Pressable
-                                key={data.id}
-                                onPress={() => router.push(`/user/equipment/${data.id}`)}>
-                                <View
-                                    className={twMerge(
-                                        "flex-row p-6 justify-between items-center border-b border-divider",
-                                        i === filteredData.length - 1 && "border-b-0",
-                                    )}>
-                                    <View className={"flex-row items-center"}>
-                                        <Image
-                                            source={{ uri: data.imageLink }}
-                                            style={{ width: 64, height: 64 }}
-                                            resizeMode={"cover"}
-                                            className={"rounded-[16px] bg-gray-100"}
-                                        />
-                                        <View className={"ml-5 justify-center"}>
-                                            <Text
-                                                className={
-                                                    "font-pretendard-semibold text-xl text-text-main mb-1"
-                                                }>
-                                                {data.name}
-                                            </Text>
-                                            <Text
-                                                className={
-                                                    "font-pretendard text-sm text-text-secondary"
-                                                }>
-                                                {data.category}
-                                            </Text>
+                        {isLoading ? (
+                            <ActivityIndicator className="py-10" color="#7C3AED" />
+                        ) : equipmentList.length === 0 ? (
+                            <Text className="py-10 text-center text-text-secondary">
+                                조회된 장비가 없습니다.
+                            </Text>
+                        ) : (
+                            equipmentList.map((data, i) => (
+                                <Pressable
+                                    key={data.id}
+                                    onPress={() => router.push(`/user/equipment/${data.id}`)}>
+                                    <View
+                                        className={twMerge(
+                                            "flex-row p-6 justify-between items-center border-b border-divider",
+                                            i === equipmentList.length - 1 && "border-b-0",
+                                        )}>
+                                        <View className={"flex-row items-center"}>
+                                            <Image
+                                                source={
+                                                    data.imageUrl
+                                                        ? { uri: data.imageUrl }
+                                                        : require("@/assets/images/common/box.png")
+                                                }
+                                                style={{ width: 64, height: 64 }}
+                                                resizeMode={"cover"}
+                                                className={"rounded-[16px] bg-gray-100"}
+                                            />
+                                            <View className={"ml-5 justify-center"}>
+                                                <Text
+                                                    className={
+                                                        "font-pretendard-semibold text-xl text-text-main mb-1"
+                                                    }>
+                                                    {data.name}
+                                                </Text>
+                                                <Text
+                                                    className={
+                                                        "font-pretendard text-sm text-text-secondary"
+                                                    }>
+                                                    {data.category || "기타"}
+                                                </Text>
+                                            </View>
                                         </View>
+                                        <Badge status={getStatus(data)} />
                                     </View>
-                                    <Badge status={data.status} />
-                                </View>
-                            </Pressable>
-                        ))}
+                                </Pressable>
+                            ))
+                        )}
                     </View>
                 </View>
             </ScrollView>

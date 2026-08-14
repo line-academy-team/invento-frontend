@@ -20,8 +20,8 @@ export type BadgeStatus =
 
 interface BadgeProps {
     status: BadgeStatus | string;
-    className?: string; // 컨테이너 스타일 덮어쓰기용
-    textClassName?: string; // 텍스트 스타일 덮어쓰기용
+    className?: string;
+    textClassName?: string;
 }
 
 const getBadgeStyles = (status: string) => {
@@ -55,8 +55,7 @@ const getBadgeStyles = (status: string) => {
             return {
                 bg: "bg-primary-light",
                 text: "text-primary-main",
-
-            }
+            };
         default:
             return { bg: "bg-background-deep", text: "text-text-secondary" };
     }

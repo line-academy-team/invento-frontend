@@ -8,7 +8,8 @@ import MainHeader from "@/components/layout/MainHeader";
 export default function ManagerOrganizationPage() {
     const { authUser } = useUserStore();
     const role = authUser?.memberInfo?.role || "MEMBER";
-    const isOwner = true;
+    const isOwner = role === "OWNER";
+    const canManageOrganization = isOwner || role === "MANAGER";
 
     return (
         <View className="flex-1 bg-background-default">
@@ -16,14 +17,16 @@ export default function ManagerOrganizationPage() {
 
             <ScrollView className="flex-1 px-6 pt-6" contentContainerStyle={{ paddingBottom: 20 }}>
                 <View className="gap-y-4">
-                    <Pressable
-                        onPress={() => router.push("/manager/organization/approval" as Href)}
-                        className="w-full h-[64px] bg-white hover:bg-primary-main active:bg-primary-main rounded-2xl flex-row items-center justify-between px-6 shadow-sm border border-divider group transition-colors">
-                        <Text className="font-pretendard-bold text-lg text-text-default group-hover:text-white group-active:text-white transition-colors">
-                            조직 가입 승인
-                        </Text>
-                        <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-                    </Pressable>
+                    {canManageOrganization && (
+                        <Pressable
+                            onPress={() => router.push("/manager/organization/approval" as Href)}
+                            className="w-full h-[64px] bg-white hover:bg-primary-main active:bg-primary-main rounded-2xl flex-row items-center justify-between px-6 shadow-sm border border-divider group transition-colors">
+                            <Text className="font-pretendard-bold text-lg text-text-default group-hover:text-white group-active:text-white transition-colors">
+                                조직 가입 승인
+                            </Text>
+                            <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+                        </Pressable>
+                    )}
 
                     {isOwner && (
                         <Pressable
@@ -51,16 +54,18 @@ export default function ManagerOrganizationPage() {
                         </Pressable>
                     )}
 
-                    <Pressable
-                        onPress={() =>
-                            router.push("/manager/organization/department/transfer" as Href)
-                        }
-                        className="w-full h-[64px] bg-white hover:bg-primary-main active:bg-primary-main rounded-2xl flex-row items-center justify-between px-6 shadow-sm border border-divider group transition-colors">
-                        <Text className="font-pretendard-bold text-lg text-text-default group-hover:text-white group-active:text-white transition-colors">
-                            부서 이동
-                        </Text>
-                        <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-                    </Pressable>
+                    {canManageOrganization && (
+                        <Pressable
+                            onPress={() =>
+                                router.push("/manager/organization/department/transfer" as Href)
+                            }
+                            className="w-full h-[64px] bg-white hover:bg-primary-main active:bg-primary-main rounded-2xl flex-row items-center justify-between px-6 shadow-sm border border-divider group transition-colors">
+                            <Text className="font-pretendard-bold text-lg text-text-default group-hover:text-white group-active:text-white transition-colors">
+                                부서 이동
+                            </Text>
+                            <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
+                        </Pressable>
+                    )}
                 </View>
             </ScrollView>
         </View>

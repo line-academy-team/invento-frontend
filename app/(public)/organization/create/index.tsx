@@ -64,7 +64,6 @@ export default function OrganizationCreatePage() {
                 },
             ]);
         } catch (error: any) {
-            console.log(error);
             setError("root", {
                 message: error.response?.data?.message || "조직 생성에 실패했습니다.",
             });

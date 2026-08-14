@@ -79,14 +79,12 @@ function AuthLoginPage() {
                 router.push("/organization/status");
                 return;
             }
-            console.log(result);
             if (["MANAGER", "OWNER"].includes(result.memberInfo.role)) {
                 router.push("/manager");
             } else {
                 router.push("/user");
             }
         } catch (error) {
-            console.log(error);
             let errorMessage = "로그인 중 오류가 발생했습니다.";
 
             if (isAxiosError(error)) {

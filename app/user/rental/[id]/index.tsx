@@ -1,31 +1,102 @@
-import React, { useState } from "react";
-import { ScrollView, Text, View, Modal, TextInput, Pressable, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
-import { useRouter } from "expo-router";
+import { Href, useLocalSearchParams, useRouter } from "expo-router";
 import { twMerge } from "tailwind-merge";
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import Button from "@/components/common/Button/Button";
 import Badge from "@/components/common/Badge/Badge";
+import memberRentalApi from "@/api/member/memberRentalApi";
+import { MyRental } from "@/types/rental";
+import { formatDate } from "@/utils/date";
 
 export default function UserRentalDetailPage() {
     const router = useRouter();
+    const { id } = useLocalSearchParams<{ id: string }>();
 
-    const [isReportModalVisible, setIsReportModalVisible] = useState(false);
-    const [reportMemo, setReportMemo] = useState("");
+    const [rental, setRental] = useState<MyRental | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleReturnComplete = () => {
-        Alert.alert("반납 완료", "장비 반납 처리가 완료되었습니다.", [
-            { text: "확인", onPress: () => router.navigate("/user/rental") },
-        ]);
+    useEffect(() => {
+        const rentalId = Number(id);
+        if (!Number.isInteger(rentalId)) {
+            setIsLoading(false);
+            return;
+        }
+
+        memberRentalApi
+            .getMyRentalById(rentalId)
+            .then(setRental)
+            .catch(error => {
+                console.error(error);
+                Alert.alert("조회 실패", "대여 상세 내역을 불러오지 못했습니다.");
+            })
+            .finally(() => setIsLoading(false));
+    }, [id]);
+
+    const handleReturnComplete = async () => {
+        if (!rental) return;
+
+        try {
+            setIsSubmitting(true);
+            await memberRentalApi.returnRental(rental.id);
+            Alert.alert("반납 완료", "장비 반납 처리가 완료되었습니다.", [
+                { text: "확인", onPress: () => router.replace("/user/rental") },
+            ]);
+        } catch (error) {
+            console.error(error);
+            Alert.alert("반납 실패", "장비 반납 처리 중 오류가 발생했습니다.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
-    const handleReportComplete = () => {
-        setIsReportModalVisible(false);
-        Alert.alert("파손신고 접수", "파손 신고가 접수되었습니다.", [
-            { text: "확인", onPress: () => router.navigate("/user/rental") },
-        ]);
-        setReportMemo("");
+    const handleCancelRequest = async () => {
+        if (!rental) return;
+        try {
+            setIsSubmitting(true);
+            await memberRentalApi.deleteRentalRequest(rental.id);
+            Alert.alert("신청 취소", "대여 신청이 취소되었습니다.", [
+                { text: "확인", onPress: () => router.replace("/user/rental") },
+            ]);
+        } catch (error) {
+            console.error(error);
+            Alert.alert("취소 실패", "대여 신청 취소 중 오류가 발생했습니다.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
+
+    const rentalStatus =
+        rental?.status === "REQUESTED"
+            ? "신청중"
+            : rental?.status === "REJECTED"
+              ? "반려"
+              : rental?.status === "BORROWED"
+                ? "대여중"
+                : rental?.status === "RETURNED"
+                  ? "반납완료"
+                  : "취소";
+
+    if (isLoading || !rental) {
+        return (
+            <View className="flex-1 bg-white">
+                <MainHeader
+                    title="대여목록 상세"
+                    isBackPress
+                    onBackPress={() => router.navigate("/user/rental")}
+                />
+                <View className="flex-1 items-center justify-center">
+                    {isLoading ? (
+                        <ActivityIndicator color="#7C3AED" />
+                    ) : (
+                        <Text className="text-text-secondary">대여 내역을 찾을 수 없습니다.</Text>
+                    )}
+                </View>
+            </View>
+        );
+    }
 
     return (
         <View className={"flex-1 bg-white"}>
@@ -41,7 +112,14 @@ export default function UserRentalDetailPage() {
                         className={
                             "h-[200px] w-full rounded-2xl bg-background-default overflow-hidden items-center justify-center mb-5 mt-4"
                         }>
-                        <Ionicons name={"laptop-outline"} size={80} color={"#9CA3AF"} />
+                        {rental.equipment.imageUrl ? (
+                            <Image
+                                source={{ uri: rental.equipment.imageUrl }}
+                                className="w-full h-full"
+                            />
+                        ) : (
+                            <Ionicons name={"laptop-outline"} size={80} color={"#9CA3AF"} />
+                        )}
                     </View>
 
                     <View className={"flex-1"}>
@@ -51,8 +129,10 @@ export default function UserRentalDetailPage() {
                                     ["pb-3 mb-2 border-b border-text-default"],
                                     ["flex-row justify-between items-center"],
                                 )}>
-                                <Text className={"text-2xl font-semibold"}>노트북01</Text>
-                                <Badge status={"대여중"} />
+                                <Text className={"text-2xl font-semibold"}>
+                                    {rental.equipment.name}
+                                </Text>
+                                <Badge status={rentalStatus} />
                             </View>
 
                             <View
@@ -65,7 +145,9 @@ export default function UserRentalDetailPage() {
                                 <Text className={"text-text-secondary text-base font-semibold"}>
                                     카테고리
                                 </Text>
-                                <Text className={"text-text-default text-base"}>IT 기기</Text>
+                                <Text className={"text-text-default text-base"}>
+                                    {rental.equipment.category || "기타"}
+                                </Text>
                             </View>
                             <View
                                 className={twMerge([
@@ -77,7 +159,9 @@ export default function UserRentalDetailPage() {
                                 <Text className={"text-text-secondary text-base font-semibold"}>
                                     신청일
                                 </Text>
-                                <Text className={"text-text-default text-base"}>2026.07.20</Text>
+                                <Text className={"text-text-default text-base"}>
+                                    {formatDate(rental.requestedAt)}
+                                </Text>
                             </View>
                             <View
                                 className={twMerge([
@@ -89,7 +173,9 @@ export default function UserRentalDetailPage() {
                                 <Text className={"text-text-secondary text-base font-semibold"}>
                                     대여수량
                                 </Text>
-                                <Text className={"text-text-default text-base"}>1대</Text>
+                                <Text className={"text-text-default text-base"}>
+                                    {rental.quantity}대
+                                </Text>
                             </View>
                             <View
                                 className={twMerge([
@@ -101,7 +187,9 @@ export default function UserRentalDetailPage() {
                                 <Text className={"text-text-secondary text-base font-semibold"}>
                                     대여일
                                 </Text>
-                                <Text className={"text-text-default text-base"}>2026.07.20</Text>
+                                <Text className={"text-text-default text-base"}>
+                                    {formatDate(rental.approvedAt)}
+                                </Text>
                             </View>
                             <View
                                 className={twMerge([
@@ -114,7 +202,7 @@ export default function UserRentalDetailPage() {
                                     반납예정일
                                 </Text>
                                 <Text className={"text-primary-main text-base font-bold"}>
-                                    2026.07.30
+                                    {formatDate(rental.dueAt)}
                                 </Text>
                             </View>
                             <View
@@ -131,7 +219,7 @@ export default function UserRentalDetailPage() {
                                     className={
                                         "text-text-default text-base text-right flex-1 ml-4"
                                     }>
-                                    거치대도 추가해주세요
+                                    {rental.reason || "-"}
                                 </Text>
                             </View>
                         </View>
@@ -142,69 +230,26 @@ export default function UserRentalDetailPage() {
                             variant={"outline"}
                             className={"h-[60px] w-auto flex-1 border-error-main"}
                             textClassName={"text-xl text-error-main font-semibold"}
-                            onPress={() => setIsReportModalVisible(true)}>
-                            파손신고
+                            isLoading={isSubmitting}
+                            disabled={rental.status !== "REQUESTED" && rental.status !== "BORROWED"}
+                            onPress={
+                                rental.status === "REQUESTED"
+                                    ? handleCancelRequest
+                                    : () => router.push(`/user/rental/${rental.id}/report` as Href)
+                            }>
+                            {rental.status === "REQUESTED" ? "신청취소" : "파손신고"}
                         </Button>
                         <Button
                             className={"h-[60px] w-auto flex-1 bg-primary-main"}
                             textClassName={"text-xl text-white font-semibold"}
+                            isLoading={isSubmitting}
+                            disabled={rental.status !== "BORROWED"}
                             onPress={handleReturnComplete}>
                             반납완료
                         </Button>
                     </View>
                 </View>
             </ScrollView>
-
-            <Modal
-                animationType="fade"
-                transparent={true}
-                visible={isReportModalVisible}
-                onRequestClose={() => setIsReportModalVisible(false)}>
-                <View className="flex-1 justify-center items-center bg-black/50 px-[40px]">
-                    <View className="bg-white w-full max-w-[430px] rounded-[20px] p-6">
-                        <View className="flex-row justify-between items-center mb-6">
-                            <Text className="text-xl font-bold text-primary-main">
-                                장비파손신고
-                            </Text>
-                            <Pressable onPress={() => setIsReportModalVisible(false)}>
-                                <Feather name="x" size={24} color="#666" />
-                            </Pressable>
-                        </View>
-
-                        <View className="bg-background-default border border-gray-100 rounded-2xl p-4 mb-5">
-                            <View className="flex-row justify-between items-center mb-2">
-                                <Text className="font-semibold text-lg text-text-default">
-                                    노트북01
-                                </Text>
-                                <Text className="text-sm text-text-secondary">IT 기기</Text>
-                            </View>
-                            <Text className="text-sm text-text-secondary">
-                                사용기간 : 2026.07.24~2026.07.30
-                            </Text>
-                        </View>
-
-                        <View className="mb-8">
-                            <Text className="text-lg font-bold mb-3">문제점</Text>
-                            <TextInput
-                                className="w-full border border-gray-300 rounded-xl p-4 text-base text-gray-800"
-                                style={{ minHeight: 120, textAlignVertical: "top" }}
-                                multiline={true}
-                                placeholder="파손 사유나 문제점을 상세히 적어주세요."
-                                placeholderTextColor="#9ca3af"
-                                value={reportMemo}
-                                onChangeText={setReportMemo}
-                            />
-                        </View>
-
-                        <Button
-                            className="h-[56px] bg-primary-main rounded-xl"
-                            textClassName="text-white text-lg font-bold"
-                            onPress={handleReportComplete}>
-                            신청완료
-                        </Button>
-                    </View>
-                </View>
-            </Modal>
         </View>
     );
 }

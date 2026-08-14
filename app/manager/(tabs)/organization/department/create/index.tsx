@@ -30,7 +30,6 @@ export default function DepartmentCreatePage() {
             const data = await ownerDepartmentApi.getDepartmentList();
             setDepartments(data);
         } catch (error: any) {
-            console.log(error);
             Alert.alert(
                 "오류",
                 error.response?.data?.message || "부서 목록을 불러오지 못했습니다.",
@@ -50,7 +49,6 @@ export default function DepartmentCreatePage() {
 
             await fetchDepartments();
         } catch (error: any) {
-            console.log(error);
             Alert.alert(
                 "오류",
                 error.response?.data?.message || "부서 생성 중 오류가 발생했습니다.",
@@ -71,7 +69,6 @@ export default function DepartmentCreatePage() {
                         await ownerDepartmentApi.deleteDepartment(id);
                         await fetchDepartments();
                     } catch (error: any) {
-                        console.log(error);
                         Alert.alert(
                             "오류",
                             error.response?.data?.message || "부서 삭제 중 오류가 발생했습니다.",
@@ -83,7 +80,6 @@ export default function DepartmentCreatePage() {
     };
 
     const formatDate = (dateString: string) => {
-        // 방어 로직: dateString이 없을 경우 빈 문자열 반환
         if (!dateString) return "";
         return dateString.split("T")[0] + " 생성";
     };

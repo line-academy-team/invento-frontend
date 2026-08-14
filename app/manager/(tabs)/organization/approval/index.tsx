@@ -1,88 +1,38 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Pressable, FlatList, Alert } from "react-native";
+import React, { useCallback, useState } from "react";
+import { ActivityIndicator, View, Text, TextInput, Pressable, FlatList, Alert } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import MainHeader from "@/components/layout/MainHeader";
 import Badge from "@/components/common/Badge/Badge";
 import managerJoinApi, { JoinRequestMember } from "@/api/manager/managerJoinApi";
-
-import { Member } from "@/types/member";
-// import managerOrganizationApi from "@/api/manager/managerOrganizationApi";
-import { useUserStore } from "@/stores/user/useUserStore";
-
-const DUMMY_MEMBERS: Member[] = [
-    {
-        id: 1,
-        organizationId: 1,
-        userId: 101,
-        role: "MEMBER",
-        status: "PENDING",
-        joinedAt: "2026-07-20T14:30:00.000Z",
-        createdAt: "2026-07-20T14:30:00.000Z",
-        user: { id: 101, name: "홍길동", email: "hong@company.com" },
-    },
-    {
-        id: 2,
-        organizationId: 1,
-        userId: 102,
-        role: "MEMBER",
-        status: "APPROVED",
-        joinedAt: "2026-07-20T14:30:00.000Z",
-        createdAt: "2026-07-20T14:30:00.000Z",
-        user: { id: 102, name: "홍길동", email: "hong@company.com" },
-    },
-    {
-        id: 3,
-        organizationId: 1,
-        userId: 103,
-        role: "MEMBER",
-        status: "REJECTED",
-        joinedAt: "2026-07-20T14:30:00.000Z",
-        createdAt: "2026-07-20T14:30:00.000Z",
-        user: { id: 103, name: "홍길동", email: "hong@company.com" },
-    },
-    {
-        id: 4,
-        organizationId: 1,
-        userId: 104,
-        role: "MEMBER",
-        status: "PENDING",
-        joinedAt: "2026-07-20T14:30:00.000Z",
-        createdAt: "2026-07-20T14:30:00.000Z",
-        user: { id: 104, name: "홍길동", email: "hong@company.com" },
-    },
-    {
-        id: 5,
-        organizationId: 1,
-        userId: 105,
-        role: "MEMBER",
-        status: "PENDING",
-        joinedAt: "2026-07-20T14:30:00.000Z",
-        createdAt: "2026-07-20T14:30:00.000Z",
-        user: { id: 105, name: "홍길동", email: "hong@company.com" },
-    },
-];
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function OrganizationApprovalListPage() {
     const [search, setSearch] = useState("");
     const [members, setMembers] = useState<JoinRequestMember[]>([]);
-    //const [members, setMembers] = useState<Member[]>(DUMMY_MEMBERS);
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [batchAction, setBatchAction] = useState<"APPROVED" | "REJECTED">("APPROVED");
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const fetchMembers = async () => {
+    const fetchMembers = useCallback(async () => {
         try {
+            setIsLoading(true);
             const data = await managerJoinApi.getJoinRequestList();
             setMembers(data || []);
         } catch (error: any) {
             console.error(error);
             Alert.alert("오류", error.response?.data?.message || "멤버 목록 조회에 실패했습니다.");
+        } finally {
+            setIsLoading(false);
         }
-    };
-
-    useEffect(() => {
-        fetchMembers();
     }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchMembers();
+        }, [fetchMembers]),
+    );
 
     const filteredMembers = members.filter(
         m => m.user.name.includes(search) || m.user.email.includes(search),
@@ -123,29 +73,23 @@ export default function OrganizationApprovalListPage() {
         if (selectedIds.length === 0) return;
 
         try {
+            setIsSubmitting(true);
             await managerJoinApi.processJoinRequest({
                 memberIds: selectedIds,
                 status: batchAction,
             });
 
+            setSelectedIds([]);
+            await fetchMembers();
             Alert.alert(
                 "알림",
                 `일괄 ${batchAction === "APPROVED" ? "승인" : "반려"} 처리되었습니다.`,
             );
-                Alert.alert(
-                    "알림",
-                    `일괄 ${batchAction === "APPROVED" ? "승인" : "반려"} 처리되었습니다. (테스트)`,
-                );
-
-                setMembers(prev =>
-                    prev.map(m => (selectedIds.includes(m.id) ? { ...m, status: batchAction } : m)),
-                );
-
-            setSelectedIds([]);
-            await fetchMembers();
         } catch (error: any) {
             console.error(error);
             Alert.alert("오류", error.response?.data?.message || "처리에 실패했습니다.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -190,6 +134,17 @@ export default function OrganizationApprovalListPage() {
                         contentContainerStyle={{
                             paddingBottom: selectedIds.length > 0 ? 120 : 20,
                         }}
+                        ListEmptyComponent={
+                            <View className="py-12 items-center">
+                                {isLoading ? (
+                                    <ActivityIndicator color="#7C3AED" />
+                                ) : (
+                                    <Text className="text-text-secondary">
+                                        가입 요청이 없습니다.
+                                    </Text>
+                                )}
+                            </View>
+                        }
                         renderItem={({ item, index }) => {
                             const isProcessed = item.status !== "PENDING";
                             const isChecked = selectedIds.includes(item.id);
@@ -290,7 +245,8 @@ export default function OrganizationApprovalListPage() {
 
                         <Pressable
                             onPress={executeBatchAction}
-                            className="px-2 py-2 active:opacity-70">
+                            disabled={isSubmitting}
+                            className={`px-2 py-2 active:opacity-70 ${isSubmitting ? "opacity-50" : ""}`}>
                             <Text className="font-pretendard-bold text-lg text-text-default">
                                 완료
                             </Text>

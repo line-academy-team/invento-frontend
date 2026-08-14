@@ -16,7 +16,6 @@ import {
 import { isAxiosError } from "axios";
 import InputGroup from "@/components/common/input/InputGroup";
 import ErrorMessage from "@/components/common/form/ErrorMessage";
-import { twMerge } from "tailwind-merge";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "@/components/common/Button/Button";
 
@@ -62,7 +61,6 @@ function AuthRegisterPage() {
                 ]);
             }
         } catch (error) {
-            console.log(error);
             let errorMessage = "회원가입 중 오류가 발생했습니다.";
 
             if (isAxiosError(error)) {
