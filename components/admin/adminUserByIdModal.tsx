@@ -52,15 +52,15 @@ function AdminUserByIdModal({ visible, user, onClose, onSuccess }: AdminUserById
 
     return (
         <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-            <View className="flex-1 bg-black/50 justify-center items-center px-6">
-                <View className="w-full max-w-[400px] bg-background-paper rounded-[24px] p-6 shadow-lg">
-                    <Text className="font-pretendard-bold text-xl text-text-main mb-6">
+            <View className="flex-1 bg-black/50 justify-center items-center px-5">
+                <View className="w-96 bg-background-paper rounded-2xl px-5 py-7 shadow-lg">
+                    <Text className="font-pretendard-bold text-xl text-text-main mb-5">
                         회원 정보 제어
                     </Text>
 
                     <View className="flex-row items-center gap-4 mb-6">
-                        <View className="w-[56px] h-[56px] justify-center items-center bg-primary-light rounded-2xl">
-                            <FiUser size={36} className="text-primary-main" />
+                        <View className="w-[64px] h-[64px] justify-center items-center bg-primary-light rounded-2xl">
+                            <FiUser size={37} className="text-primary-main" />
                         </View>
                         <View className="justify-center">
                             <Text className="font-pretendard-bold text-lg text-text-main">
@@ -75,20 +75,20 @@ function AdminUserByIdModal({ visible, user, onClose, onSuccess }: AdminUserById
                         </View>
                     </View>
 
-                    <View className="bg-[#F8F9FA] border border-divider rounded-[16px] p-4 mb-4">
-                        <Text className="font-pretendard-semibold text-sm text-text-main mb-3">
+                    <View className="border border-divider rounded-2xl px-5 py-6 mb-5">
+                        <Text className="font-pretendard-bold text-lg text-text-main mb-4">
                             권한 설정 (Role)
                         </Text>
                         <View className="flex-row gap-3">
                             <Pressable
                                 onPress={() => setRole("USER")}
-                                className={`flex-1 h-[44px] rounded-[12px] justify-center items-center border ${
+                                className={`flex-1 h-14 rounded-2xl justify-center items-center border ${
                                     role === "USER"
                                         ? "bg-primary-main border-primary-main"
                                         : "bg-white border-divider"
                                 }`}>
                                 <Text
-                                    className={`font-pretendard-bold text-sm ${
+                                    className={`font-pretendard-medium text-lg ${
                                         role === "USER" ? "text-white" : "text-text-secondary"
                                     }`}>
                                     USER {role === "USER" && "✓"}
@@ -97,13 +97,13 @@ function AdminUserByIdModal({ visible, user, onClose, onSuccess }: AdminUserById
 
                             <Pressable
                                 onPress={() => setRole("ADMIN")}
-                                className={`flex-1 h-[44px] rounded-[12px] justify-center items-center border ${
+                                className={`flex-1 h-14 rounded-2xl justify-center items-center border ${
                                     role === "ADMIN"
                                         ? "bg-primary-main border-primary-main"
                                         : "bg-white border-divider"
                                 }`}>
                                 <Text
-                                    className={`font-pretendard-bold text-sm ${
+                                    className={`font-pretendard-medium text-lg ${
                                         role === "ADMIN" ? "text-white" : "text-text-secondary"
                                     }`}>
                                     ADMIN {role === "ADMIN" && "✓"}
@@ -112,8 +112,8 @@ function AdminUserByIdModal({ visible, user, onClose, onSuccess }: AdminUserById
                         </View>
                     </View>
 
-                    <View className="bg-[#F8F9FA] border border-divider rounded-[16px] p-4 mb-6">
-                        <Text className="font-pretendard-semibold text-sm text-text-main mb-2">
+                    <View className="border border-divider rounded-2xl p-5 mb-5">
+                        <Text className="font-pretendard-bold text-lg text-text-main mb-2">
                             계정 정지 설정 (isDeleted)
                         </Text>
                         <Pressable
@@ -124,11 +124,11 @@ function AdminUserByIdModal({ visible, user, onClose, onSuccess }: AdminUserById
                                 size={22}
                                 color={isDeleted ? "#7C3AED" : "#9CA3AF"}
                             />
-                            <Text className="font-pretendard-semibold text-sm text-text-main">
+                            <Text className="font-pretendard-semibold text-[16px] text-text-main">
                                 계정 이용 정지 처리
                             </Text>
                         </Pressable>
-                        <Text className="font-pretendard text-xs text-text-secondary mt-1 ml-7">
+                        <Text className="font-pretendard-medium text-sm text-text-secondary ml-7">
                             정지 처리된 계정은 로그인 및 서비스 이용이 제한됩니다.
                         </Text>
                     </View>
@@ -136,7 +136,7 @@ function AdminUserByIdModal({ visible, user, onClose, onSuccess }: AdminUserById
                     <View className="flex-row gap-3">
                         <Pressable
                             onPress={onClose}
-                            className="flex-1 h-[50px] bg-divider/40 rounded-[14px] justify-center items-center">
+                            className="flex-1 h-[60px] rounded-2xl justify-center items-center hover:bg-divider">
                             <Text className="font-pretendard-bold text-base text-text-secondary">
                                 취소
                             </Text>
@@ -145,7 +145,7 @@ function AdminUserByIdModal({ visible, user, onClose, onSuccess }: AdminUserById
                         <Pressable
                             disabled={isSubmitting}
                             onPress={handleSave}
-                            className="flex-1 h-[50px] bg-primary-main rounded-[14px] justify-center items-center active:opacity-90">
+                            className="flex-1 h-[60px] bg-primary-main rounded-2xl justify-center items-center active:opacity-90">
                             {isSubmitting ? (
                                 <ActivityIndicator color="#FFFFFF" />
                             ) : (

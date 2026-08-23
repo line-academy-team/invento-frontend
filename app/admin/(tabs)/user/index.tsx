@@ -104,7 +104,7 @@ function AdminUserPage() {
 
                     <View
                         className={
-                            "mt-4 rounded-[16px] bg-background-paper border border-divider overflow-hidden"
+                            "mt-4 bg-background-paper border-b border-divider overflow-hidden"
                         }>
                         {isLoading ? (
                             <ActivityIndicator className="py-10" color="#7C3AED" />
@@ -126,13 +126,13 @@ function AdminUserPage() {
                                             i === userList.length - 1 && "border-b-0",
                                         )}>
                                         <View className={"flex-row items-center"}>
-                                            <View className="w-[64px] h-[64px] justify-center items-center bg-primary-light rounded-2xl">
+                                            <View className="w-[64px] h-[64px] rounded-2xl justify-center items-center bg-primary-light">
                                                 <FiUser size={45} className="text-primary-main" />
                                             </View>
                                             <View className={"ml-5 justify-center"}>
                                                 <Text
                                                     className={
-                                                        "font-pretendard-semibold text-xl text-text-main mb-1"
+                                                        "font-pretendard-bold text-xl text-text-main mb-0.5"
                                                     }>
                                                     {data.name}
                                                 </Text>
@@ -146,7 +146,7 @@ function AdminUserPage() {
                                                     className={
                                                         "font-pretendard text-xs text-text-secondary"
                                                     }>
-                                                    가입일 : {data.createdAt}
+                                                    가입일 : {data.createdAt?.slice(0, 10)}
                                                 </Text>
                                             </View>
                                         </View>

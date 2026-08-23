@@ -23,6 +23,7 @@ function AdminOrganizationDetailPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // TODO: 조직 상세 수정, user 아이콘 다 바꾸기, 카테고리 기능 적용
     const loadOrg = useCallback(async () => {
         try {
             setIsLoading(true);

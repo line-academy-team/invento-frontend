@@ -31,7 +31,7 @@ function MainHeader({
 
     const [isModalVisible, setModalVisible] = useState(false);
 
-    const { logout } = useUserStore();
+    const { logout, authUser } = useUserStore();
 
     const commonClassName =
         "w-full h-[88px] relative flex-row justify-between items-center px-[30px]";
@@ -46,7 +46,10 @@ function MainHeader({
 
     const handleSwitchToUser = () => {
         setModalVisible(false);
-        router.push("/user");
+        if (authUser?.memberInfo) {
+            router.push("/user");
+        }
+        router.push("/");
     };
 
     const handleLogout = () => {

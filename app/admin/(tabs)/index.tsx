@@ -52,56 +52,8 @@ function AdminMainPage() {
 
     const todayDate = new Date().toISOString().split("T")[0];
 
-    const dashboardData = [
-        {
-            logo: (
-                <View className="w-[50px] h-[50px] justify-center items-center bg-primary-light rounded-2xl">
-                    <FiUsers size={37} className="text-primary-main" />
-                </View>
-            ),
-            title: "전체 회원",
-            count: userList.length,
-            subTitle: "전체 등록된 회원 수",
-        },
-        {
-            logo: (
-                <View className="w-[50px] h-[50px] justify-center items-center bg-success-light rounded-2xl">
-                    <MaterialIcons name={"domain"} size={37} className="text-success-main" />
-                </View>
-            ),
-            title: "전체 조직",
-            count: orgList.length,
-            subTitle: "전체 등록된 조직 수",
-        },
-        {
-            logo: (
-                <View className="w-[50px] h-[50px] justify-center items-center bg-[#EFF5FF] rounded-2xl">
-                    <MaterialCommunityIcons
-                        name={"shield-account"}
-                        size={37}
-                        className="text-secondary-main"
-                    />
-                </View>
-            ),
-            title: "관리자 계정",
-            count: userList.filter(u => u.role === "ADMIN").length,
-            subTitle: "ADMIN 권한 계정 수",
-        },
-        {
-            logo: (
-                <View className="w-[50px] h-[50px] justify-center items-center bg-warning-light rounded-2xl">
-                    <AntDesign name={"user-add"} size={37} className="text-warning-main" />
-                </View>
-            ),
-            title: "오늘 가입 회원",
-            count: userList.filter(u => u.createdAt && u.createdAt.split("T")[0] === todayDate)
-                .length,
-            subTitle: "오늘 신규 가입 회원 수",
-        },
-    ];
-
     return (
-        <ScrollView>
+        <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
             <MainHeader variant={"adminMain"} onMenuPress={() => {}} />
             <View className={"flex-1 px-[30px] py-8 bg-background-default"}>
                 <Text className={"font-pretendard-medium text-lg text-text-default"}>
@@ -135,56 +87,66 @@ function AdminMainPage() {
                                 </Pressable>
                             </View>
 
-                            <View
-                                className={
-                                    "mt-3 bg-background-paper rounded-[16px] overflow-hidden"
-                                }>
-                                {userList.slice(0, 5).map((item, i) => (
-                                    <View
-                                        key={i}
-                                        className="py-5 px-5 border-b border-divider flex-row gap-4 items-center">
-                                        <Image
-                                            source={require("@/assets/images/common/user.png")}
-                                            style={{ width: 45, height: 45 }}
-                                        />
-
-                                        <View>
-                                            <Text className="font-pretendard-semibold text-sm">
-                                                {item.name}
-                                            </Text>
-                                            <Text
-                                                className={
-                                                    "font-pretendard text-xs text-text-secondary"
-                                                }>
-                                                {item.email}
-                                            </Text>
-                                            <Text
-                                                className={
-                                                    "font-pretendard text-xs text-text-secondary"
-                                                }>
-                                                {item.createdAt?.slice(0, 10)}
-                                            </Text>
-                                        </View>
+                            <View className={"mt-3 rounded-[16px] overflow-hidden"}>
+                                {userList.length === 0 ? (
+                                    <View className="h-96 justify-center items-center">
+                                        <Text>최근 가입한 회원이 없습니다. </Text>
                                     </View>
-                                ))}
-                                <Pressable onPress={() => router.push("/admin/user" as any)}>
-                                    <View
-                                        className={
-                                            "flex-row py-3 px-5 gap-2 justify-center items-center"
-                                        }>
-                                        <Text
-                                            className={
-                                                "font-pretendard-semibold text-primary-main"
-                                            }>
-                                            더 보기
-                                        </Text>
+                                ) : (
+                                    <View className="bg-background-paper">
+                                        {userList.slice(0, 5).map((item, i) => (
+                                            <View
+                                                key={i}
+                                                className="py-5 px-5 border-b border-divider flex-row gap-4 items-center">
+                                                <Image
+                                                    source={require("@/assets/images/common/user.png")}
+                                                    style={{ width: 45, height: 45 }}
+                                                />
 
-                                        <Image
-                                            source={require("@/assets/images/common/arrow_forward.png")}
-                                            style={{ width: 12, height: 12, tintColor: "#7C3AED" }}
-                                        />
+                                                <View>
+                                                    <Text className="font-pretendard-semibold text-sm">
+                                                        {item.name}
+                                                    </Text>
+                                                    <Text
+                                                        className={
+                                                            "font-pretendard text-xs text-text-secondary"
+                                                        }>
+                                                        {item.email}
+                                                    </Text>
+                                                    <Text
+                                                        className={
+                                                            "font-pretendard text-xs text-text-secondary"
+                                                        }>
+                                                        {item.createdAt?.slice(0, 10)}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        ))}
+                                        <Pressable
+                                            onPress={() => router.push("/admin/user" as any)}>
+                                            <View
+                                                className={
+                                                    "flex-row py-3 px-5 gap-2 justify-center items-center"
+                                                }>
+                                                <Text
+                                                    className={
+                                                        "font-pretendard-semibold text-primary-main"
+                                                    }>
+                                                    더 보기
+                                                </Text>
+
+                                                <Image
+                                                    source={require("@/assets/images/common/arrow_forward.png")}
+                                                    style={{
+                                                        width: 12,
+                                                        height: 12,
+                                                        tintColor: "#7C3AED",
+                                                    }}
+                                                />
+                                            </View>
+                                        </Pressable>
                                     </View>
-                                </Pressable>
+                                )}
                             </View>
                         </View>
 
@@ -207,60 +169,71 @@ function AdminMainPage() {
                                 </Pressable>
                             </View>
 
-                            <View
-                                className={
-                                    "mt-3 bg-background-paper rounded-[16px] overflow-hidden"
-                                }>
-                                {orgList.slice(0, 5).map((item, i) => (
-                                    <View
-                                        key={i}
-                                        className="py-5 px-5 border-b border-divider flex-row gap-4 items-center">
-                                        <View className="w-[50px] h-[50px] justify-center items-center bg-text-secondary rounded-full">
-                                            <MaterialIcons
-                                                name={"domain"}
-                                                size={35}
-                                                className="text-text-light"
-                                            />
-                                        </View>
-
-                                        <View>
-                                            <Text className="font-pretendard-semibold text-sm">
-                                                {item.name}
-                                            </Text>
-                                            <Text
-                                                className={
-                                                    "font-pretendard text-xs text-text-secondary"
-                                                }>
-                                                {item.creator.name}
-                                            </Text>
-                                            <Text
-                                                className={
-                                                    "font-pretendard text-xs text-text-secondary"
-                                                }>
-                                                {item.createdAt?.slice(0, 10)}
-                                            </Text>
-                                        </View>
+                            <View className={"mt-3 rounded-[16px] overflow-hidden"}>
+                                {orgList.length === 0 ? (
+                                    <View className="h-96 justify-center items-center">
+                                        <Text>최근 생성된 조직이 없습니다. </Text>
                                     </View>
-                                ))}
-                                <Pressable
-                                    onPress={() => router.push("/admin/organization" as any)}>
-                                    <View
-                                        className={
-                                            "flex-row py-3 px-5 gap-2 justify-center items-center"
-                                        }>
-                                        <Text
-                                            className={
-                                                "font-pretendard-semibold text-primary-main"
+                                ) : (
+                                    <View className="bg-background-paper">
+                                        {orgList.slice(0, 5).map((item, i) => (
+                                            <View
+                                                key={i}
+                                                className="py-5 px-5 border-b border-divider flex-row gap-4 items-center">
+                                                <View className="w-[50px] h-[50px] justify-center items-center bg-text-secondary rounded-full">
+                                                    <MaterialIcons
+                                                        name={"domain"}
+                                                        size={35}
+                                                        className="text-text-light"
+                                                    />
+                                                </View>
+
+                                                <View>
+                                                    <Text className="font-pretendard-semibold text-sm">
+                                                        {item.name}
+                                                    </Text>
+                                                    <Text
+                                                        className={
+                                                            "font-pretendard text-xs text-text-secondary"
+                                                        }>
+                                                        {item.creator.name}
+                                                    </Text>
+                                                    <Text
+                                                        className={
+                                                            "font-pretendard text-xs text-text-secondary"
+                                                        }>
+                                                        {item.createdAt?.slice(0, 10)}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        ))}
+                                        <Pressable
+                                            onPress={() =>
+                                                router.push("/admin/organization" as any)
                                             }>
-                                            더 보기
-                                        </Text>
+                                            <View
+                                                className={
+                                                    "flex-row py-3 px-5 gap-2 justify-center items-center"
+                                                }>
+                                                <Text
+                                                    className={
+                                                        "font-pretendard-semibold text-primary-main"
+                                                    }>
+                                                    더 보기
+                                                </Text>
 
-                                        <Image
-                                            source={require("@/assets/images/common/arrow_forward.png")}
-                                            style={{ width: 12, height: 12, tintColor: "#7C3AED" }}
-                                        />
+                                                <Image
+                                                    source={require("@/assets/images/common/arrow_forward.png")}
+                                                    style={{
+                                                        width: 12,
+                                                        height: 12,
+                                                        tintColor: "#7C3AED",
+                                                    }}
+                                                />
+                                            </View>
+                                        </Pressable>
                                     </View>
-                                </Pressable>
+                                )}
                             </View>
                         </View>
                     </View>

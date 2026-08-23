@@ -16,8 +16,8 @@ import MainHeader from "@/components/layout/MainHeader";
 import { twMerge } from "tailwind-merge";
 import Badge from "@/components/common/Badge/Badge";
 import { useRouter } from "expo-router";
+import { FaUser } from "react-icons/fa";
 import { MaterialIcons } from "@expo/vector-icons";
-import { FiUser } from "react-icons/fi";
 
 function AdminOrganizationPage() {
     const router = useRouter();
@@ -104,7 +104,7 @@ function AdminOrganizationPage() {
 
                     <View
                         className={
-                            "mt-4 rounded-[16px] bg-background-paper border border-divider overflow-hidden"
+                            "mt-4 bg-background-paper border-b border-divider overflow-hidden"
                         }>
                         {isLoading ? (
                             <ActivityIndicator className="py-10" color="#7C3AED" />
@@ -114,80 +114,69 @@ function AdminOrganizationPage() {
                             </Text>
                         ) : (
                             orgList.map((data, i) => (
-                                <Pressable
-                                    key={data.id}
-                                    onPress={() => router.push(`/admin/organization/${data.id}`)}>
-                                    <View
-                                        className={twMerge(
-                                            "flex-row p-6 justify-between items-center border-b border-divider",
-                                            i === orgList.length - 1 && "border-b-0",
-                                        )}>
-                                        <View className={"flex-row items-center"}>
-                                            <View className="w-[64px] h-[64px] justify-center items-center bg-primary-light rounded-2xl">
-                                                <MaterialIcons
-                                                    name={"domain"}
-                                                    size={45}
-                                                    className="text-primary-main"
-                                                />
-                                            </View>
-                                            <View className={"ml-5 justify-center"}>
-                                                <Text
-                                                    className={
-                                                        "font-pretendard-semibold text-xl text-text-main mb-1"
-                                                    }>
-                                                    {data.name}
-                                                </Text>
-                                                <View className="flex-row gap-1 items-center justify-center">
-                                                    <Text
-                                                        className={
-                                                            "font-pretendard text-sm text-text-secondary"
-                                                        }>
-                                                        대표자
-                                                    </Text>
-                                                    <FiUser size={12} />
-                                                    <Text
-                                                        className={
-                                                            "font-pretendard text-sm text-text-secondary"
-                                                        }>
-                                                        {data.creator.name}
-                                                    </Text>
-                                                </View>
-                                                <View className="flex-row gap-1 items-center justify-center">
-                                                    <Text
-                                                        className={
-                                                            "font-pretendard-semibold text-xs text-text-secondary"
-                                                        }>
-                                                        멤버 {data._count.members}
-                                                    </Text>
-                                                    <View className="w-[10px] h-[10px] rounded-full bg-text-secondary" />
-                                                    <Text
-                                                        className={
-                                                            "font-pretendard-semibold text-xs text-text-secondary"
-                                                        }>
-                                                        비품 {data._count.equipment}개
-                                                    </Text>
-                                                </View>
-                                                <Text
-                                                    className={
-                                                        "font-pretendard text-xs text-text-secondary"
-                                                    }>
-                                                    생성일 : {data.createdAt}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                        <View>
-                                            <Badge
-                                                status={getStatus(data)}
-                                                className="gap-3 justify-center items-center"
+                                <View
+                                    key={i}
+                                    className={twMerge(
+                                        "flex-row p-6 justify-between items-center border-b border-divider",
+                                        i === orgList.length - 1 && "border-b-0",
+                                    )}>
+                                    <View className={"flex-row items-center"}>
+                                        <View className="w-[64px] h-[64px] rounded-2xl justify-center items-center bg-primary-light">
+                                            <MaterialIcons
+                                                name={"domain"}
+                                                size={45}
+                                                className="text-primary-main"
                                             />
-                                            <View className="border border-primary-main w-[72px] h-[24px] rounded-[16px] items-center justify-center">
-                                                <Text className="text-primary-main font-pretendard-bold text-[14px]">
-                                                    관리
+                                        </View>
+                                        <View className={"ml-5 justify-center"}>
+                                            <Text
+                                                className={
+                                                    "font-pretendard-bold text-xl text-text-main mb-0.5"
+                                                }>
+                                                {data.name}
+                                            </Text>
+                                            <View className="flex-row gap-1 items-center">
+                                                <Text
+                                                    className={
+                                                        "font-pretendard text-sm text-text-secondary"
+                                                    }>
+                                                    대표자
+                                                </Text>
+                                                <FaUser size={12} style={{ color: "#6B7280 " }} />
+                                                <Text
+                                                    className={
+                                                        "font-pretendard text-sm text-text-secondary"
+                                                    }>
+                                                    {data.creator.name}
                                                 </Text>
                                             </View>
+                                            <View className="flex-row gap-1 items-center">
+                                                <Text
+                                                    className={
+                                                        "font-pretendard-semibold text-sm text-text-secondary"
+                                                    }>
+                                                    멤버 {data._count.members} •{" "}
+                                                    {data._count.equipment}
+                                                </Text>
+                                            </View>
+
+                                            <Text
+                                                className={
+                                                    "font-pretendard-medium text-sm text-text-secondary"
+                                                }>
+                                                생성일 : {data.createdAt?.slice(0, 10)}
+                                            </Text>
                                         </View>
                                     </View>
-                                </Pressable>
+                                    <View className="gap-3 justify-center items-center">
+                                        <Badge status={getStatus(data)} />
+                                        <View className="border border-primary-main w-[72px] h-[24px] rounded-[16px] items-center justify-center">
+                                            <Text className="text-primary-main font-pretendard-bold text-[14px]">
+                                                관리
+                                            </Text>
+                                        </View>
+                                    </View>
+                                </View>
                             ))
                         )}
                     </View>
