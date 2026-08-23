@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Modal, View, Text, Pressable, Alert, Platform, ActivityIndicator } from "react-native";
 import { User, UserRole } from "@/types/user";
 import adminApi from "@/api/admin/adminApi";
-import { FiUser } from "react-icons/fi";
 import { MaterialIcons } from "@expo/vector-icons";
+import { FaUser } from "react-icons/fa";
 
 interface AdminUserByIdModalProps {
     visible: boolean;
@@ -60,7 +60,7 @@ function AdminUserByIdModal({ visible, user, onClose, onSuccess }: AdminUserById
 
                     <View className="flex-row items-center gap-4 mb-6">
                         <View className="w-[64px] h-[64px] justify-center items-center bg-primary-light rounded-2xl">
-                            <FiUser size={37} className="text-primary-main" />
+                            <FaUser size={30} className="text-primary-main" />
                         </View>
                         <View className="justify-center">
                             <Text className="font-pretendard-bold text-lg text-text-main">

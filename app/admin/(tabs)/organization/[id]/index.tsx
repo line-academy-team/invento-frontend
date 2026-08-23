@@ -13,7 +13,6 @@ import {
 import MainHeader from "@/components/layout/MainHeader";
 import { OrganizationCount } from "@/types/organization";
 import { MaterialIcons } from "@expo/vector-icons";
-import { twMerge } from "tailwind-merge";
 
 function AdminOrganizationDetailPage() {
     const router = useRouter();
@@ -23,7 +22,6 @@ function AdminOrganizationDetailPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // TODO: 조직 상세 수정, user 아이콘 다 바꾸기, 카테고리 기능 적용
     const loadOrg = useCallback(async () => {
         try {
             setIsLoading(true);
@@ -103,99 +101,146 @@ function AdminOrganizationDetailPage() {
                     </Text>
                 </View>
             ) : (
-                <ScrollView className="flex-1" contentContainerClassName="p-[30px] pb-5">
-                    <View className="flex-row bg-background-paper border border-border rounded-[10px] p-6 items-center justify-between gap-5 mb-6">
+                <ScrollView className="flex-1 p-5">
+                    <View className="flex-row bg-background-paper border border-divider rounded-[10px] p-5 items-center gap-5 mb-5">
                         <View className="w-[70px] h-[70px] justify-center items-center bg-primary-light rounded-2xl">
                             <MaterialIcons name="domain" size={50} className="text-primary-main" />
                         </View>
-                        <View className="justify-center">
-                            <Text className="font-pretendard-bold text-2xl text-text-main mb-1">
+                        <View>
+                            <Text className="font-pretendard-semibold text-2xl text-text-main mb-1">
                                 {org.name}
                             </Text>
-                            <View
-                                className={twMerge(
-                                    "w-20, h-6, justify-center items-center rounded-2xl",
-                                    isSuspended ? "bg-success-light" : "bg-error-light",
-                                )}></View>
-                            <Text className="font-pretendard text-xs text-text-secondary mt-3">
-                                등록 장비: {org._count.equipment ?? 0}개 | 멤버:{" "}
+                            <View style={{width: 85}} className="mb-1 items-center justify-center">
+                                <View
+                                    className={`px-3 py-1 rounded-2xl ${
+                                        isSuspended ? "bg-error-light" : "bg-success-light"
+                                    }`}>
+                                    <Text
+                                        className={`font-pretendard-semibold text-xs ${
+                                            isSuspended ? "text-error-main" : "text-success-main"
+                                        }`}>
+                                        {isSuspended ? "운영 정지" : "정상 운영 중"}
+                                    </Text>
+                                </View>
+                            </View>
+                            <Text className="font-pretendard-semibold text-xs text-text-secondary">
+                                등록 장비: {org._count?.equipment ?? 0}개 | 멤버:{" "}
                                 {org._count?.members ?? 0}명
                             </Text>
                         </View>
-                        <Text className="font-pretendard-bold text-lg text-text-main mb-4">
+                    </View>
+
+                    <View className="mb-4" style={{ paddingHorizontal: 10 }}>
+                        <Text className="font-pretendard-bold text-lg text-text-main mb-3">
                             기본 정보
                         </Text>
-                        <View className="gap-y-4 mb-8">
-                            <View className="flex-row justify-between items-center">
-                                <Text className="font-pretendard text-base text-text-secondary">
+                        <View
+                            style={{ borderTopWidth: 1, borderBottomWidth: 1 }}
+                            className="border-text-secondary">
+                            <View className="flex-row justify-between items-center p-5 border-b border-divider">
+                                <Text className="font-pretendard-medium text-[16px] text-text-main">
                                     대표자
                                 </Text>
-                                <Text className="font-pretendard-semibold text-base text-text-main">
+                                <Text className="font-pretendard-medium text-[16px] text-text-main">
                                     {org.creator?.name || "-"}
                                 </Text>
                             </View>
-                            <View className="flex-row justify-between items-center">
-                                <Text className="font-pretendard text-base text-text-secondary">
+                            <View className="flex-row justify-between items-center p-5 border-b border-divider">
+                                <Text className="font-pretendard-medium text-[16px] text-text-main">
                                     초대코드
                                 </Text>
-                                <Text className="font-pretendard-semibold text-base text-text-main">
-                                    {org.inviteCode}
+                                <View className="flex-row items-center gap-1">
+                                    <Text className="font-pretendard-semibold text-sm text-text-main">
+                                        {org.inviteCode}
+                                    </Text>
+                                    <MaterialIcons name="content-copy" size={22} color="#000000" />
+                                </View>
+                            </View>
+                            <View className="flex-row justify-between items-center p-5 border-b border-divider">
+                                <Text className="font-pretendard-medium text-[16px] text-text-main">
+                                    대표자
+                                </Text>
+                                <Text className="font-pretendard-medium text-[16px] text-text-main">
+                                    {org.createdAt.split("T")[0]}
                                 </Text>
                             </View>
-                            <View className="flex-row justify-between items-center">
-                                <Text className="font-pretendard text-base text-text-secondary">
-                                    생성일
-                                </Text>
-                                <Text className="font-pretendard-semibold text-base text-text-main">
-                                    {org.createdAt?.split("T")[0]}
-                                </Text>
-                            </View>
-                            <View className="flex-row justify-between items-center">
-                                <Text className="font-pretendard text-base text-text-secondary">
+                            <View className="flex-row justify-between items-center p-5 border-b border-divider">
+                                <Text className="font-pretendard-medium text-[16px] text-text-main">
                                     상태
                                 </Text>
-                                <Text
-                                    className={`font-pretendard-semibold text-base ${isSuspended ? "text-error-main" : "text-success-main"}`}>
-                                    {isSuspended ? "운영 정지" : "정상 운영 중"}
+                                <Text className="font-pretendard-medium text-[16px] text-text-main">
+                                    <View className="items-center mb-1">
+                                        <View
+                                            className={`px-3 py-1 rounded-2xl ${
+                                                isSuspended ? "bg-error-light" : "bg-success-light"
+                                            }`}>
+                                            <Text
+                                                className={`font-pretendard-semibold text-xs ${
+                                                    isSuspended
+                                                        ? "text-error-main"
+                                                        : "text-success-main"
+                                                }`}>
+                                                {isSuspended ? "운영 정지" : "정상 운영 중"}
+                                            </Text>
+                                        </View>
+                                    </View>
                                 </Text>
                             </View>
-                            <View className="flex-row justify-between items-center">
-                                <Text className="font-pretendard text-base text-text-secondary">
+                            <View className="flex-row justify-between items-center p-5 border-b border-divider">
+                                <Text className="font-pretendard-medium text-[16px] text-text-main">
                                     멤버 수
                                 </Text>
-                                <Text className="font-pretendard-bold text-base text-text-main">
-                                    {org._count?.members ?? 0}명
+                                <Text className="font-pretendard-medium text-[16px] text-text-main">
+                                    {org._count.members ?? 0}명
                                 </Text>
                             </View>
-                            <View className="flex-row justify-between items-center">
-                                <Text className="font-pretendard text-base text-text-secondary">
+                            <View className="flex-row justify-between items-center p-5 border-b border-divider">
+                                <Text className="font-pretendard-medium text-[16px] text-text-main">
                                     등록 비품 수
                                 </Text>
-                                <Text className="font-pretendard-bold text-base text-text-main">
-                                    {org._count?.equipment ?? 0}개
+                                <Text className="font-pretendard-medium text-[16px] text-text-main">
+                                    {org._count.equipment ?? 0}개
                                 </Text>
                             </View>
                         </View>
+                    </View>
+
+                    <View className="mb-5">
+                        <View className="border border-divider bg-background-paper rounded-[10px] px-3 py-4">
+                            <Text className="font-pretendard-bold text-lg text-text-main mb-2">
+                                설명
+                            </Text>
+                            <Text className="font-pretendard text-[16px] text-text-main">
+                                {org.description || "등록된 설명이 없습니다."}
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View
+                        style={{  marginHorizontal: 10, borderTopWidth: 1 }}
+                        className="pt-2 border-divider"
+                    >
                         <Text className="font-pretendard-bold text-lg text-text-main mb-2">
-                            설명
-                        </Text>
-                        <Text className="font-pretendard text-sm text-text-secondary mb-8 leading-6">
-                            {org.description || "등록된 설명이 없습니다."}
-                        </Text>
-                        <Text className="font-pretendard-bold text-lg text-text-main mb-4">
                             관리 기능
                         </Text>
                         <Pressable
                             disabled={isSubmitting}
                             onPress={handleToggleSuspend}
-                            className={`w-full h-[52px] border rounded-[16px] justify-center items-center active:opacity-80 ${
+                            className={`w-full h-[60px] border-2 border-error-main rounded-2xl flex-row justify-center items-center gap-2 ${
                                 isSuspended
                                     ? "border-primary-main bg-primary-light"
-                                    : "border-error-main bg-error-light/20"
+                                    : "border-error-main bg-white"
                             }`}>
+                            <MaterialIcons
+                                name={isSuspended ? "play-circle-outline" : "warning-amber"}
+                                size={28}
+                                color={isSuspended ? "#7C3AED" : "#EF4444"}
+                            />
                             <Text
-                                className={`font-pretendard-bold text-base ${isSuspended ? "text-primary-main" : "text-error-main"}`}>
-                                {isSuspended ? "조직 정지 해제하기" : "⚠️ 조직 정지하기"}
+                                className={`font-pretendard-bold text-xl ${
+                                    isSuspended ? "text-primary-main" : "text-error-main"
+                                }`}>
+                                {isSuspended ? "조직 정지 해제하기" : "조직 정지하기"}
                             </Text>
                         </Pressable>
                     </View>

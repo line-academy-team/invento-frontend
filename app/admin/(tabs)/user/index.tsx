@@ -15,8 +15,8 @@ import { User } from "@/types/user";
 import MainHeader from "@/components/layout/MainHeader";
 import { twMerge } from "tailwind-merge";
 import Badge from "@/components/common/Badge/Badge";
-import { FiUser } from "react-icons/fi";
 import AdminUserByIdModal from "@/components/admin/adminUserByIdModal";
+import { FaUser } from "react-icons/fa";
 
 function AdminUserPage() {
     const [selected, setSelected] = useState("전체");
@@ -54,6 +54,25 @@ function AdminUserPage() {
         if (user.deletedAt) return "정지";
         return "정상";
     };
+
+    const filteredUserList = userList.filter(user => {
+        if (selected === "정지") {
+            if (!user.deletedAt) return false;
+        } else if (selected === "USER") {
+            if (user.deletedAt || user.role !== "USER") return false;
+        } else if (selected === "ADMIN") {
+            if (user.deletedAt || user.role !== "ADMIN") return false;
+        }
+
+        if (search.trim() !== "") {
+            const query = search.toLowerCase();
+            const nameMatch = user.name?.toLowerCase().includes(query);
+            const emailMatch = user.email?.toLowerCase().includes(query);
+            return nameMatch || emailMatch;
+        }
+
+        return true;
+    });
 
     return (
         <View className="flex-1 bg-background-paper relative">
@@ -104,16 +123,16 @@ function AdminUserPage() {
 
                     <View
                         className={
-                            "mt-4 bg-background-paper border-b border-divider overflow-hidden"
+                            "mt-4 bg-background-paper overflow-hidden"
                         }>
                         {isLoading ? (
                             <ActivityIndicator className="py-10" color="#7C3AED" />
-                        ) : userList.length === 0 ? (
+                        ) : filteredUserList.length === 0 ? (
                             <Text className="py-10 text-center text-text-secondary">
                                 조회된 사용자가 없습니다.
                             </Text>
                         ) : (
-                            userList.map((data, i) => (
+                            filteredUserList.map((data, i) => (
                                 <Pressable
                                     key={data.id}
                                     onPress={() => {
@@ -127,7 +146,7 @@ function AdminUserPage() {
                                         )}>
                                         <View className={"flex-row items-center"}>
                                             <View className="w-[64px] h-[64px] rounded-2xl justify-center items-center bg-primary-light">
-                                                <FiUser size={45} className="text-primary-main" />
+                                                <FaUser size={30} className="text-primary-main" />
                                             </View>
                                             <View className={"ml-5 justify-center"}>
                                                 <Text
