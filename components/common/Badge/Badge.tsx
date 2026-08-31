@@ -33,12 +33,13 @@ const getBadgeStyles = (status: string) => {
         case "답변완료":
             return { bg: "bg-success-light", text: "text-success-main" };
         case "반려":
-        case "대여중":
+        // case "대여중":
         case "파손신고":
         case "정지":
             return { bg: "bg-error-light", text: "text-error-main" };
         case "요청":
         case "사용중":
+        case "대여중":
             return { bg: "bg-primary-light", text: "text-primary-main" };
         case "대기":
         case "신청중":
