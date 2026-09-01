@@ -3,6 +3,7 @@ import {
     ActivityIndicator,
     Alert,
     Animated,
+    Platform,
     Pressable,
     ScrollView,
     Text,
@@ -117,14 +118,24 @@ function ManagerDamageReportDetailPage() {
                 );
             } catch (error) {
                 console.error(error);
-                Alert.alert("조회 실패", "파손 신고 상세를 불러오지 못했습니다.");
+                if (Platform.OS === "web") {
+                    window.alert(`조회 실패\n파손 신고 목록을 불러오지 못했습니다.`);
+                    router.back();
+                } else {
+                    Alert.alert("조회 실패", "파손 신고 목록을 불러오지 못했습니다.", [
+                        {
+                            text: "확인",
+                            onPress: () => router.back(),
+                        },
+                    ]);
+                }
             } finally {
                 setIsLoading(false);
             }
         };
 
         loadData();
-    }, [id, organizationId]);
+    }, [id, organizationId, router]);
 
     const handleConfirm = async () => {
         if (!report || !replyContent.trim()) {
@@ -139,15 +150,25 @@ function ManagerDamageReportDetailPage() {
                 result: replyContent.trim(),
             });
             setReport(current => (current ? { ...current, ...updatedReport } : current));
-            Alert.alert("확인", "처리가 완료되었습니다.", [
-                {
-                    text: "확인",
-                    onPress: () => router.replace("/manager/report" as Href),
-                },
-            ]);
+            if (Platform.OS === "web") {
+                window.alert(`확인\n처리가 완료되었습니다.`);
+                router.replace("/manager/report" as Href);
+            } else {
+                Alert.alert("확인", "처리가 완료되었습니다.", [
+                    {
+                        text: "확인",
+                        onPress: () => router.replace("/manager/report" as Href),
+                    },
+                ]);
+            }
+
         } catch (error) {
             console.error(error);
-            Alert.alert("처리 실패", "파손 신고 답변 처리 중 오류가 발생했습니다.");
+            if (Platform.OS === "web") {
+                window.alert(`처리 실패\n파손 신고 답변 처리 중 오류가 발생했습니다.`);
+            } else {
+                Alert.alert("처리 실패", "파손 신고 답변 처리 중 오류가 발생했습니다.");
+            }
         } finally {
             setIsSubmitting(false);
         }

@@ -2,6 +2,7 @@ import {
     ActivityIndicator,
     Alert,
     Image,
+    Platform,
     Pressable,
     ScrollView,
     Text,
@@ -75,10 +76,20 @@ function ManagerReportPage() {
                 .then(setReports)
                 .catch(error => {
                     console.error(error);
-                    Alert.alert("조회 실패", "조직 신고 목록을 불러오지 못했습니다.");
+                    if (Platform.OS === "web") {
+                        window.alert(`조회 실패\n조직 신고 목록을 불러오지 못했습니다.`);
+                        router.back();
+                    } else {
+                        Alert.alert("조회 실패", "조직 신고 목록을 불러오지 못했습니다.", [
+                            {
+                                text: "확인",
+                                onPress: () => router.back(),
+                            },
+                        ]);
+                    }
                 })
                 .finally(() => setIsLoading(false));
-        }, [organizationId]),
+        }, [organizationId, router]),
     );
 
     const getStatus = (report: Report) => (report.status === "COMPLETED" ? "답변완료" : "답변대기");

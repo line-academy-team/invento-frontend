@@ -1,5 +1,14 @@
 import React, { useCallback, useState } from "react";
-import { ActivityIndicator, View, Text, TextInput, Pressable, FlatList, Alert } from "react-native";
+import {
+    ActivityIndicator,
+    View,
+    Text,
+    TextInput,
+    Pressable,
+    FlatList,
+    Alert,
+    Platform,
+} from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import MainHeader from "@/components/layout/MainHeader";
@@ -22,7 +31,11 @@ export default function OrganizationApprovalListPage() {
             setMembers(data || []);
         } catch (error: any) {
             console.error(error);
-            Alert.alert("오류", error.response?.data?.message || "멤버 목록 조회에 실패했습니다.");
+            if (Platform.OS === "web") {
+                window.alert(`오류\n${error.response?.data?.message || "멤버 목록 조회에 실패했습니다."}`);
+            } else {
+                Alert.alert("오류", `${error.response?.data?.message || "멤버 목록 조회에 실패했습니다."}`);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -81,13 +94,23 @@ export default function OrganizationApprovalListPage() {
 
             setSelectedIds([]);
             await fetchMembers();
-            Alert.alert(
-                "알림",
-                `일괄 ${batchAction === "APPROVED" ? "승인" : "반려"} 처리되었습니다.`,
-            );
+            if (Platform.OS === "web") {
+                window.alert(
+                    `알림\n일괄 ${batchAction === "APPROVED" ? "승인" : "반려"} 처리되었습니다.`,
+                );
+            } else {
+                Alert.alert(
+                    "알림",
+                    `일괄 ${batchAction === "APPROVED" ? "승인" : "반려"} 처리되었습니다.`,
+                );
+            }
         } catch (error: any) {
             console.error(error);
-            Alert.alert("오류", error.response?.data?.message || "처리에 실패했습니다.");
+            if (Platform.OS === "web") {
+                window.alert(`오류\n${error.response?.data?.message || "처리에 실패했습니다."}`);
+            } else {
+                Alert.alert("오류", error.response?.data?.message || "처리에 실패했습니다.");
+            }
         } finally {
             setIsSubmitting(false);
         }

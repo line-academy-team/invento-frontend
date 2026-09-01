@@ -166,8 +166,8 @@ function AdminOrganizationPage() {
                                                         className={
                                                             "font-pretendard-semibold text-sm text-text-secondary"
                                                         }>
-                                                        멤버 {data._count.members ?? 0}명 • 비품{" "}
-                                                        {data._count.equipment ?? 0}개
+                                                        멤버 {data.count.members ?? 0}명 • 비품{" "}
+                                                        {data.count.equipment ?? 0}개
                                                     </Text>
                                                 </View>
 

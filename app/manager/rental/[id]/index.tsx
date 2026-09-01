@@ -3,6 +3,7 @@ import {
     ActivityIndicator,
     Alert,
     Modal,
+    Platform,
     Pressable,
     ScrollView,
     Text,
@@ -46,7 +47,14 @@ function ManagerRentalRequestDetailPage() {
             .then(setRental)
             .catch(error => {
                 console.error(error);
-                Alert.alert("조회 실패", "대여 요청 상세를 불러오지 못했습니다.");
+                const title = "조회 실패";
+                const message = "대여 요청 상세를 불러오지 못했습니다.";
+
+                if (Platform.OS === "web") {
+                    window.alert(`${title}\n${message}`);
+                } else {
+                    Alert.alert(title, message);
+                }
             })
             .finally(() => setIsLoading(false));
     }, [id, organizationId]);
@@ -60,13 +68,29 @@ function ManagerRentalRequestDetailPage() {
                 status: "BORROWED",
             });
             setIsApproveModalVisible(false);
-            Alert.alert("승인 완료", "승인 처리가 완료되었습니다.", [
-                { text: "확인", onPress: () => router.replace("/manager/rental") },
-            ]);
+
+            const title = "승인 완료";
+            const message = "승인 처리가 완료되었습니다.";
+
+            if (Platform.OS === "web") {
+                window.alert(`${title}\n${message}`);
+                router.replace("/manager/rental");
+            } else {
+                Alert.alert(title, message, [
+                    { text: "확인", onPress: () => router.replace("/manager/rental") },
+                ]);
+            }
             setMemo("");
         } catch (error) {
             console.error(error);
-            Alert.alert("승인 실패", "대여 승인 처리 중 오류가 발생했습니다.");
+            const title = "승인 실패";
+            const message = "대여 승인 처리 중 오류가 발생했습니다.";
+
+            if (Platform.OS === "web") {
+                window.alert(`${title}\n${message}`);
+            } else {
+                Alert.alert(title, message);
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -75,7 +99,14 @@ function ManagerRentalRequestDetailPage() {
     const handleRejectComplete = async () => {
         if (!organizationId || !rental) return;
         if (!rejectMemo.trim()) {
-            Alert.alert("알림", "반려 사유를 입력해주세요.");
+            const title = "알림";
+            const message = "반려 사유를 입력해주세요.";
+
+            if (Platform.OS === "web") {
+                window.alert(`${title}\n${message}`);
+            } else {
+                Alert.alert(title, message);
+            }
             return;
         }
 
@@ -86,13 +117,29 @@ function ManagerRentalRequestDetailPage() {
                 rejectedReason: rejectMemo.trim(),
             });
             setIsRejectModalVisible(false);
-            Alert.alert("반려 완료", "반려 처리가 완료되었습니다.", [
-                { text: "확인", onPress: () => router.replace("/manager/rental") },
-            ]);
+
+            const title = "반려 완료";
+            const message = "반려 처리가 완료되었습니다.";
+
+            if (Platform.OS === "web") {
+                window.alert(`${title}\n${message}`);
+                router.replace("/manager/rental");
+            } else {
+                Alert.alert(title, message, [
+                    { text: "확인", onPress: () => router.replace("/manager/rental") },
+                ]);
+            }
             setRejectMemo("");
         } catch (error) {
             console.error(error);
-            Alert.alert("반려 실패", "대여 반려 처리 중 오류가 발생했습니다.");
+            const title = "반려 실패";
+            const message = "대여 반려 처리 중 오류가 발생했습니다.";
+
+            if (Platform.OS === "web") {
+                window.alert(`${title}\n${message}`);
+            } else {
+                Alert.alert(title, message);
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -393,4 +440,5 @@ function ManagerRentalRequestDetailPage() {
         </View>
     );
 }
+
 export default ManagerRentalRequestDetailPage;

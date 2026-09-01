@@ -7,6 +7,7 @@ import {
     View,
     Text,
     Pressable,
+    Platform,
 } from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
 import { twMerge } from "tailwind-merge";
@@ -40,14 +41,19 @@ export default function UserEquipmentListPage() {
                 setEquipmentList(data);
             } catch (error) {
                 console.error(error);
-                Alert.alert("조회 실패", "장비 목록을 불러오지 못했습니다.");
+                if (Platform.OS === "web") {
+                    window.alert(`조회 실패\n장비 목록을 불러오지 못했습니다.`);
+                    router.replace("/manager");
+                } else {
+                    Alert.alert("조회 실패", "장비 목록을 불러오지 못했습니다.");
+                }
             } finally {
                 setIsLoading(false);
             }
         }, 300);
 
         return () => clearTimeout(timer);
-    }, [isFocused, search, selected]);
+    }, [isFocused, router, search, selected]);
 
     const getStatus = (equipment: Equipment) => {
         if (equipment.status === "BROKEN") return "파손신고";

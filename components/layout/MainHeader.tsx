@@ -49,7 +49,6 @@ function MainHeader({
         if (authUser?.memberInfo) {
             router.push("/user");
         }
-        router.push("/");
     };
 
     const handleLogout = () => {

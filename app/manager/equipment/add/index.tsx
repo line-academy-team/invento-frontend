@@ -1,5 +1,5 @@
 import MainHeader from "@/components/layout/MainHeader";
-import { Alert, Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Alert, Image, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { useState } from "react";
 import Dropdown from "@/components/common/Dropdown/Dropdown";
 import { twMerge } from "tailwind-merge";
@@ -33,12 +33,22 @@ function AddEquipmentPage() {
         const parsedQuantity = Number(quantity);
 
         if (!trimmedName) {
-            Alert.alert("입력 확인", "장비명을 입력해주세요.");
+            const message = "장비명을 입력해주세요.";
+            if (Platform.OS === "web") {
+                window.alert(`입력 확인\n${message}`);
+            } else {
+                Alert.alert("입력 확인", message);
+            }
             return;
         }
 
         if (!Number.isInteger(parsedQuantity) || parsedQuantity < 1) {
-            Alert.alert("입력 확인", "수량은 1개 이상이어야 합니다.");
+            const message = "수량은 1개 이상이어야 합니다.";
+            if (Platform.OS === "web") {
+                window.alert(`입력 확인\n${message}`);
+            } else {
+                Alert.alert("입력 확인", message);
+            }
             return;
         }
 
@@ -60,7 +70,12 @@ function AddEquipmentPage() {
             router.replace("/manager/equipment");
         } catch (error) {
             console.error("장비 등록 실패", error);
-            Alert.alert("등록 실패", "장비 등록 중 오류가 발생했습니다.");
+            const message = "장비 등록 중 오류가 발생했습니다.";
+            if (Platform.OS === "web") {
+                window.alert(`등록 실패\n${message}`);
+            } else {
+                Alert.alert("등록 실패", message);
+            }
         } finally {
             setIsSubmitting(false);
         }

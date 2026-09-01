@@ -1,5 +1,13 @@
 import React, { useCallback, useState } from "react";
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from "react-native";
+import {
+    ActivityIndicator,
+    Alert,
+    Platform,
+    Pressable,
+    ScrollView,
+    Text,
+    View,
+} from "react-native";
 import { Href, useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import MainHeader from "@/components/layout/MainHeader";
@@ -24,7 +32,14 @@ export default function UserReportListPage() {
                 .then(data => isActive && setReports(data))
                 .catch(error => {
                     console.error(error);
-                    Alert.alert("조회 실패", "신고 목록을 불러오지 못했습니다.");
+                    const title = "조회 실패";
+                    const message = "신고 목록을 불러오지 못했습니다.";
+
+                    if (Platform.OS === "web") {
+                        window.alert(`${title}\n${message}`);
+                    } else {
+                        Alert.alert(title, message);
+                    }
                 })
                 .finally(() => isActive && setIsLoading(false));
 

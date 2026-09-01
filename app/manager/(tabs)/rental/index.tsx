@@ -2,6 +2,7 @@ import {
     ActivityIndicator,
     Alert,
     Image,
+    Platform,
     Pressable,
     ScrollView,
     Text,
@@ -86,7 +87,11 @@ function ManagerRentalPage() {
             setRentals(await managerRentalApi.getOrgRentalRequestList(organizationId));
         } catch (error) {
             console.error(error);
-            Alert.alert("조회 실패", "조직 대여 요청을 불러오지 못했습니다.");
+            if (Platform.OS === "web") {
+                window.alert(`조회 실패\n조직 대여 요청을 불러오지 못했습니다.`);
+            } else {
+                Alert.alert("조회 실패", "조직 대여 요청을 불러오지 못했습니다.");
+            }
         } finally {
             setIsLoading(false);
         }
@@ -145,12 +150,26 @@ function ManagerRentalPage() {
                     }),
                 ),
             );
-            Alert.alert("처리 완료", `${checkedIds.length}개의 요청을 ${actionType}했습니다.`);
+
+            const successMessage = `${checkedIds.length}개의 요청을 ${actionType}했습니다.`;
+            if (Platform.OS === "web") {
+                window.alert(`처리 완료\n${successMessage}`);
+            } else {
+                Alert.alert("처리 완료", successMessage);
+            }
+
             setCheckedIds([]);
             await loadRentals();
         } catch (error) {
             console.error(error);
-            Alert.alert("처리 실패", "선택한 대여 요청 처리 중 오류가 발생했습니다.");
+            const errorMessage = "선택한 대여 요청 처리 중 오류가 발생했습니다.";
+
+            if (Platform.OS === "web") {
+                window.alert(`처리 실패\n${errorMessage}`);
+            } else {
+                Alert.alert("처리 실패", errorMessage);
+            }
+
             setCheckedIds([]);
             await loadRentals();
         }

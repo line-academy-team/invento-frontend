@@ -38,15 +38,29 @@ export default function UserDamageReportCreatePage() {
             .then(setRental)
             .catch(error => {
                 console.error(error);
-                Alert.alert("조회 실패", "대여 정보를 불러오지 못했습니다.");
+                if (Platform.OS === "web") {
+                    window.alert(`조회 실패\n대여 정보를 불러오지 못했습니다.`);
+                    router.back();
+                } else {
+                    Alert.alert("조회 실패", `대여 정보를 불러오지 못했습니다.`, [
+                        {
+                            text: "확인",
+                            onPress: () => router.back(),
+                        },
+                    ]);
+                }
             })
             .finally(() => setIsLoading(false));
-    }, [id]);
+    }, [id, router]);
 
     const handleSubmit = async () => {
         if (!rental || rental.status !== "BORROWED") return;
         if (!content.trim()) {
-            Alert.alert("알림", "파손 사유나 문제점을 입력해주세요.");
+            if (Platform.OS === "web") {
+                window.alert(`알림\n파손 사유나 문제점을 입력해주세요.`);
+            } else {
+                Alert.alert("알림", `파손 사유나 문제점을 입력해주세요.`);
+            }
             return;
         }
 
@@ -58,15 +72,24 @@ export default function UserDamageReportCreatePage() {
                 title: `${rental.equipment.name} 파손 신고`.slice(0, 100),
                 content: content.trim(),
             });
-            Alert.alert("파손신고 접수", "파손 신고가 접수되었습니다.", [
-                {
-                    text: "확인",
-                    onPress: () => router.replace("/user/report" as Href),
-                },
-            ]);
+            if (Platform.OS === "web") {
+                window.alert(`파손신고 접수\n파손 신고가 접수되었습니다.`);
+                router.replace("/user/report" as Href);
+            } else {
+                Alert.alert("파손신고 접수", `파손 신고가 접수되었습니다.`, [
+                    {
+                        text: "확인",
+                        onPress: () => router.replace("/user/report" as Href),
+                    },
+                ]);
+            }
         } catch (error) {
             console.error(error);
-            Alert.alert("신고 실패", "파손 신고 접수 중 오류가 발생했습니다.");
+            if (Platform.OS === "web") {
+                window.alert(`신고 실패\n파손 신고 접수 중 오류가 발생했습니다.`);
+            } else {
+                Alert.alert("신고 실패", `파손 신고 접수 중 오류가 발생했습니다.`);
+            }
         } finally {
             setIsSubmitting(false);
         }

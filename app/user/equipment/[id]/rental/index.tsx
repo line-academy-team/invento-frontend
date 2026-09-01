@@ -44,7 +44,11 @@ export default function UserEquipmentRentalPage() {
             .then(setEquipment)
             .catch(error => {
                 console.error(error);
-                Alert.alert("조회 실패", "장비 정보를 불러오지 못했습니다.");
+                if (Platform.OS === "web") {
+                    window.alert(`조회 실패\n장비 정보를 불러오지 못했습니다.`);
+                } else {
+                    Alert.alert("조회 실패", "장비 정보를 불러오지 못했습니다.");
+                }
             })
             .finally(() => setIsLoading(false));
     }, [id]);
@@ -65,7 +69,11 @@ export default function UserEquipmentRentalPage() {
 
     const handleRequest = async () => {
         if (!reason.trim() || !date.trim()) {
-            Alert.alert("알림", "필수 항목(* )을 모두 입력해주세요.");
+            if (Platform.OS === "web") {
+                window.alert(`알림\n필수 항목(* )을 모두 입력해주세요.`);
+            } else {
+                Alert.alert("알림", "필수 항목(* )을 모두 입력해주세요.");
+            }
             return;
         }
 
@@ -73,7 +81,11 @@ export default function UserEquipmentRentalPage() {
 
         const dueAt = parseRentalDueDate(date);
         if (!dueAt) {
-            Alert.alert("알림", "사용예정 기간을 YYYY.MM.DD~YYYY.MM.DD 형식으로 입력해주세요.");
+            if (Platform.OS === "web") {
+                window.alert(`알림\n사용예정 기간을 YYYY.MM.DD~YYYY.MM.DD 형식으로 입력해주세요.`);
+            } else {
+                Alert.alert("알림", "사용예정 기간을 YYYY.MM.DD~YYYY.MM.DD 형식으로 입력해주세요.");
+            }
             return;
         }
 
@@ -83,7 +95,16 @@ export default function UserEquipmentRentalPage() {
             requestQuantity < 1 ||
             requestQuantity > equipment.availableQuantity
         ) {
-            Alert.alert("알림", `대여 수량은 1~${equipment.availableQuantity}개까지 가능합니다.`);
+            if (Platform.OS === "web") {
+                window.alert(
+                    `알림\n대여 수량은 1~${equipment.availableQuantity}개까지 가능합니다.`,
+                );
+            } else {
+                Alert.alert(
+                    "알림",
+                    `대여 수량은 1~${equipment.availableQuantity}개까지 가능합니다.`,
+                );
+            }
             return;
         }
 
@@ -91,7 +112,11 @@ export default function UserEquipmentRentalPage() {
             ? `${reason.trim()} / 추가 메모: ${memo.trim()}`
             : reason.trim();
         if (requestReason.length > 255) {
-            Alert.alert("알림", "사용 목적과 추가 메모는 합쳐서 255자 이내로 입력해주세요.");
+            if (Platform.OS === "web") {
+                window.alert(`알림\n사용 목적과 추가 메모는 합쳐서 255자 이내로 입력해주세요.`);
+            } else {
+                Alert.alert("알림", `사용 목적과 추가 메모는 합쳐서 255자 이내로 입력해주세요.`);
+            }
             return;
         }
 
@@ -103,15 +128,23 @@ export default function UserEquipmentRentalPage() {
                 reason: requestReason,
                 dueAt,
             });
-            Alert.alert("알림", "대여 신청이 완료되었습니다.", [
-                {
+            if (Platform.OS === "web") {
+                window.alert(`알림\n대여 신청이 완료되었습니다.`);
+                router.replace("/user/equipment");
+            } else {
+                Alert.alert("알림", `대여 신청이 완료되었습니다.`, [{
                     text: "확인",
                     onPress: () => router.replace("/user/equipment"),
-                },
-            ]);
+                }]);
+            }
         } catch (error) {
             console.error(error);
-            Alert.alert("신청 실패", "대여 신청 중 오류가 발생했습니다.");
+            if (Platform.OS === "web") {
+                window.alert(`신청 실패\n대여 신청 중 오류가 발생했습니다.`);
+                router.replace("/user/equipment");
+            } else {
+                Alert.alert("신청 실패", `대여 신청 중 오류가 발생했습니다.`);
+            }
         } finally {
             setIsSubmitting(false);
         }

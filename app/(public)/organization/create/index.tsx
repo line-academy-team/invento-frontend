@@ -57,12 +57,17 @@ export default function OrganizationCreatePage() {
 
             const newOrg = await organizationApi.createOrganization(payload);
 
-            Alert.alert("🎉 단체 생성 완료!", `초대 코드: ${newOrg.inviteCode}`, [
-                {
-                    text: "확인",
-                    onPress: () => router.replace("/manager"),
-                },
-            ]);
+            if (Platform.OS === "web") {
+                window.alert(`🎉 단체 생성 완료! 초대 코드: ${newOrg.inviteCode}`);
+                router.replace("/manager");
+            } else {
+                Alert.alert("🎉 단체 생성 완료!", `초대 코드: ${newOrg.inviteCode}`, [
+                    {
+                        text: "확인",
+                        onPress: () => router.replace("/manager"),
+                    },
+                ]);
+            }
         } catch (error: any) {
             setError("root", {
                 message: error.response?.data?.message || "조직 생성에 실패했습니다.",

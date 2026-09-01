@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Image, Platform, ScrollView, Text, View } from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import Badge from "@/components/common/Badge/Badge";
@@ -27,10 +27,20 @@ export default function UserEquipmentDetailPage() {
             .then(setEquipment)
             .catch(error => {
                 console.error(error);
-                Alert.alert("조회 실패", "장비 정보를 불러오지 못했습니다.");
+                if (Platform.OS === "web") {
+                    window.alert(`조회 실패\n장비 정보를 불러오지 못했습니다.`);
+                    router.back();
+                } else {
+                    Alert.alert("조회 실패", `장비 정보를 불러오지 못했습니다.`, [
+                        {
+                            text: "확인",
+                            onPress: () => router.back()
+                        }
+                    ]);
+                }
             })
             .finally(() => setIsLoading(false));
-    }, [id]);
+    }, [id, router]);
 
     const status =
         equipment?.status === "BROKEN"

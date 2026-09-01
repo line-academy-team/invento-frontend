@@ -50,11 +50,16 @@ export default function OrganizationJoinPage() {
                 department: data.department,
             });
 
-            Alert.alert("🎉 가입 신청 완료!", "단체 가입 신청 완료", [
-                {
-                    onPress: () => router.replace("/organization/status"),
-                },
-            ]);
+            if (Platform.OS === "web") {
+                window.alert(`🎉 단체 가입 신청 완료!`);
+                router.replace("/manager");
+            } else {
+                Alert.alert("🎉 가입 신청 완료!", "단체 가입 신청 완료", [
+                    {
+                        onPress: () => router.replace("/organization/status"),
+                    },
+                ]);
+            }
         } catch (error: any) {
             setError("root", {
                 message: error.response?.data?.message || "올바르지 않은 초대코드입니다.",

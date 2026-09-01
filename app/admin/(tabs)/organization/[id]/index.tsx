@@ -124,8 +124,8 @@ function AdminOrganizationDetailPage() {
                                 </View>
                             </View>
                             <Text className="font-pretendard-semibold text-xs text-text-secondary">
-                                등록 장비: {org._count?.equipment ?? 0}개 | 멤버:{" "}
-                                {org._count?.members ?? 0}명
+                                등록 장비: {org.count?.equipment ?? 0}개 | 멤버:{" "}
+                                {org.count?.members ?? 0}명
                             </Text>
                         </View>
                     </View>
@@ -191,7 +191,7 @@ function AdminOrganizationDetailPage() {
                                     멤버 수
                                 </Text>
                                 <Text className="font-pretendard-medium text-[16px] text-text-main">
-                                    {org._count.members ?? 0}명
+                                    {org.count.members ?? 0}명
                                 </Text>
                             </View>
                             <View className="flex-row justify-between items-center p-5 border-b border-divider">
@@ -199,7 +199,7 @@ function AdminOrganizationDetailPage() {
                                     등록 비품 수
                                 </Text>
                                 <Text className="font-pretendard-medium text-[16px] text-text-main">
-                                    {org._count.equipment ?? 0}개
+                                    {org.count.equipment ?? 0}개
                                 </Text>
                             </View>
                         </View>

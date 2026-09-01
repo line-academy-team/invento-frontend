@@ -3,6 +3,7 @@ import {
     ActivityIndicator,
     Alert,
     Image,
+    Platform,
     Pressable,
     ScrollView,
     Text,
@@ -61,12 +62,20 @@ function EditEquipmentPage() {
                 setDescription(data.description ?? "");
             } catch (error) {
                 console.error("장비 정보 조회 실패", error);
-                Alert.alert("조회 실패", "수정할 장비 정보를 불러오지 못했습니다.", [
-                    {
-                        text: "확인",
-                        onPress: () => router.replace("/manager/equipment"),
-                    },
-                ]);
+                const title = "조회 실패";
+                const message = "수정할 장비 정보를 불러오지 못했습니다.";
+
+                if (Platform.OS === "web") {
+                    window.alert(`${title}\n${message}`);
+                    router.replace("/manager/equipment");
+                } else {
+                    Alert.alert(title, message, [
+                        {
+                            text: "확인",
+                            onPress: () => router.replace("/manager/equipment"),
+                        },
+                    ]);
+                }
             } finally {
                 setIsLoading(false);
             }
@@ -87,12 +96,22 @@ function EditEquipmentPage() {
         const parsedQuantity = Number(quantity);
 
         if (!trimmedName) {
-            Alert.alert("입력 확인", "장비명을 입력해주세요.");
+            const message = "장비명을 입력해주세요.";
+            if (Platform.OS === "web") {
+                window.alert(`입력 확인\n${message}`);
+            } else {
+                Alert.alert("입력 확인", message);
+            }
             return;
         }
 
         if (!Number.isInteger(parsedQuantity) || parsedQuantity < 1) {
-            Alert.alert("입력 확인", "수량은 1개 이상이어야 합니다.");
+            const message = "수량은 1개 이상이어야 합니다.";
+            if (Platform.OS === "web") {
+                window.alert(`입력 확인\n${message}`);
+            } else {
+                Alert.alert("입력 확인", message);
+            }
             return;
         }
 
@@ -114,7 +133,12 @@ function EditEquipmentPage() {
             router.replace("/manager/equipment");
         } catch (error) {
             console.error("장비 수정 실패", error);
-            Alert.alert("수정 실패", "장비 정보 수정 중 오류가 발생했습니다.");
+            const message = "장비 정보 수정 중 오류가 발생했습니다.";
+            if (Platform.OS === "web") {
+                window.alert(`수정 실패\n${message}`);
+            } else {
+                Alert.alert("수정 실패", message);
+            }
         } finally {
             setIsSubmitting(false);
         }
