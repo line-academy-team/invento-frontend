@@ -97,9 +97,9 @@ function ProfileForm({ onSuccess }: ProfileFormProps) {
                                 <Feather name="user" size={48} color="#6B7280" />
                             )}
                         </View>
-                        <View className="absolute bottom-0 right-0 bg-secondary-main p-2 rounded-full items-center justify-center">
-                            <Feather size={24} name="edit-3" color="#FFFFFF" />
-                        </View>
+                        {/*<View className="absolute bottom-0 right-0 bg-secondary-main p-2 rounded-full items-center justify-center">*/}
+                        {/*    <Feather size={24} name="edit-3" color="#FFFFFF" />*/}
+                        {/*</View>*/}
                     </TouchableOpacity>
                 </View>
 

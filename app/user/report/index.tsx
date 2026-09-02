@@ -50,14 +50,14 @@ export default function UserReportListPage() {
     );
 
     return (
-        <View className="flex-1 bg-background-default">
+        <View className="flex-1 bg-background-paper">
             <MainHeader
                 title="내 파손신고"
                 isBackPress
                 onBackPress={() => router.navigate("/user" as Href)}
             />
             <ScrollView className="flex-1" contentContainerClassName="px-[30px] py-8 flex-grow">
-                <View className="rounded-[20px] overflow-hidden bg-white shadow-sm shadow-black/5">
+                <View className="rounded-[20px] overflow-hidden bg-white shadow-sm shadow-black/5 border border-divider">
                     {isLoading ? (
                         <ActivityIndicator className="py-10" color="#7C3AED" />
                     ) : reports.length === 0 ? (
