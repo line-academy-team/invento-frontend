@@ -15,6 +15,7 @@ import ErrorMessage from "@/components/common/form/ErrorMessage";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "@/components/common/Button/Button";
 import organizationApi from "@/api/organization/organizationApi";
+import { useUserStore } from "@/stores/user/useUserStore";
 
 interface JoinFormInput {
     inviteCode: string;
@@ -47,12 +48,13 @@ export default function OrganizationJoinPage() {
         try {
             await organizationApi.joinOrganization({
                 inviteCode: data.inviteCode,
-                department: data.department,
+                department: data.department.trim() || undefined,
             });
+            await useUserStore.getState().restoreLogin();
 
             if (Platform.OS === "web") {
                 window.alert(`🎉 단체 가입 신청 완료!`);
-                router.replace("/manager");
+                router.replace("/organization/status");
             } else {
                 Alert.alert("🎉 가입 신청 완료!", "단체 가입 신청 완료", [
                     {

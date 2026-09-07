@@ -15,6 +15,7 @@ import ErrorMessage from "@/components/common/form/ErrorMessage";
 import { Ionicons } from "@expo/vector-icons";
 import Button from "@/components/common/Button/Button";
 import organizationApi from "@/api/organization/organizationApi";
+import { useUserStore } from "@/stores/user/useUserStore";
 
 interface CreateOrganizationFormInput {
     name: string;
@@ -48,14 +49,8 @@ export default function OrganizationCreatePage() {
 
     const onSubmit = async (data: CreateOrganizationFormInput) => {
         try {
-            const generatedInviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-
-            const payload = {
-                ...data,
-                inviteCode: generatedInviteCode,
-            };
-
-            const newOrg = await organizationApi.createOrganization(payload);
+            const newOrg = await organizationApi.createOrganization(data);
+            await useUserStore.getState().restoreLogin();
 
             if (Platform.OS === "web") {
                 window.alert(`🎉 단체 생성 완료! 초대 코드: ${newOrg.inviteCode}`);

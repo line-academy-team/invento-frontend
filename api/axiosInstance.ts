@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useUserStore } from "@/stores/user/useUserStore";
 
-const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || "";
+const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:8006";
 
 const api = axios.create({
     baseURL: BASE_URL,

@@ -5,7 +5,7 @@ import { ActivityIndicator, Alert, Image, Platform, Pressable, ScrollView, Text,
 import MainHeader from "@/components/layout/MainHeader";
 import { twMerge } from "tailwind-merge";
 import Badge from "@/components/common/Badge/Badge";
-import { useRouter } from "expo-router";
+import { Href, useRouter } from "expo-router";
 import { FaUser } from "react-icons/fa";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -119,14 +119,14 @@ function AdminOrganizationPage() {
                                 조회된 조직이 없습니다.
                             </Text>
                         ) : (
-                            orgList.map((data, i) => (
+                            filteredOrgList.map((data, i) => (
                                 <Pressable
                                     key={i}
-                                    onPress={() => router.push(`/admin/organization/${data.id}`)}>
+                                    onPress={() => router.push(`/admin/organization/${data.id}` as Href)}>
                                     <View
                                         className={twMerge(
                                             "flex-row p-6 justify-between items-center border-b border-divider",
-                                            i === orgList.length - 1 && "border-b-0",
+                                            i === filteredOrgList.length - 1 && "border-b-0",
                                         )}>
                                         <View className={"flex-row items-center"}>
                                             <View className="w-[64px] h-[64px] rounded-2xl justify-center items-center bg-primary-light">

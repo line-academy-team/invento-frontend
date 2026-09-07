@@ -5,7 +5,6 @@ export interface OrganizationInput {
     name: string;
     description?: string;
     logoUrl?: string;
-    inviteCode: string;
 }
 
 export interface JoinOrganizationInput {
