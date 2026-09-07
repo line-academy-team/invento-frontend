@@ -30,10 +30,16 @@ export default function DepartmentCreatePage() {
             const data = await ownerDepartmentApi.getDepartmentList();
             setDepartments(data);
         } catch (error: any) {
-            Alert.alert(
-                "오류",
-                error.response?.data?.message || "부서 목록을 불러오지 못했습니다.",
-            );
+            if (Platform.OS === "web") {
+                window.alert(
+                    `오류\n${error.response?.data?.message || "부서 목록을 불러오지 못했습니다."}`,
+                );
+            } else {
+                Alert.alert(
+                    "오류",
+                    error.response?.data?.message || "부서 목록을 불러오지 못했습니다.",
+                );
+            }
         }
     };
 
@@ -49,34 +55,51 @@ export default function DepartmentCreatePage() {
 
             await fetchDepartments();
         } catch (error: any) {
-            Alert.alert(
-                "오류",
-                error.response?.data?.message || "부서 생성 중 오류가 발생했습니다.",
-            );
+            if (Platform.OS === "web") {
+                window.alert(
+                    `오류\n${error.response?.data?.message || "부서 생성 중 오류가 발생했습니다."}`,
+                );
+            } else {
+                Alert.alert(
+                    "오류",
+                    error.response?.data?.message || "부서 생성 중 오류가 발생했습니다.",
+                );
+            }
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleDeleteDepartment = (id: number, name: string) => {
-        Alert.alert("부서 삭제", `'${name}'을(를) 정말 삭제하시겠습니까?`, [
-            { text: "취소", style: "cancel" },
-            {
-                text: "삭제",
-                style: "destructive",
-                onPress: async () => {
-                    try {
-                        await ownerDepartmentApi.deleteDepartment(id);
-                        await fetchDepartments();
-                    } catch (error: any) {
-                        Alert.alert(
-                            "오류",
-                            error.response?.data?.message || "부서 삭제 중 오류가 발생했습니다.",
-                        );
-                    }
+        const executeDelete = async () => {
+            try {
+                await ownerDepartmentApi.deleteDepartment(id);
+                await fetchDepartments();
+            } catch (error: any) {
+                const errorMessage =
+                    error.response?.data?.message || "부서 삭제 중 오류가 발생했습니다.";
+                if (Platform.OS === "web") {
+                    window.alert(errorMessage);
+                } else {
+                    Alert.alert("오류", errorMessage);
+                }
+            }
+        };
+
+        if (Platform.OS === "web") {
+            if (window.confirm(`'${name}'을(를) 정말 삭제하시겠습니까?`)) {
+                executeDelete();
+            }
+        } else {
+            Alert.alert("부서 삭제", `'${name}'을(를) 정말 삭제하시겠습니까?`, [
+                { text: "취소", style: "cancel" },
+                {
+                    text: "삭제",
+                    style: "destructive",
+                    onPress: executeDelete,
                 },
-            },
-        ]);
+            ]);
+        }
     };
 
     const formatDate = (dateString: string) => {

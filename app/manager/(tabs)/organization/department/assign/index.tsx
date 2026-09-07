@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, Pressable, FlatList, Alert } from "react-native";
+import { View, Text, Pressable, FlatList, Alert, Platform } from "react-native";
 import { router, useFocusEffect } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import MainHeader from "@/components/layout/MainHeader";
@@ -30,10 +30,16 @@ export default function DepartmentAssignIndexPage() {
             setDepartments(data as any);
         } catch (error: any) {
             console.error(error);
-            Alert.alert(
-                "오류",
-                error.response?.data?.message || "부서 목록을 불러오지 못했습니다.",
-            );
+            if (Platform.OS === "web") {
+                window.alert(
+                    `오류\n${error.response?.data?.message || "부서 목록을 불러오지 못했습니다."}`,
+                );
+            } else {
+                Alert.alert(
+                    "오류",
+                    error.response?.data?.message || "부서 목록을 불러오지 못했습니다.",
+                );
+            }
         }
     };
 

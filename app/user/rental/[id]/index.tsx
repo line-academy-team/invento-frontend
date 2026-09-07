@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Image, Platform, ScrollView, Text, View } from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
 import { Href, useLocalSearchParams, useRouter } from "expo-router";
 import { twMerge } from "tailwind-merge";
@@ -30,7 +30,14 @@ export default function UserRentalDetailPage() {
             .then(setRental)
             .catch(error => {
                 console.error(error);
-                Alert.alert("조회 실패", "대여 상세 내역을 불러오지 못했습니다.");
+                const title = "조회 실패";
+                const message = "대여 상세 내역을 불러오지 못했습니다.";
+
+                if (Platform.OS === "web") {
+                    window.alert(`${title}\n${message}`);
+                } else {
+                    Alert.alert(title, message);
+                }
             })
             .finally(() => setIsLoading(false));
     }, [id]);
@@ -41,12 +48,27 @@ export default function UserRentalDetailPage() {
         try {
             setIsSubmitting(true);
             await memberRentalApi.returnRental(rental.id);
-            Alert.alert("반납 완료", "장비 반납 처리가 완료되었습니다.", [
-                { text: "확인", onPress: () => router.replace("/user/rental") },
-            ]);
+            const title = "반납 완료";
+            const message = "장비 반납 처리가 완료되었습니다.";
+
+            if (Platform.OS === "web") {
+                window.alert(`${title}\n${message}`);
+                router.replace("/user/rental");
+            } else {
+                Alert.alert(title, message, [
+                    { text: "확인", onPress: () => router.replace("/user/rental") },
+                ]);
+            }
         } catch (error) {
             console.error(error);
-            Alert.alert("반납 실패", "장비 반납 처리 중 오류가 발생했습니다.");
+            const title = "반납 실패";
+            const message = "장비 반납 처리 중 오류가 발생했습니다.";
+
+            if (Platform.OS === "web") {
+                window.alert(`${title}\n${message}`);
+            } else {
+                Alert.alert(title, message);
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -57,12 +79,27 @@ export default function UserRentalDetailPage() {
         try {
             setIsSubmitting(true);
             await memberRentalApi.deleteRentalRequest(rental.id);
-            Alert.alert("신청 취소", "대여 신청이 취소되었습니다.", [
-                { text: "확인", onPress: () => router.replace("/user/rental") },
-            ]);
+            const title = "신청 취소";
+            const message = "대여 신청이 취소되었습니다.";
+
+            if (Platform.OS === "web") {
+                window.alert(`${title}\n${message}`);
+                router.replace("/user/rental");
+            } else {
+                Alert.alert(title, message, [
+                    { text: "확인", onPress: () => router.replace("/user/rental") },
+                ]);
+            }
         } catch (error) {
             console.error(error);
-            Alert.alert("취소 실패", "대여 신청 취소 중 오류가 발생했습니다.");
+            const title = "취소 실패";
+            const message = "대여 신청 취소 중 오류가 발생했습니다.";
+
+            if (Platform.OS === "web") {
+                window.alert(`${title}\n${message}`);
+            } else {
+                Alert.alert(title, message);
+            }
         } finally {
             setIsSubmitting(false);
         }

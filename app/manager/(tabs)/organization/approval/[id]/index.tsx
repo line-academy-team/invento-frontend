@@ -8,7 +8,7 @@ import {
     Modal,
     TextInput,
     Switch,
-    Alert,
+    Alert, Platform,
 } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import MainHeader from "@/components/layout/MainHeader";
@@ -44,11 +44,22 @@ export default function OrganizationApprovalDetailPage() {
                 setDepartments(data.departments || []);
             } catch (error: any) {
                 console.error(error);
-                Alert.alert(
-                    "오류",
-                    error.response?.data?.message || "상세 정보를 불러오지 못했습니다.",
-                );
-                router.back();
+                if (Platform.OS === "web") {
+                    window.alert(
+                        `오류\n${error.response?.data?.message || "상세 정보를 불러오지 못했습니다."}`,
+                    );
+                    router.back();
+                } else {
+                    Alert.alert(
+                        "오류",
+                        `${error.response?.data?.message || "상세 정보를 불러오지 못했습니다."}`, [
+                            {
+                                text: "확인",
+                                onPress: () => router.back(),
+                            }
+                        ]
+                    );
+                }
             }
         };
 
@@ -67,15 +78,26 @@ export default function OrganizationApprovalDetailPage() {
             });
 
             setIsModalVisible(false);
-            Alert.alert("승인 완료", "가입 승인이 성공적으로 처리되었습니다.", [
-                {
-                    text: "확인",
-                    onPress: () => router.replace("/manager/organization/approval"),
-                },
-            ]);
+            if (Platform.OS === "web") {
+                window.alert(`승인 완료\n가입 승인이 성공적으로 처리되었습니다.`);
+                router.replace("/manager/organization/approval");
+            } else {
+                Alert.alert("승인 완료", "가입 승인이 성공적으로 처리되었습니다.", [
+                    {
+                        text: "확인",
+                        onPress: () => router.replace("/manager/organization/approval"),
+                    },
+                ]);
+            }
         } catch (error: any) {
             console.error(error);
-            Alert.alert("오류", error.response?.data?.message || "승인 처리에 실패했습니다.");
+            if (Platform.OS === "web") {
+                window.alert(
+                    `오류\n${error.response?.data?.message || "승인 처리에 실패했습니다."}`,
+                );
+            } else {
+                Alert.alert("오류", error.response?.data?.message || "승인 처리에 실패했습니다.");
+            }
         } finally {
             setIsSubmitting(false);
         }

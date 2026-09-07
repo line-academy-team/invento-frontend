@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Pressable, FlatList, Modal, Alert } from "react-native";
+import { View, Text, TextInput, Pressable, FlatList, Modal, Alert, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MainHeader from "@/components/layout/MainHeader";
 import managerDepartmentApi, { OrgMember } from "@/api/manager/managerDepartmentApi";
@@ -25,7 +25,16 @@ export default function DepartmentTransferPage() {
             setDepartments(deptsData);
         } catch (error: any) {
             console.error(error);
-            Alert.alert("오류", error.response?.data?.message || "데이터를 불러오지 못했습니다.");
+            if (Platform.OS === "web") {
+                window.alert(
+                    `오류\n${error.response?.data?.message || "데이터를 불러오지 못했습니다."}`,
+                );
+            } else {
+                Alert.alert(
+                    "오류",
+                    error.response?.data?.message || "데이터를 불러오지 못했습니다.",
+                );
+            }
         }
     };
 
@@ -53,15 +62,25 @@ export default function DepartmentTransferPage() {
                 targetDepartmentId: targetDept.id,
             });
 
-            Alert.alert(
-                "부서 이동 완료",
-                `${selectedMember.user.name}님이 ${targetDept.name}(으)로 이동되었습니다.`,
-            );
+            const successMessage = `${selectedMember.user.name}님이 ${targetDept.name}(으)로 이동되었습니다.`;
+
+            if (Platform.OS === "web") {
+                window.alert(`부서 이동 완료\n${successMessage}`);
+            } else {
+                Alert.alert("부서 이동 완료", successMessage);
+            }
+
             handleCloseModal();
             await fetchData();
         } catch (error: any) {
             console.error(error);
-            Alert.alert("오류", error.response?.data?.message || "부서 이동에 실패했습니다.");
+            const errorMessage = error.response?.data?.message || "부서 이동에 실패했습니다.";
+
+            if (Platform.OS === "web") {
+                window.alert(`오류\n${errorMessage}`);
+            } else {
+                Alert.alert("오류", errorMessage);
+            }
         } finally {
             setIsSubmitting(false);
         }

@@ -1,5 +1,13 @@
 import React, { useCallback, useState } from "react";
-import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from "react-native";
+import {
+    ActivityIndicator,
+    Alert,
+    Platform,
+    Pressable,
+    ScrollView,
+    Text,
+    View,
+} from "react-native";
 import { Href, useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
 import MainHeader from "@/components/layout/MainHeader";
@@ -24,7 +32,14 @@ export default function UserReportListPage() {
                 .then(data => isActive && setReports(data))
                 .catch(error => {
                     console.error(error);
-                    Alert.alert("조회 실패", "신고 목록을 불러오지 못했습니다.");
+                    const title = "조회 실패";
+                    const message = "신고 목록을 불러오지 못했습니다.";
+
+                    if (Platform.OS === "web") {
+                        window.alert(`${title}\n${message}`);
+                    } else {
+                        Alert.alert(title, message);
+                    }
                 })
                 .finally(() => isActive && setIsLoading(false));
 
@@ -35,14 +50,14 @@ export default function UserReportListPage() {
     );
 
     return (
-        <View className="flex-1 bg-background-default">
+        <View className="flex-1 bg-background-paper">
             <MainHeader
                 title="내 파손신고"
                 isBackPress
                 onBackPress={() => router.navigate("/user" as Href)}
             />
             <ScrollView className="flex-1" contentContainerClassName="px-[30px] py-8 flex-grow">
-                <View className="rounded-[20px] overflow-hidden bg-white shadow-sm shadow-black/5">
+                <View className="rounded-[20px] overflow-hidden bg-white shadow-sm shadow-black/5 border border-divider">
                     {isLoading ? (
                         <ActivityIndicator className="py-10" color="#7C3AED" />
                     ) : reports.length === 0 ? (

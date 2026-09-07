@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Image, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Image, Platform, ScrollView, Text, View } from "react-native";
 import MainHeader from "@/components/layout/MainHeader";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import Badge from "@/components/common/Badge/Badge";
@@ -34,12 +34,20 @@ function ManagerEquipmentDetailPage() {
                 setEquipment(data);
             } catch (error) {
                 console.error("장비 상세 조회 실패", error);
-                Alert.alert("조회 실패", "장비 정보를 불러오지 못했습니다.", [
-                    {
-                        text: "확인",
-                        onPress: () => router.replace("/manager/equipment"),
-                    },
-                ]);
+                const title = "조회 실패";
+                const message = "장비 정보를 불러오지 못했습니다.";
+
+                if (Platform.OS === "web") {
+                    window.alert(`${title}\n${message}`);
+                    router.replace("/manager/equipment");
+                } else {
+                    Alert.alert(title, message, [
+                        {
+                            text: "확인",
+                            onPress: () => router.replace("/manager/equipment"),
+                        },
+                    ]);
+                }
             } finally {
                 setIsLoading(false);
             }
@@ -48,28 +56,44 @@ function ManagerEquipmentDetailPage() {
         void fetchEquipment();
     }, [equipmentId, router]);
 
+    const executeDelete = async () => {
+        if (!equipment) return;
+        try {
+            setIsDeleting(true);
+            await managerEquipmentApi.deleteEquipment(equipment.id);
+            router.replace("/manager/equipment");
+        } catch (error) {
+            console.error("장비 삭제 실패", error);
+            const message = "장비 삭제 중 오류가 발생했습니다.";
+            if (Platform.OS === "web") {
+                window.alert(`삭제 실패\n${message}`);
+            } else {
+                Alert.alert("삭제 실패", message);
+            }
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     const handleDelete = () => {
         if (!equipment || isDeleting) return;
 
-        Alert.alert("장비 삭제", `\"${equipment.name}\" 장비를 삭제할까요?`, [
-            { text: "취소", style: "cancel" },
-            {
-                text: "삭제",
-                style: "destructive",
-                onPress: async () => {
-                    try {
-                        setIsDeleting(true);
-                        await managerEquipmentApi.deleteEquipment(equipment.id);
-                        router.replace("/manager/equipment");
-                    } catch (error) {
-                        console.error("장비 삭제 실패", error);
-                        Alert.alert("삭제 실패", "장비 삭제 중 오류가 발생했습니다.");
-                    } finally {
-                        setIsDeleting(false);
-                    }
+        const confirmMessage = `\"${equipment.name}\" 장비를 삭제할까요?`;
+
+        if (Platform.OS === "web") {
+            if (window.confirm(confirmMessage)) {
+                void executeDelete();
+            }
+        } else {
+            Alert.alert("장비 삭제", confirmMessage, [
+                { text: "취소", style: "cancel" },
+                {
+                    text: "삭제",
+                    style: "destructive",
+                    onPress: executeDelete,
                 },
-            },
-        ]);
+            ]);
+        }
     };
 
     if (isLoading) {

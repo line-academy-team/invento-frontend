@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Platform, ScrollView, Text, View } from "react-native";
 import { Href, useLocalSearchParams, useRouter } from "expo-router";
 import MainHeader from "@/components/layout/MainHeader";
 import Button from "@/components/common/Button/Button";
@@ -27,7 +27,14 @@ export default function UserReportDetailPage() {
             .then(setReport)
             .catch(error => {
                 console.error(error);
-                Alert.alert("조회 실패", "신고 상세를 불러오지 못했습니다.");
+                const title = "조회 실패";
+                const message = "신고 상세를 불러오지 못했습니다.";
+
+                if (Platform.OS === "web") {
+                    window.alert(`${title}\n${message}`);
+                } else {
+                    Alert.alert(title, message);
+                }
             })
             .finally(() => setIsLoading(false));
     }, [id]);
@@ -38,15 +45,30 @@ export default function UserReportDetailPage() {
         try {
             setIsSubmitting(true);
             await memberReportApi.deleteReport(report.id);
-            Alert.alert("신고 취소", "파손 신고가 취소되었습니다.", [
-                {
-                    text: "확인",
-                    onPress: () => router.replace("/user/report" as Href),
-                },
-            ]);
+            const title = "신고 취소";
+            const message = "파손 신고가 취소되었습니다.";
+
+            if (Platform.OS === "web") {
+                window.alert(`${title}\n${message}`);
+                router.replace("/user/report" as Href);
+            } else {
+                Alert.alert(title, message, [
+                    {
+                        text: "확인",
+                        onPress: () => router.replace("/user/report" as Href),
+                    },
+                ]);
+            }
         } catch (error) {
             console.error(error);
-            Alert.alert("취소 실패", "파손 신고 취소 중 오류가 발생했습니다.");
+            const title = "취소 실패";
+            const message = "파손 신고 취소 중 오류가 발생했습니다.";
+
+            if (Platform.OS === "web") {
+                window.alert(`${title}\n${message}`);
+            } else {
+                Alert.alert(title, message);
+            }
         } finally {
             setIsSubmitting(false);
         }

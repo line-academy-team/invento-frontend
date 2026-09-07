@@ -70,7 +70,7 @@ function UserMainPage() {
             title: "내 대여 장비",
             number: rentalList.filter(rental => rental.status === "BORROWED").length.toString(),
             background: "bg-secondary-main",
-            route: "/user/report",
+            route: "/user/rental",
         },
         {
             logo: require("@/assets/images/common/short_stay.png"),
@@ -93,7 +93,7 @@ function UserMainPage() {
             title: "내 신고",
             number: reportCount.toString(),
             background: "bg-error-main",
-            route: "/user/rental",
+            route: "/user/report",
         },
     ];
 

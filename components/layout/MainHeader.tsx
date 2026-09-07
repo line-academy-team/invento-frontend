@@ -1,5 +1,5 @@
-import React, { useState, ReactNode } from "react";
-import { Image, Pressable, Text, View, Modal, TouchableOpacity } from "react-native";
+import React, { ReactNode, useState } from "react";
+import { Image, Modal, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Svg, { Path } from "react-native-svg";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,35 +26,71 @@ function MainHeader({
     onBackPress,
 }: MainHeaderProps) {
     const isMain = variant === "userMain" || variant === "adminMain" || variant === "managerMain";
-    const isAdmin = variant === "adminMain";
-    const isManager = variant === "managerMain";
+
+    const isUserMain = variant === "userMain";
+    const isAdminMain = variant === "adminMain";
+    const isManagerMain = variant === "managerMain";
 
     const [isModalVisible, setModalVisible] = useState(false);
 
-    const { logout } = useUserStore();
+    const { logout, authUser } = useUserStore();
+
+    // 권한
+    const memberRole = authUser?.memberInfo?.role;
+    const isOwner = memberRole === "OWNER";
+    const isManager = memberRole === "MANAGER";
+
+    const canUserOpenMenu = isOwner || isManager;
 
     const commonClassName =
         "w-full h-[88px] relative flex-row justify-between items-center px-[30px]";
 
+    // 메뉴
     const handleMenuPress = () => {
-        if (isAdmin || isManager) {
+        if (isAdminMain || isManagerMain) {
             setModalVisible(true);
-        } else if (onMenuPress) {
+            return;
+        }
+
+        if (isUserMain && canUserOpenMenu) {
+            setModalVisible(true);
+            return;
+        }
+
+        if (onMenuPress) {
             onMenuPress();
         }
     };
 
+    // 사용자 전환
     const handleSwitchToUser = () => {
         setModalVisible(false);
-        router.push("/user");
+
+        if (authUser?.memberInfo) {
+            router.push("/user");
+        }
     };
 
+    // 오너 전환
+    const handleSwitchToOwner = () => {
+        setModalVisible(false);
+        router.push("/admin");
+    };
+
+    // 관리자 전환
+    const handleSwitchToManager = () => {
+        setModalVisible(false);
+        router.push("/manager");
+    };
+
+    // 로그아웃
     const handleLogout = () => {
         setModalVisible(false);
         logout();
         router.replace("/");
     };
 
+    // 모달
     const renderModal = () => (
         <Modal
             visible={isModalVisible}
@@ -79,13 +115,40 @@ function MainHeader({
                         shadowRadius: 10,
                         elevation: 5,
                     }}>
-                    <TouchableOpacity
-                        onPress={handleSwitchToUser}
-                        className="p-5 border-b border-gray-100 active:bg-gray-50">
-                        <Text className="text-center font-pretendard-bold text-lg text-text-default">
-                            유저 페이지로 전환
-                        </Text>
-                    </TouchableOpacity>
+                    {/* 사용자 전환 */}
+                    {(isAdminMain || isManagerMain) && (
+                        <TouchableOpacity
+                            onPress={handleSwitchToUser}
+                            className="p-5 border-b border-gray-100 active:bg-gray-50">
+                            <Text className="text-center font-pretendard-bold text-lg text-text-default">
+                                유저 페이지로 전환
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+
+                    {/* 오너 전환 */}
+                    {isUserMain && isOwner && (
+                        <TouchableOpacity
+                            onPress={handleSwitchToOwner}
+                            className="p-5 border-b border-gray-100 active:bg-gray-50">
+                            <Text className="text-center font-pretendard-bold text-lg text-text-default">
+                                오너 페이지로 전환
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+
+                    {/* 관리자 전환 */}
+                    {isUserMain && (isOwner || isManager) && (
+                        <TouchableOpacity
+                            onPress={handleSwitchToManager}
+                            className="p-5 border-b border-gray-100 active:bg-gray-50">
+                            <Text className="text-center font-pretendard-bold text-lg text-text-default">
+                                관리자 페이지로 전환
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+
+                    {/* 로그아웃 */}
                     <TouchableOpacity onPress={handleLogout} className="p-5 active:bg-gray-50">
                         <Text className="text-center font-pretendard-bold text-lg text-red-500">
                             로그아웃
@@ -96,44 +159,55 @@ function MainHeader({
         </Modal>
     );
 
+    // 헤더 내용
     const renderContent = () => {
         if (isMain) {
             return (
                 <>
+                    {/* 로고 */}
                     <View className="flex-row gap-2.5 items-center z-10">
                         <Image
                             source={require("@/assets/images/common/box.png")}
                             style={{ width: 36, height: 36 }}
                         />
+
                         <View>
                             <Text className="font-pretendard-bold text-2xl text-text-light">
-                                {isAdmin ? "Invento Admin" : "Invento"}
+                                {isAdminMain ? "Invento Admin" : "Invento"}
                             </Text>
-                            {isAdmin && (
+
+                            {isAdminMain && (
                                 <Text className="font-pretendard-bold text-sm text-text-light">
                                     {'"시스템 관리 센터"'}
                                 </Text>
                             )}
                         </View>
                     </View>
-                    <Pressable onPress={handleMenuPress} className="z-10">
-                        <Image
-                            source={require("@/assets/images/common/menu.png")}
-                            style={{ width: 28, height: 28 }}
-                        />
-                    </Pressable>
+
+                    {/* 메뉴 */}
+                    {(isAdminMain || isManagerMain || (isUserMain && canUserOpenMenu)) && (
+                        <Pressable onPress={handleMenuPress} className="z-10">
+                            <Image
+                                source={require("@/assets/images/common/menu.png")}
+                                style={{ width: 28, height: 28 }}
+                            />
+                        </Pressable>
+                    )}
                 </>
             );
         }
 
         return (
             <>
-                <View className={"flex-row gap-2.5 items-center"}>
+                <View className="flex-row gap-2.5 items-center">
+                    {/* 뒤로가기 */}
                     {isBackPress && (
                         <Pressable onPress={onBackPress ? onBackPress : () => router.back()}>
-                            <Ionicons name={"chevron-back-outline"} size={24} />
+                            <Ionicons name="chevron-back-outline" size={24} />
                         </Pressable>
                     )}
+
+                    {/* 제목 */}
                     <View className="z-10">
                         {customTitle ? (
                             customTitle
@@ -144,11 +218,17 @@ function MainHeader({
                         )}
                     </View>
                 </View>
+
+                {/* 메뉴 */}
                 {onMenuPress && (
                     <Pressable onPress={handleMenuPress} className="z-10">
                         <Image
                             source={require("@/assets/images/common/menu.png")}
-                            style={{ width: 28, height: 28, tintColor: "black" }}
+                            style={{
+                                width: 28,
+                                height: 28,
+                                tintColor: "black",
+                            }}
                         />
                     </Pressable>
                 )}
@@ -156,6 +236,7 @@ function MainHeader({
         );
     };
 
+    // 사용자 / 관리자 메인
     if (variant === "userMain" || variant === "managerMain") {
         return (
             <>
@@ -182,31 +263,36 @@ function MainHeader({
                         }}>
                         <Path
                             d="
-                            M 0 0
-                            L 550 0
-                            C 580 0, 350 88, 245 88
-                            L 0 90
-                            Z
-                        "
+                                M 0 0
+                                L 550 0
+                                C 580 0, 350 88, 245 88
+                                L 0 90
+                                Z
+                            "
                             fill="rgba(255, 255, 255, 0.1)"
                         />
                     </Svg>
+
                     {renderContent()}
                 </LinearGradient>
-                {isManager && renderModal()}
+
+                {(isManagerMain || (isUserMain && canUserOpenMenu)) && renderModal()}
             </>
         );
     }
 
+    // 앱 관리자 메인
     if (variant === "adminMain") {
         return (
             <>
                 <View className={`${commonClassName} bg-primary-main`}>{renderContent()}</View>
+
                 {renderModal()}
             </>
         );
     }
 
+    // 서브 헤더
     return (
         <View
             className={`${commonClassName} bg-text-light`}

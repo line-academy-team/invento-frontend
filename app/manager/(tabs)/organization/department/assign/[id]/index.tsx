@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, Pressable, FlatList, Alert } from "react-native";
+import { View, Text, Pressable, FlatList, Alert, Platform } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import MainHeader from "@/components/layout/MainHeader";
@@ -34,10 +34,16 @@ export default function DepartmentAssignDetailPage() {
             }
         } catch (error: any) {
             console.error(error);
-            Alert.alert(
-                "오류",
-                error.response?.data?.message || "멤버 목록을 불러오지 못했습니다.",
-            );
+            if (Platform.OS === "web") {
+                window.alert(
+                    `오류\n${error.response?.data?.message || "멤버 목록을 불러오지 못했습니다."}`,
+                );
+            } else {
+                Alert.alert(
+                    "오류",
+                    error.response?.data?.message || "멤버 목록을 불러오지 못했습니다.",
+                );
+            }
         }
     }, [departmentId]);
 
@@ -67,14 +73,27 @@ export default function DepartmentAssignDetailPage() {
             setIsSubmitting(true);
             await ownerDepartmentApi.assignDepartmentManager(departmentId, selectedMember.id);
 
-            Alert.alert(
-                "임명 완료",
-                `${selectedMember.user.name}님이 부서 관리자로 임명되었습니다.`,
-                [{ text: "확인", onPress: () => router.back() }],
-            );
+            if (Platform.OS === "web") {
+                window.alert(
+                    `임명 완료\n${selectedMember.user.name}님이 부서 관리자로 임명되었습니다.`,
+                );
+                router.back();
+            } else {
+                Alert.alert(
+                    "임명 완료",
+                    `${selectedMember.user.name}님이 부서 관리자로 임명되었습니다.`,
+                    [{ text: "확인", onPress: () => router.back() }],
+                );
+            }
         } catch (error: any) {
             console.error(error);
-            Alert.alert("오류", error.response?.data?.message || "관리자 임명에 실패했습니다.");
+            if (Platform.OS === "web") {
+                window.alert(
+                    `임명 완료\n${error.response?.data?.message || "관리자 임명에 실패했습니다."}`,
+                );
+            } else {
+                Alert.alert("오류", error.response?.data?.message || "관리자 임명에 실패했습니다.");
+            }
         } finally {
             setIsSubmitting(false);
         }

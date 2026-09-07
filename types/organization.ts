@@ -14,7 +14,7 @@ export interface Organization {
 }
 
 export type OrganizationCount = Organization & {
-    _count: {
+    count: {
         members: number;
         equipment: number;
     };
