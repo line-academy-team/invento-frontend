@@ -26,7 +26,7 @@ const Checkbox = ({ isChecked, onPress }: { isChecked: boolean; onPress: () => v
         onPress={onPress}
         className={twMerge(
             "w-5 h-5 rounded-[4px] border items-center justify-center mr-2",
-            isChecked ? "bg-primary-main border-primary-main" : "bg-white border-divider"
+            isChecked ? "bg-primary-main border-primary-main" : "bg-white border-divider",
         )}>
         {isChecked && <Text className="text-white text-xs font-bold">✓</Text>}
     </Pressable>
@@ -198,21 +198,23 @@ function ManagerRentalPage() {
                         />
                     </View>
 
-                    <View className={"mt-8 flex-row justify-between items-center"}>
-                        <View className={"flex-row items-center"}>
-                            <Checkbox isChecked={isAllChecked} onPress={toggleAll} />
-                            <Pressable onPress={() => setSelectedTab("전체")}>
-                                <Text
-                                    className={twMerge(
-                                        "font-pretendard-semibold text-base",
-                                        selectedTab === "전체"
-                                            ? "text-primary-main"
-                                            : "text-text-secondary",
-                                    )}>
-                                    전체선택
-                                </Text>
-                            </Pressable>
-                        </View>
+                    <View className={twMerge("mt-8 flex-row items-center", ["대기", "전체"].includes(selectedTab) ? "justify-between" : "justify-end")}>
+                        {["대기", "전체"].includes(selectedTab) ? (
+                            <View className={"flex-row items-center"}>
+                                <Checkbox isChecked={isAllChecked} onPress={toggleAll} />
+                                <Pressable onPress={() => setSelectedTab("전체")}>
+                                    <Text
+                                        className={twMerge(
+                                            "font-pretendard-semibold text-base",
+                                            selectedTab === "전체"
+                                                ? "text-primary-main"
+                                                : "text-text-secondary",
+                                        )}>
+                                        전체선택
+                                    </Text>
+                                </Pressable>
+                            </View>
+                        ) : null}
 
                         <View className={"flex-row space-x-6"}>
                             {categories.map(category => (
@@ -257,10 +259,12 @@ function ManagerRentalPage() {
                                             i === filteredData.length - 1 && "border-b-0",
                                         )}>
                                         <View className={"flex-row items-center flex-1"}>
-                                            <Checkbox
-                                                isChecked={checkedIds.includes(data.id)}
-                                                onPress={() => toggleItem(data.id)}
-                                            />
+                                            {["대기", "전체"].includes(selectedTab) ? (
+                                                <Checkbox
+                                                    isChecked={checkedIds.includes(data.id)}
+                                                    onPress={() => toggleItem(data.id)}
+                                                />
+                                            ) : null}
                                             <View className={"ml-2 justify-between"}>
                                                 <Text
                                                     className={
