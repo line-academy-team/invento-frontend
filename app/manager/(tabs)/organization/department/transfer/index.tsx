@@ -118,10 +118,14 @@ export default function DepartmentTransferPage() {
                 <View className="flex-1 bg-background-paper rounded-3xl border border-divider overflow-hidden mb-6 shadow-sm">
                     <FlatList
                         data={filteredMembers}
-                        keyExtractor={item => item.id.toString()}
+                        keyExtractor={(item, index) =>
+                            item?.id ? String(item.id) : `member-${index}`
+                        }
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ paddingBottom: 20 }}
                         renderItem={({ item, index }) => {
+                            if (!item || !item.user) return null;
+
                             const isChecked = selectedMember?.id === item.id;
                             const isLast = index === filteredMembers.length - 1;
                             const currentDeptName = item.department?.name || "부서 미지정";

@@ -126,10 +126,12 @@ export default function DepartmentAssignDetailPage() {
                 <View className="flex-1 bg-background-paper rounded-3xl border border-divider overflow-hidden mb-6 shadow-sm">
                     <FlatList
                         data={members}
-                        keyExtractor={item => item.id.toString()}
+                        keyExtractor={(item, index) => item?.id ? String(item.id) : `member-${index}`}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={{ paddingBottom: selectedMember ? 140 : 20 }}
                         renderItem={({ item, index }) => {
+                            if (!item || !item.user) return null;
+
                             const isChecked = selectedMember?.id === item.id;
                             const isManager = item.role === "MANAGER";
                             const isLast = index === members.length - 1;

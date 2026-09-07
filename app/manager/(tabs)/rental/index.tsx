@@ -26,7 +26,7 @@ const Checkbox = ({ isChecked, onPress }: { isChecked: boolean; onPress: () => v
         onPress={onPress}
         className={twMerge(
             "w-5 h-5 rounded-[4px] border items-center justify-center mr-2",
-            isChecked ? "bg-primary-main border-primary-main" : "bg-white border-divider",
+            isChecked ? "bg-primary-main border-primary-main" : "bg-white border-divider"
         )}>
         {isChecked && <Text className="text-white text-xs font-bold">✓</Text>}
     </Pressable>

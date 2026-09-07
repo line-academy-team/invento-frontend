@@ -101,6 +101,14 @@ export default function DepartmentCreatePage() {
             ]);
         }
     };
+    
+    const handleUpdateDepartment = () => {
+        if (Platform.OS === "web") {
+            window.alert("수정 기능은 준비 중입니다.");
+        } else {
+            Alert.alert("알림", "수정 기능은 준비 중입니다.");
+        }
+    };
 
     const formatDate = (dateString: string) => {
         if (!dateString) return "";
@@ -134,7 +142,7 @@ export default function DepartmentCreatePage() {
                                 <Feather name="trash-2" size={16} color="#EF4444" />
                             </Pressable>
                             <Pressable
-                                onPress={() => Alert.alert("알림", "수정 기능은 준비 중입니다.")}
+                                onPress={() => handleUpdateDepartment()}
                                 className="w-[34px] h-[34px] items-center justify-center border border-primary-light rounded-lg bg-primary-light/10 active:opacity-70">
                                 <Feather name="edit-2" size={16} color="#7C3AED" />
                             </Pressable>
